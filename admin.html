@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix Admin Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-header">
+                <span class="logo-icon">▶</span>
+                <h1>StreamFlix <span class="text-primary">Admin</span></h1>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+                <div id="login-error" class="error-message hidden"></div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+            <p class="login-footer">Default: admin / streamflix2026</p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-dashboard hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">▶</span>
+                <span class="logo-text">Stream<span class="text-primary">Flix</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="overview">
+                    <span class="nav-icon">📊</span>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="content">
+                    <span class="nav-icon">🎬</span>
+                    <span>Content Stats</span>
+                </a>
+                <a href="#" class="nav-item" data-section="users">
+                    <span class="nav-icon">👥</span>
+                    <span>User Activity</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ads">
+                    <span class="nav-icon">📢</span>
+                    <span>Ad Management</span>
+                </a>
+                <a href="#" class="nav-item" data-section="seo">
+                    <span class="nav-icon">🔍</span>
+                    <span>SEO Settings</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-block">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1 id="page-title">Dashboard Overview</h1>
+                <div class="header-actions">
+                    <span class="current-date" id="current-date"></span>
+                    <a href="/" class="btn btn-outline" target="_blank">View Site</a>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="section-overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👁️</div>
+                        <div class="stat-info">
+                            <h3 id="stat-views">0</h3>
+                            <p>Total Views Today</p>
+                        </div>
+                        <span class="stat-trend up">+12%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="stat-users">0</h3>
+                            <p>Active Users</p>
+                        </div>
+                        <span class="stat-trend up">+8%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎬</div>
+                        <div class="stat-info">
+                            <h3 id="stat-plays">0</h3>
+                            <p>Video Plays</p>
+                        </div>
+                        <span class="stat-trend up">+23%</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <h3 id="stat-time">0m</h3>
+                            <p>Avg. Watch Time</p>
+                        </div>
+                        <span class="stat-trend up">+5%</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Traffic Overview</h2>
+                            <select id="traffic-period" class="select-sm">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <div id="traffic-chart" class="chart-container">
+                                <canvas id="trafficCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Top Watched Content</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="table" id="top-content-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Views</th>
+                                        <th>Trend</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Real-Time Activity</h2>
+                            <span class="live-badge">🔴 Live</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="realtime-activity" class="activity-feed">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Geographic Distribution</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="geo-stats" class="geo-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="section-analytics" class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 id="analytics-pageviews">0</h3>
+                            <p>Page Views</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-info">
+                            <h3 id="analytics-bounce">0%</h3>
+                            <p>Bounce Rate</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📱</div>
+                        <div class="stat-info">
+                            <h3 id="analytics-mobile">0%</h3>
+                            <p>Mobile Users</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔗</div>
+                        <div class="stat-info">
+                            <h3 id="analytics-referral">0</h3>
+                            <p>Referrals</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Traffic Sources</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="sources-grid" id="traffic-sources">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Device Breakdown</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="device-stats" id="device-stats">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Stats Section -->
+            <section id="section-content" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Most Watched Movies</h2>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="movies-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Title</th>
+                                    <th>Views</th>
+                                    <th>Avg. Duration</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Most Watched TV Shows</h2>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="tvshows-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Title</th>
+                                    <th>Views</th>
+                                    <th>Episodes Watched</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Genre Performance</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="genre-performance" class="genre-bars">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Activity Section -->
+            <section id="section-users" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>User Watch History</h2>
+                        <input type="search" placeholder="Search users..." class="search-input" id="user-search">
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Last Watched</th>
+                                    <th>Total Views</th>
+                                    <th>Watch Time</th>
+                                    <th>Country</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Peak Hours Activity</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="peak-hours" class="heatmap">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ad Management Section -->
+            <section id="section-ads" class="content-section">
+                <div class="alert alert-info">
+                    <strong>💡 Tip:</strong> Paste your ad codes below. Supported: Google AdSense, PropellerAds,
+                    AdMaven, PopAds, and any custom ad scripts.
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Header Ads</h2>
+                        <span class="badge">Displayed on all pages</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Paste your header ad code:</label>
+                        <textarea id="header-ad-code" class="code-textarea"
+                            placeholder="<!-- Paste Google AdSense or other ad code here -->"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('header')">Save Header Ad</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('header')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Sidebar Ads</h2>
+                        <span class="badge">Displayed on movie/TV detail pages</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Paste your sidebar ad code:</label>
+                        <textarea id="sidebar-ad-code" class="code-textarea"
+                            placeholder="<!-- Paste sidebar ad code here -->"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('sidebar')">Save Sidebar Ad</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('sidebar')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Video Pre-Roll Ads</h2>
+                        <span class="badge">Displayed before video plays</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Paste your video pre-roll ad code:</label>
+                        <textarea id="preroll-ad-code" class="code-textarea"
+                            placeholder="<!-- Paste VAST/VPAID tag or video ad code here -->"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('preroll')">Save Pre-Roll Ad</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('preroll')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Pop-Under / Interstitial Ads</h2>
+                        <span class="badge badge-warning">Use sparingly</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Paste your pop-under/interstitial ad code:</label>
+                        <textarea id="popup-ad-code" class="code-textarea"
+                            placeholder="<!-- Paste PopAds, PropellerAds or similar code here -->"></textarea>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="popup-enabled"> Enable Pop-Under Ads
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('popup')">Save Pop-Under Ad</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('popup')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Footer Ads</h2>
+                        <span class="badge">Sticky footer banner</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Paste your footer banner ad code:</label>
+                        <textarea id="footer-ad-code" class="code-textarea"
+                            placeholder="<!-- Paste footer banner ad code here -->"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('footer')">Save Footer Ad</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('footer')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Custom Scripts</h2>
+                        <span class="badge">Analytics, tracking, custom code</span>
+                    </div>
+                    <div class="card-body">
+                        <label class="form-label">Google Analytics / Custom tracking scripts:</label>
+                        <textarea id="custom-scripts" class="code-textarea"
+                            placeholder="<!-- Paste Google Analytics, Facebook Pixel, or any custom scripts here -->"></textarea>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveAdCode('custom')">Save Custom Scripts</button>
+                            <button class="btn btn-secondary" onclick="clearAdCode('custom')">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEO Settings Section -->
+            <section id="section-seo" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Site Meta Tags</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Site Title</label>
+                            <input type="text" id="seo-title" class="form-input"
+                                value="StreamFlix - Watch Free Movies, TV Shows, Anime & Animation Online">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Description</label>
+                            <textarea id="seo-description"
+                                class="form-textarea">Stream thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Keywords</label>
+                            <textarea id="seo-keywords"
+                                class="form-textarea">free movies, watch movies online, stream tv shows, anime streaming, HD movies</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveSEOSettings()">Save SEO Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Sitemap & Robots.txt</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">robots.txt content</label>
+                            <textarea id="robots-txt" class="code-textarea">User-agent: *
+Allow: /
+Sitemap: https://streamflix.com/sitemap.xml</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="generateSitemap()">Generate Sitemap</button>
+                            <button class="btn btn-secondary" onclick="saveRobots()">Save robots.txt</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="section-settings" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Admin Credentials</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="settings-username" class="form-input" value="admin">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="settings-password" class="form-input"
+                                placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" id="settings-confirm" class="form-input"
+                                placeholder="Confirm new password">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="updateCredentials()">Update Credentials</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Site Settings</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" id="site-name" class="form-input" value="StreamFlix">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TMDB API Key</label>
+                            <input type="text" id="tmdb-api-key" class="form-input" placeholder="Your TMDB API Key">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="maintenance-mode"> Enable Maintenance Mode
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveSiteSettings()">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Data Export</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>Export all analytics and user data for backup or analysis.</p>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="exportData('json')">Export as JSON</button>
+                            <button class="btn btn-secondary" onclick="exportData('csv')">Export as CSV</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

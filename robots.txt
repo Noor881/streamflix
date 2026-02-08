@@ -1,0 +1,31 @@
+# StreamFlix Robots.txt
+# https://streamflix-six-amber.vercel.app/
+
+# Allow all search engines
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://streamflix-six-amber.vercel.app/sitemap.xml
+
+# Allow Google and Bing to index everything
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Crawl delay to be respectful
+User-agent: *
+Crawl-delay: 1
+
+# Block admin panel from search engines
+Disallow: /admin.html
+Disallow: /admin
+
+# Block any API endpoints (if any)
+Disallow: /api/
+
+# Block temporary or cache files
+Disallow: /*.tmp$
+Disallow: /*.bak$

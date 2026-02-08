@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .bg { fill: #141414; }
+      .play { fill: #e50914; }
+      .highlight { fill: #ff6b6b; opacity: 0.3; }
+    </style>
+  </defs>
+  <!-- Background circle -->
+  <circle class="bg" cx="256" cy="256" r="256"/>
+  <!-- Outer ring -->
+  <circle fill="none" stroke="#e50914" stroke-width="16" cx="256" cy="256" r="220"/>
+  <!-- Play button triangle -->
+  <path class="play" d="M200 140 L200 372 L380 256 Z"/>
+  <!-- Highlight on play button -->
+  <path class="highlight" d="M200 140 L200 256 L290 198 Z"/>
+</svg>
