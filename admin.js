@@ -31,6 +31,16 @@ const gaAnalytics = {
     tokenClient: null,
     connected: false,
 
+    init() {
+        const saved = sessionStorage.getItem('ga_access_token');
+        if (saved) {
+            this.accessToken = saved;
+            this.connected = true;
+            this.updateButton(true);
+            this.loadAllData();
+        }
+    },
+
     connect() {
         if (typeof google === 'undefined' || !google.accounts) {
             showNotification('Google Identity Services not loaded. Please refresh.', 'error');
@@ -48,6 +58,7 @@ const gaAnalytics = {
                     }
                     this.accessToken = response.access_token;
                     this.connected = true;
+                    sessionStorage.setItem('ga_access_token', response.access_token);
                     this.updateButton(true);
                     systemLogs.add('Analytics Connected', 'Google Analytics linked via OAuth', 'success');
                     showNotification('Google Analytics connected! Loading real data...', 'success');
@@ -91,6 +102,8 @@ const gaAnalytics = {
                 const err = await res.json();
                 if (res.status === 401) {
                     this.connected = false;
+                    this.accessToken = null;
+                    sessionStorage.removeItem('ga_access_token');
                     this.updateButton(false);
                     showNotification('Analytics session expired. Click Connect to re-auth.', 'warning');
                 }
@@ -588,6 +601,7 @@ const auth = {
             .getElementById('admin-dashboard')
             .classList.remove('hidden');
         this.loadDashboardData();
+        gaAnalytics.init();
     },
 
     loadDashboardData() {

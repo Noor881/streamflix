@@ -5,6 +5,18 @@
     "cleanUrls": true,
     "rewrites": [
         {
+            "source": "/movie/:id",
+            "destination": "/movie.html?id=:id"
+        },
+        {
+            "source": "/tv/:id/:season/:episode",
+            "destination": "/tv.html?id=:id&s=:season&e=:episode"
+        },
+        {
+            "source": "/tv/:id",
+            "destination": "/tv.html?id=:id"
+        },
+        {
             "source": "/(.*)",
             "destination": "/$1"
         }

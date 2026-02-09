@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHQKVYP1WN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZHQKVYP1WN');
+    </script>
+
+    <!-- Primary Meta (updated by JS) -->
+    <title>Watch TV Show - StreamFlix</title>
+    <meta name="description" content="Watch TV shows in HD on StreamFlix. Free streaming, no sign-up required.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="language" content="English">
+
+    <!-- Open Graph (updated by JS) -->
+    <meta property="og:type" content="video.tv_show">
+    <meta property="og:site_name" content="StreamFlix">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="Watch TV Show - StreamFlix">
+    <meta property="og:description" content="Watch TV shows in HD on StreamFlix. Free streaming.">
+    <meta property="og:image" content="">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@streamflix">
+    <meta name="twitter:title" content="Watch TV Show - StreamFlix">
+    <meta name="twitter:description" content="Watch TV shows in HD on StreamFlix.">
+    <meta name="twitter:image" content="">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#e50914">
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.themoviedb.org">
+    <link rel="preconnect" href="https://image.tmdb.org">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="detail.css">
+
+    <!-- Schema.org (injected by JS) -->
+    <script id="schema-movie" type="application/ld+json">{}</script>
+</head>
+
+<body>
+    <div id="detail-app">
+        <div class="detail-loading">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="detail.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const pathParts = window.location.pathname.split('/tv/')[1];
+            const id = params.get('id') || (pathParts ? pathParts.split('/')[0] : null);
+            const season = params.get('s') || (pathParts ? pathParts.split('/')[1] : null) || 1;
+            const episode = params.get('e') || (pathParts ? pathParts.split('/')[2] : null) || 1;
+            if (id) {
+                DetailPage.loadTV(id, parseInt(season), parseInt(episode));
+            } else {
+                document.getElementById('detail-app').innerHTML = `
+                    <div class="detail-error">
+                        <h2>TV Show Not Found</h2>
+                        <p>No TV show ID specified.</p>
+                        <a href="/" class="btn-play">Go Home</a>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+
+</html>
