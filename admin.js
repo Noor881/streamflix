@@ -16,6 +16,339 @@ const ADMIN_CONFIG = {
     MAX_ATTEMPTS: 5
 };
 
+const GA_CONFIG = {
+    clientId: '589684000704-6feti4bp8p85jefcsnov1bqefgdlh7db.apps.googleusercontent.com',
+    propertyId: '523849331',
+    scopes: 'https://www.googleapis.com/auth/analytics.readonly',
+    apiBase: 'https://analyticsdata.googleapis.com/v1beta'
+};
+
+// ==========================================
+// Google Analytics 4 Data API Integration
+// ==========================================
+const gaAnalytics = {
+    accessToken: null,
+    tokenClient: null,
+    connected: false,
+
+    connect() {
+        if (typeof google === 'undefined' || !google.accounts) {
+            showNotification('Google Identity Services not loaded. Please refresh.', 'error');
+            return;
+        }
+
+        if (!this.tokenClient) {
+            this.tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: GA_CONFIG.clientId,
+                scope: GA_CONFIG.scopes,
+                callback: (response) => {
+                    if (response.error) {
+                        showNotification('Analytics auth failed: ' + response.error, 'error');
+                        return;
+                    }
+                    this.accessToken = response.access_token;
+                    this.connected = true;
+                    this.updateButton(true);
+                    systemLogs.add('Analytics Connected', 'Google Analytics linked via OAuth', 'success');
+                    showNotification('Google Analytics connected! Loading real data...', 'success');
+                    this.loadAllData();
+                }
+            });
+        }
+
+        this.tokenClient.requestAccessToken();
+    },
+
+    updateButton(connected) {
+        const btn = document.getElementById('ga-connect-btn');
+        if (!btn) return;
+        if (connected) {
+            btn.textContent = '✅ Analytics Connected';
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+        } else {
+            btn.textContent = '📊 Connect Analytics';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline');
+        }
+    },
+
+    async apiCall(body) {
+        if (!this.accessToken) return null;
+        try {
+            const res = await fetch(
+                `${GA_CONFIG.apiBase}/properties/${GA_CONFIG.propertyId}:runReport`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+            if (!res.ok) {
+                const err = await res.json();
+                if (res.status === 401) {
+                    this.connected = false;
+                    this.updateButton(false);
+                    showNotification('Analytics session expired. Click Connect to re-auth.', 'warning');
+                }
+                return null;
+            }
+            return await res.json();
+        } catch {
+            return null;
+        }
+    },
+
+    async loadAllData() {
+        if (!this.connected) return;
+
+        await Promise.all([
+            this.loadOverviewStats(),
+            this.loadTrafficSources(),
+            this.loadTopPages(),
+            this.loadGeoData(),
+            this.loadDeviceData()
+        ]);
+    },
+
+    async loadOverviewStats() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            metrics: [
+                { name: 'activeUsers' },
+                { name: 'screenPageViews' },
+                { name: 'sessions' },
+                { name: 'averageSessionDuration' },
+                { name: 'bounceRate' },
+                { name: 'newUsers' }
+            ]
+        });
+
+        if (!data || !data.rows || !data.rows[0]) return;
+
+        const values = data.rows[0].metricValues;
+        const activeUsers = parseInt(values[0].value) || 0;
+        const pageViews = parseInt(values[1].value) || 0;
+        const sessions = parseInt(values[2].value) || 0;
+        const avgDuration = parseFloat(values[3].value) || 0;
+        const bounceRate = parseFloat(values[4].value) || 0;
+        const newUsers = parseInt(values[5].value) || 0;
+
+        const statViews = document.getElementById('stat-views');
+        const statUsers = document.getElementById('stat-users');
+        const statPlays = document.getElementById('stat-plays');
+        const statTime = document.getElementById('stat-time');
+
+        if (statViews) {
+            analyticsModule.animateCounter('stat-views', pageViews);
+        }
+        if (statUsers) {
+            analyticsModule.animateCounter('stat-users', activeUsers);
+        }
+        if (statPlays) {
+            analyticsModule.animateCounter('stat-plays', sessions);
+        }
+        if (statTime) {
+            statTime.textContent = `${Math.round(avgDuration / 60)}m`;
+        }
+
+        const apv = document.getElementById('analytics-pageviews');
+        const ab = document.getElementById('analytics-bounce');
+        const ar = document.getElementById('analytics-referral');
+
+        if (apv) apv.textContent = pageViews.toLocaleString();
+        if (ab) ab.textContent = `${(bounceRate * 100).toFixed(1)}%`;
+        if (ar) ar.textContent = newUsers.toLocaleString();
+
+        await this.loadDailyTraffic();
+    },
+
+    async loadDailyTraffic() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'date' }],
+            metrics: [{ name: 'screenPageViews' }],
+            orderBys: [{ dimension: { dimensionName: 'date' } }]
+        });
+
+        if (!data || !data.rows) return;
+
+        const canvas = document.getElementById('trafficCanvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        const chartData = data.rows.map(r => parseInt(r.metricValues[0].value) || 0);
+        const labels = data.rows.map(r => {
+            const d = r.dimensionValues[0].value;
+            return `${d.slice(4, 6)}/${d.slice(6, 8)}`;
+        });
+
+        const maxValue = Math.max(...chartData, 1);
+        const padding = 40;
+        const chartWidth = canvas.width - padding * 2;
+        const chartHeight = canvas.height - padding * 2;
+        const barWidth = chartWidth / chartData.length - 10;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        chartData.forEach((value, index) => {
+            const x = padding + index * (chartWidth / chartData.length) + 5;
+            const barHeight = (value / maxValue) * chartHeight;
+            const y = canvas.height - padding - barHeight;
+
+            ctx.fillStyle = '#e50914';
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, 4);
+            ctx.fill();
+
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(labels[index], x + barWidth / 2, canvas.height - 10);
+
+            ctx.fillStyle = '#fff';
+            ctx.fillText(value.toLocaleString(), x + barWidth / 2, y - 10);
+        });
+    },
+
+    async loadTrafficSources() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+            metrics: [{ name: 'sessions' }],
+            orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+            limit: 6
+        });
+
+        if (!data || !data.rows) return;
+
+        const colors = ['#e50914', '#4285f4', '#1da1f2', '#46d369', '#f5c518', '#9b59b6'];
+        const total = data.rows.reduce((s, r) => s + parseInt(r.metricValues[0].value), 0);
+
+        const srcContainer = document.getElementById('traffic-sources');
+        if (srcContainer) {
+            srcContainer.innerHTML = data.rows.map((row, i) => {
+                const name = row.dimensionValues[0].value;
+                const value = parseInt(row.metricValues[0].value);
+                const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+                return `
+                    <div class="source-item" style="border-left: 4px solid ${colors[i % colors.length]}">
+                        <h4>${pct}%</h4>
+                        <p>${sanitize(name)}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+    },
+
+    async loadTopPages() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'pagePath' }],
+            metrics: [
+                { name: 'screenPageViews' },
+                { name: 'activeUsers' }
+            ],
+            orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+            limit: 8
+        });
+
+        if (!data || !data.rows) return;
+
+        const tbody = document.querySelector('#top-content-table tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = data.rows.map(row => {
+            const path = row.dimensionValues[0].value;
+            const views = parseInt(row.metricValues[0].value);
+            const users = parseInt(row.metricValues[1].value);
+            return `
+                <tr>
+                    <td>${sanitize(path)}</td>
+                    <td><span class="badge">Page</span></td>
+                    <td>${views.toLocaleString()}</td>
+                    <td>${users.toLocaleString()} users</td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    async loadGeoData() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'country' }],
+            metrics: [{ name: 'activeUsers' }],
+            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+            limit: 8
+        });
+
+        if (!data || !data.rows) return;
+
+        const total = data.rows.reduce((s, r) => s + parseInt(r.metricValues[0].value), 0);
+        const container = document.getElementById('geo-stats');
+        if (!container) return;
+
+        container.innerHTML = data.rows.map(row => {
+            const country = row.dimensionValues[0].value;
+            const users = parseInt(row.metricValues[0].value);
+            const pct = total > 0 ? Math.round((users / total) * 100) : 0;
+            return `
+                <div class="geo-item">
+                    <span class="geo-flag">🌍</span>
+                    <span class="geo-name">${sanitize(country)}</span>
+                    <div class="geo-bar">
+                        <div class="geo-bar-fill" style="width: ${pct}%"></div>
+                    </div>
+                    <span class="geo-percent">${pct}%</span>
+                </div>
+            `;
+        }).join('');
+    },
+
+    async loadDeviceData() {
+        const data = await this.apiCall({
+            dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'deviceCategory' }],
+            metrics: [{ name: 'activeUsers' }],
+            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }]
+        });
+
+        if (!data || !data.rows) return;
+
+        const total = data.rows.reduce((s, r) => s + parseInt(r.metricValues[0].value), 0);
+        const icons = { desktop: '💻', mobile: '📱', tablet: '📺' };
+
+        const devContainer = document.getElementById('device-stats');
+        if (devContainer) {
+            devContainer.innerHTML = data.rows.map(row => {
+                const device = row.dimensionValues[0].value.toLowerCase();
+                const users = parseInt(row.metricValues[0].value);
+                const pct = total > 0 ? Math.round((users / total) * 100) : 0;
+                return `
+                    <div class="device-item">
+                        <div class="device-icon">${icons[device] || '🖥️'}</div>
+                        <div class="device-percent">${pct}%</div>
+                        <div class="device-label">${sanitize(device.charAt(0).toUpperCase() + device.slice(1))}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        const mobileRow = data.rows.find(r => r.dimensionValues[0].value.toLowerCase() === 'mobile');
+        const mobileUsers = mobileRow ? parseInt(mobileRow.metricValues[0].value) : 0;
+        const mobilePct = total > 0 ? Math.round((mobileUsers / total) * 100) : 0;
+        const am = document.getElementById('analytics-mobile');
+        if (am) am.textContent = `${mobilePct}%`;
+    }
+};
+
 // ==========================================
 // Utility: SHA-256 Hashing
 // ==========================================

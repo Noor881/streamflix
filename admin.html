@@ -21,6 +21,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="admin.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -112,6 +113,8 @@
                 <h1 id="page-title">Dashboard Overview</h1>
                 <div class="header-actions">
                     <span class="current-date" id="current-date"></span>
+                    <button id="ga-connect-btn" class="btn btn-outline btn-sm" onclick="gaAnalytics.connect()">📊
+                        Connect Analytics</button>
                     <a href="/" class="btn btn-outline" target="_blank">View Site</a>
                 </div>
             </header>
