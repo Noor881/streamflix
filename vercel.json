@@ -2,6 +2,7 @@
     "buildCommand": "",
     "outputDirectory": ".",
     "framework": null,
+    "cleanUrls": true,
     "rewrites": [
         {
             "source": "/(.*)",
