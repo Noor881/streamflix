@@ -33,7 +33,7 @@
                 <div id="login-error" class="error-message hidden"></div>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
             </form>
-            <p class="login-footer">Default: admin / streamflix2026</p>
+            <p class="login-footer">Forgot credentials? Contact the site administrator.</p>
         </div>
     </div>
 
@@ -61,6 +61,22 @@
                 <a href="#" class="nav-item" data-section="users">
                     <span class="nav-icon">👥</span>
                     <span>User Activity</span>
+                </a>
+                <a href="#" class="nav-item" data-section="reports">
+                    <span class="nav-icon">📋</span>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item" data-section="moderation">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Content Moderation</span>
+                </a>
+                <a href="#" class="nav-item" data-section="notifications">
+                    <span class="nav-icon">🔔</span>
+                    <span>Notifications</span>
+                </a>
+                <a href="#" class="nav-item" data-section="logs">
+                    <span class="nav-icon">📜</span>
+                    <span>System Logs</span>
                 </a>
                 <a href="#" class="nav-item" data-section="ads">
                     <span class="nav-icon">📢</span>
@@ -339,6 +355,209 @@
                         <div id="peak-hours" class="heatmap">
                             <!-- Populated by JS -->
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="section-reports" class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <h3 id="report-top-rated-count">0</h3>
+                            <p>Top Rated (8+ rating)</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🆕</div>
+                        <div class="stat-info">
+                            <h3 id="report-upcoming-count">0</h3>
+                            <p>Upcoming Releases</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎭</div>
+                        <div class="stat-info">
+                            <h3 id="report-genre-count">0</h3>
+                            <p>Active Genres</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📺</div>
+                        <div class="stat-info">
+                            <h3 id="report-airing-count">0</h3>
+                            <p>Currently Airing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Top Rated Movies</h2>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="top-rated-movies-table">
+                            <thead>
+                                <tr>
+                                    <th>Poster</th>
+                                    <th>Title</th>
+                                    <th>Rating</th>
+                                    <th>Votes</th>
+                                    <th>Release Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <h2>Upcoming Releases</h2>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="upcoming-movies-table">
+                            <thead>
+                                <tr>
+                                    <th>Poster</th>
+                                    <th>Title</th>
+                                    <th>Release Date</th>
+                                    <th>Popularity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Moderation Section -->
+            <section id="section-moderation" class="content-section">
+                <div class="alert alert-info">
+                    <strong>🛡️ Content Moderation:</strong> Browse TMDB content catalog. Mark items to feature on the
+                    homepage or hide from the site.
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Browse Content</h2>
+                        <div class="moderation-controls">
+                            <select id="mod-type" class="select-sm">
+                                <option value="movie">Movies</option>
+                                <option value="tv">TV Shows</option>
+                            </select>
+                            <input type="search" id="mod-search" class="search-input" placeholder="Search by title...">
+                            <button class="btn btn-primary btn-sm" id="mod-search-btn">Search</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="moderation-grid" class="moderation-grid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="margin-top: 1.5rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Featured Content</h2>
+                            <span class="badge" id="featured-count">0 items</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="featured-list" class="moderation-list">
+                                <p class="text-muted">No featured content yet. Browse above and mark items as featured.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Hidden Content</h2>
+                            <span class="badge" id="hidden-count">0 items</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="hidden-list" class="moderation-list">
+                                <p class="text-muted">No hidden content. Browse above and mark items to hide.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section id="section-notifications" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Create Notification Banner</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Banner Message</label>
+                            <input type="text" id="notif-message" class="form-input"
+                                placeholder="Enter notification message...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Banner Type</label>
+                            <select id="notif-type" class="form-input">
+                                <option value="info">Info (Blue)</option>
+                                <option value="success">Success (Green)</option>
+                                <option value="warning">Warning (Yellow)</option>
+                                <option value="error">Alert (Red)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Link URL (optional)</label>
+                            <input type="url" id="notif-link" class="form-input" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="notif-active" checked> Active (visible on site)
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="save-notification-btn">Save Notification</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <h2>Saved Notifications</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="notifications-list" class="notifications-list">
+                            <p class="text-muted">No notifications created yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Logs Section -->
+            <section id="section-logs" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Admin Activity Log</h2>
+                        <button class="btn btn-secondary btn-sm" id="clear-logs-btn">Clear Logs</button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>

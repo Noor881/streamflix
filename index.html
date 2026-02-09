@@ -206,16 +206,41 @@
                         <img src="https://i.pravatar.cc/100?img=33" alt="User avatar" loading="lazy">
                     </div>
                 </div>
+                <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </header>
 
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+    <nav class="mobile-nav" id="mobile-nav" role="navigation" aria-label="Mobile navigation">
+        <a href="#/" class="mobile-nav-link">Home</a>
+        <a href="#/movies" class="mobile-nav-link">Movies</a>
+        <a href="#/tv" class="mobile-nav-link">TV Shows</a>
+        <a href="#/new" class="mobile-nav-link">New & Popular</a>
+        <a href="#/my-list" class="mobile-nav-link">My List</a>
+    </nav>
+
     <!-- Main Content -->
     <main id="app" role="main">
         <!-- Content will be injected by JavaScript -->
-        <div class="loading-screen" aria-live="polite">
-            <div class="loader" aria-hidden="true"></div>
-            <p>Loading StreamFlix...</p>
+        <div class="skeleton-container" aria-live="polite">
+            <div class="skeleton-hero shimmer"></div>
+            <div class="skeleton-section">
+                <div class="skeleton-title shimmer"></div>
+                <div class="skeleton-row">
+                    <div class="skeleton-card shimmer"></div>
+                    <div class="skeleton-card shimmer"></div>
+                    <div class="skeleton-card shimmer"></div>
+                    <div class="skeleton-card shimmer"></div>
+                    <div class="skeleton-card shimmer"></div>
+                    <div class="skeleton-card shimmer"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -308,6 +333,13 @@
             </div>
         </div>
     </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 15l-6-6-6 6" />
+        </svg>
+    </button>
 
     <!-- Scripts -->
     <script src="app.js"></script>

@@ -51,7 +51,7 @@ const state = {
 const utils = {
     // Get image URL from TMDB
     getImageUrl(path, size = 'medium', type = 'poster') {
-        if (!path) return 'https://via.placeholder.com/300x450/1a1a1a/666?text=No+Image';
+        if (!path) return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect width=%22300%22 height=%22450%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%22150%22 y=%22225%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';
         const sizeKey = IMAGE_SIZES[type][size] || IMAGE_SIZES[type].medium;
         return `${CONFIG.TMDB_IMAGE_BASE}/${sizeKey}${path}`;
     },
@@ -74,6 +74,12 @@ const utils = {
     truncate(text, length = 150) {
         if (!text) return '';
         return text.length > length ? text.substring(0, length) + '...' : text;
+    },
+
+    // Sanitize text to prevent XSS
+    sanitize(text) {
+        if (!text) return '';
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     },
 
     // Debounce function
@@ -111,6 +117,16 @@ const utils = {
 };
 
 // ==========================================
+// API Response Cache
+// ==========================================
+const apiCache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// Image error fallback
+const FALLBACK_IMG = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect width=%22300%22 height=%22450%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%22150%22 y=%22225%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';
+window.imgErr = function (el) { el.src = FALLBACK_IMG; el.onerror = null; };
+
+// ==========================================
 // TMDB API Service
 // ==========================================
 const tmdbAPI = {
@@ -122,12 +138,19 @@ const tmdbAPI = {
             url.searchParams.append(key, value);
         });
 
+        const cacheKey = url.toString();
+        const cached = apiCache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+            return cached.data;
+        }
+
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error('API request failed');
-            return await response.json();
+            const data = await response.json();
+            apiCache.set(cacheKey, { data, timestamp: Date.now() });
+            return data;
         } catch (error) {
-            console.error('TMDB API Error:', error);
             return null;
         }
     },
@@ -492,9 +515,20 @@ const components = {
     // Loading spinner
     loading() {
         return `
-            <div class="loading-screen">
-                <div class="loader"></div>
-                <p>Loading...</p>
+            <div class="skeleton-container">
+                <div class="skeleton-hero shimmer"></div>
+                <div class="skeleton-section">
+                    <div class="skeleton-title shimmer"></div>
+                    <div class="skeleton-row">
+                        ${Array(8).fill('<div class="skeleton-card shimmer"></div>').join('')}
+                    </div>
+                </div>
+                <div class="skeleton-section">
+                    <div class="skeleton-title shimmer"></div>
+                    <div class="skeleton-row">
+                        ${Array(8).fill('<div class="skeleton-card shimmer"></div>').join('')}
+                    </div>
+                </div>
             </div>
         `;
     },
@@ -514,9 +548,10 @@ const components = {
                 <div class="card">
                     <img 
                         src="${posterUrl}" 
-                        alt="${title}" 
+                        alt="${utils.sanitize(title)}" 
                         class="card-poster"
                         loading="lazy"
+                        onerror="imgErr(this)"
                     >
                     <div class="card-overlay">
                         <div class="card-meta">
@@ -721,7 +756,7 @@ const components = {
                  data-episode="${episode.episode_number}"
                  onclick="router.navigate('#/tv/${tvId}/${seasonNumber}/${episode.episode_number}')">
                 <div class="episode-thumb">
-                    <img src="${stillUrl}" alt="Episode ${episode.episode_number}" loading="lazy">
+                    <img src="${stillUrl}" alt="Episode ${episode.episode_number}" loading="lazy" onerror="imgErr(this)">
                     <span class="episode-number">E${episode.episode_number}</span>
                 </div>
                 <div class="episode-info">
@@ -1128,7 +1163,7 @@ const pages = {
                 app.innerHTML = `
                     <div class="search-page">
                         <div class="search-header">
-                            <h1 class="search-query">Results for <span>"${query}"</span></h1>
+                            <h1 class="search-query">Results for <span>"${utils.sanitize(query)}"</span></h1>
                         </div>
                         <div class="no-results">
                             <div class="no-results-icon">😔</div>
@@ -1339,8 +1374,19 @@ const router = {
         const hash = window.location.hash || '#/';
         const path = hash.slice(1); // Remove #
 
+        // Scroll to top on navigation
+        window.scrollTo(0, 0);
+
+        // Stop hero carousel when leaving home
+        stopHeroCarousel();
+
+        // Close mobile menu if open
+        document.getElementById('mobile-nav')?.classList.remove('open');
+        document.getElementById('mobile-nav-overlay')?.classList.remove('open');
+        document.getElementById('hamburger-btn')?.classList.remove('open');
+
         // Update active nav link
-        document.querySelectorAll('.nav-link').forEach(link => {
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
             const href = link.getAttribute('href');
             link.classList.toggle('active', href === hash || (href === '#/' && path === '/'));
         });
@@ -1407,6 +1453,7 @@ function initEventListeners() {
         const query = searchInput.value.trim();
         if (query) {
             router.navigate(`#/search?q=${encodeURIComponent(query)}`);
+            searchInput.value = '';
         }
     };
 
@@ -1415,8 +1462,58 @@ function initEventListeners() {
         if (e.key === 'Enter') performSearch();
     });
 
-    // Header scroll effect
-    let lastScroll = 0;
+    // Mobile hamburger menu
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileOverlay = document.getElementById('mobile-nav-overlay');
+
+    hamburgerBtn?.addEventListener('click', () => {
+        const isOpen = mobileNav?.classList.toggle('open');
+        mobileOverlay?.classList.toggle('open');
+        hamburgerBtn.classList.toggle('open');
+        hamburgerBtn.setAttribute('aria-expanded', isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    mobileOverlay?.addEventListener('click', () => {
+        mobileNav?.classList.remove('open');
+        mobileOverlay?.classList.remove('open');
+        hamburgerBtn?.classList.remove('open');
+        hamburgerBtn?.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileNav?.classList.remove('open');
+            mobileOverlay?.classList.remove('open');
+            hamburgerBtn?.classList.remove('open');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Genre dropdown click support for touch
+    const dropdownBtn = document.querySelector('.nav-dropdown-btn');
+    const dropdownContent = document.querySelector('.nav-dropdown-content');
+    dropdownBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownContent?.classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+        dropdownContent?.classList.remove('show');
+    });
+
+    // Keyboard navigation for hero carousel
+    document.addEventListener('keydown', (e) => {
+        const heroCarousel = document.getElementById('hero-carousel');
+        if (!heroCarousel) return;
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Header scroll effect + back-to-top
+    const backToTopBtn = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => {
         const header = document.querySelector('.header');
         const currentScroll = window.scrollY;
@@ -1427,7 +1524,16 @@ function initEventListeners() {
             header?.classList.remove('scrolled');
         }
 
-        lastScroll = currentScroll;
+        // Show/hide back-to-top button
+        if (currentScroll > 600) {
+            backToTopBtn?.classList.add('visible');
+        } else {
+            backToTopBtn?.classList.remove('visible');
+        }
+    });
+
+    backToTopBtn?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
@@ -1438,10 +1544,30 @@ function scrollRow(rowId, direction) {
     const row = document.getElementById(rowId);
     if (!row) return;
 
-    const scrollAmount = row.clientWidth * 0.8; // Scroll 80% of visible width
+    const scrollAmount = row.clientWidth * 0.8;
     row.scrollBy({
         left: direction * scrollAmount,
         behavior: 'smooth'
+    });
+
+    // Update arrow visibility after scroll completes
+    setTimeout(() => updateArrowVisibility(row), 400);
+}
+
+function updateArrowVisibility(row) {
+    const wrapper = row.closest('.row-wrapper');
+    if (!wrapper) return;
+    const leftArrow = wrapper.querySelector('.scroll-arrow--left');
+    const rightArrow = wrapper.querySelector('.scroll-arrow--right');
+    if (leftArrow) leftArrow.style.opacity = row.scrollLeft <= 10 ? '0' : '';
+    if (rightArrow) rightArrow.style.opacity = row.scrollLeft + row.clientWidth >= row.scrollWidth - 10 ? '0' : '';
+}
+
+// Initialize all row arrow visibility
+function initRowArrows() {
+    document.querySelectorAll('.content-row').forEach(row => {
+        updateArrowVisibility(row);
+        row.addEventListener('scroll', utils.debounce(() => updateArrowVisibility(row), 100));
     });
 }
 
@@ -1502,9 +1628,14 @@ function goToSlide(index) {
         dot.classList.toggle('active', i === currentSlide);
     });
 
-    // Reset progress bar and restart timer
+    // Reset progress bar
     resetProgressBar();
-    startHeroCarousel();
+
+    // Restart timer (clear old first to avoid duplicates)
+    stopHeroCarousel();
+    heroCarouselInterval = setInterval(() => {
+        nextSlide();
+    }, SLIDE_DURATION);
 }
 
 function nextSlide() {
@@ -1543,21 +1674,50 @@ async function loadGenres() {
             `<a href="#/genre/${genre.id}">${genre.name}</a>`
         ).join('');
     } catch (error) {
-        console.error('Error loading genres:', error);
+        // Silently fail for genres
     }
+}
+
+// ==========================================
+// Hero Touch Swipe Support
+// ==========================================
+function initHeroSwipe() {
+    const heroCarousel = document.getElementById('hero-carousel');
+    if (!heroCarousel) return;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    heroCarousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    heroCarousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) nextSlide();
+            else prevSlide();
+        }
+    }, { passive: true });
 }
 
 // ==========================================
 // Initialize App
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎬 StreamFlix initialized');
-
-    // Initialize modules
     watchProgress.init();
     initEventListeners();
     router.init();
     loadGenres();
+
+    // Observe for dynamically loaded content
+    const appEl = document.getElementById('app');
+    const observer = new MutationObserver(() => {
+        initRowArrows();
+        initHeroSwipe();
+    });
+    observer.observe(appEl, { childList: true, subtree: false });
 });
 
 // Make functions globally accessible

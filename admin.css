@@ -794,6 +794,161 @@ body {
     }
 }
 
+/* ==========================================
+   Moderation Section
+   ========================================== */
+
+.moderation-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.moderation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.mod-card {
+    background: var(--bg-input);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.mod-card:hover {
+    transform: translateY(-2px);
+}
+
+.mod-card.mod-featured {
+    border-color: var(--success);
+}
+
+.mod-card.mod-hidden {
+    border-color: var(--danger);
+    opacity: 0.6;
+}
+
+.mod-card img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+}
+
+.mod-card-info {
+    padding: 0.75rem;
+}
+
+.mod-card-info h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mod-card-info p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.mod-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.moderation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mod-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--bg-input);
+    border-radius: var(--radius);
+}
+
+.mod-list-item span {
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+/* ==========================================
+   Notifications Section
+   ========================================== */
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.notif-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: var(--radius);
+}
+
+.notif-content {
+    flex: 1;
+}
+
+.notif-message {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.notif-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   Button Variants
+   ========================================== */
+
+.btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: var(--primary-hover);
+}
+
+/* ==========================================
+   Text Utilities
+   ========================================== */
+
+.text-muted {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ==========================================
+   Responsive
+   ========================================== */
+
 @media (max-width: 768px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
@@ -801,5 +956,18 @@ body {
 
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .moderation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .moderation-controls {
+        flex-wrap: wrap;
+    }
+
+    .notif-item {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
