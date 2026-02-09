@@ -19,9 +19,6 @@ Allow: /
 User-agent: *
 Crawl-delay: 1
 
-# Block admin panel from search engines
-Disallow: /admin.html
-Disallow: /admin
 
 # Block any API endpoints (if any)
 Disallow: /api/
