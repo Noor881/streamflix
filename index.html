@@ -350,6 +350,16 @@
         </svg>
     </button>
 
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(() => { });
+            });
+        }
+    </script>
+
     <!-- Scripts -->
     <script src="app.js"></script>
 </body>

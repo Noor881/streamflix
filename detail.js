@@ -102,6 +102,48 @@ function injectSchema(data, type) {
     const schema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
     const el = document.getElementById('schema-movie');
     if (el) el.textContent = JSON.stringify(schema);
+
+    injectBreadcrumbs(data, type);
+}
+
+function injectBreadcrumbs(data, type) {
+    const title = data.title || data.name;
+    const categoryName = type === 'movie' ? 'Movies' : 'TV Shows';
+    const categoryPath = type === 'movie' ? '/#/movies' : '/#/tv';
+
+    const breadcrumb = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: TMDB.SITE_URL
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: categoryName,
+                item: `${TMDB.SITE_URL}${categoryPath}`
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: title,
+                item: `${TMDB.SITE_URL}/${type}/${data.id}`
+            }
+        ]
+    };
+
+    let el = document.getElementById('schema-breadcrumb');
+    if (!el) {
+        el = document.createElement('script');
+        el.type = 'application/ld+json';
+        el.id = 'schema-breadcrumb';
+        document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(breadcrumb);
 }
 
 function buildMovieSchema(m) {

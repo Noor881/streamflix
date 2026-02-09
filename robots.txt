@@ -4,25 +4,24 @@
 # Allow all search engines
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /api/
 
 # Sitemap location
 Sitemap: https://streamflix-six-amber.vercel.app/sitemap.xml
 
-# Allow Google and Bing to index everything
+# Allow Google and Bing to index everything (except admin)
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
 
 User-agent: Bingbot
 Allow: /
-
-# Crawl delay to be respectful
-User-agent: *
-Crawl-delay: 1
-
-
-# Block any API endpoints (if any)
-Disallow: /api/
+Disallow: /admin
 
 # Block temporary or cache files
+User-agent: *
 Disallow: /*.tmp$
 Disallow: /*.bak$
+Disallow: /sw.js
