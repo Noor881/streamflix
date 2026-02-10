@@ -787,7 +787,8 @@ const components = {
 
         const navFunc = pageType === 'movies' ? 'navigateMovies' :
             pageType === 'tv' ? 'navigateTV' :
-                pageType === 'genre' ? 'navigateGenre' : 'navigateNew';
+                pageType === 'anime' ? 'navigateAnime' :
+                    pageType === 'genre' ? 'navigateGenre' : 'navigateNew';
 
         if (currentPage > 1) {
             pages.push(`<button class="page-btn" onclick="${navFunc}('${category}', ${currentPage - 1})">‹ Prev</button>`);
@@ -814,6 +815,13 @@ const components = {
         return `<div class="pagination">${pages.join('')}</div>`;
     }
 };
+
+// Global navigation functions
+window.navigateMovies = (category, page) => router.navigate(`#/movies?category=${category}&page=${page}`);
+window.navigateTV = (category, page) => router.navigate(`#/tv?category=${category}&page=${page}`);
+window.navigateAnime = (category, page) => router.navigate(`#/anime?category=${category}&page=${page}`);
+window.navigateGenre = (genreId, page) => router.navigate(`#/genre/${genreId}?page=${page}`);
+window.navigateNew = (category, page) => router.navigate(`#/new?category=${category}&page=${page}`);
 
 // ==========================================
 // Page Renderers
@@ -856,7 +864,7 @@ const pages = {
                 ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
                 ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
                 ${components.section('🎨 Animation Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
-                ${components.section('⚔️ Anime Series', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'))}
+                ${components.section('⚔️ Anime Series', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
                 ${components.section('🏆 Top Rated Movies', components.contentRow(topRatedMovies?.results, 'movie', 'row-top-movies'))}
                 ${components.section('🌟 Top Rated TV Shows', components.contentRow(topRatedTV?.results, 'tv', 'row-top-tv'))}
             `;
@@ -1002,6 +1010,85 @@ const pages = {
         } catch (error) {
             console.error('Error loading TV page:', error);
             app.innerHTML = '<div class="section"><p>Error loading TV shows</p></div>';
+        }
+    },
+
+    // Anime page
+    async anime(category = 'popular', page = 1) {
+        const app = document.getElementById('app');
+        app.innerHTML = components.loading();
+
+        const ITEMS_PER_PAGE = 24;
+
+        // Anime-specific categories
+        const categories = [
+            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(5) },
+            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(5) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(5) }, // General top rated for now, ideally filtered
+        ];
+
+        try {
+            // Default to Anime TV Shows
+            let data;
+            if (category === 'movies') {
+                data = await tmdbAPI.getAnimationMovies(5);
+            } else if (category === 'top_rated') {
+                // For Top Rated, we'll just use general top rated TV for now as TMDB doesn't have easy "Top Rated Anime" endpoint without complex discovery
+                // actually, let's use discover with genre 16 and JP
+                const response = await tmdbAPI.fetch('/discover/tv', {
+                    with_genres: 16,
+                    with_origin_country: 'JP',
+                    page: 1,
+                    sort_by: 'vote_average.desc',
+                    'vote_count.gte': 100
+                });
+                data = { results: response.results };
+                // Fetch more pages if needed to match structure, but for now 1 page is enough for demo or handle 5 pages loop here
+            } else {
+                data = await tmdbAPI.getAnimeTVShows(5);
+            }
+
+            // Standardize data structure if needed
+            const allItems = data?.results || [];
+            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
+            const startIdx = (page - 1) * ITEMS_PER_PAGE;
+            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
+            const categoryTabs = categories.map(c =>
+                `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="router.navigate('#/anime?category=${c.id}')">${c.name}</button>`
+            ).join('');
+
+            // Custom pagination navigation function
+            // We need to add navigateAnime to window or use router directly in pagination
+            // For now, let's reuse pagination but we need to ensure it calls router.navigate
+            // The existing pagination uses onclick="navigateMovies" etc.
+            // I'll create navigateAnime in global scope below.
+
+            const pagination = components.pagination(page, totalPages, 'anime', category);
+
+            app.innerHTML = `
+                <div class="browse-page">
+                    <div class="browse-header">
+                        <h1>⚔️ Anime Series & Movies</h1>
+                        <p class="browse-subtitle">Stream the best anime from Japan and beyond</p>
+                    </div>
+                    <div class="category-tabs">
+                        ${categoryTabs}
+                    </div>
+                    <div class="browse-results">
+                        <div class="results-info">
+                            <span>Showing ${pageItems.length} of ${allItems.length} titles</span>
+                        </div>
+                        <div class="content-grid">
+                            ${pageItems.map(item => components.card(item, category === 'movies' ? 'movie' : 'tv')).join('')}
+                        </div>
+                        ${pagination}
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error loading Anime page:', error);
+            app.innerHTML = '<div class="section"><p>Error loading Anime content</p></div>';
         }
     },
 
@@ -1408,6 +1495,12 @@ const router = {
             const category = params.get('category') || 'popular';
             const page = parseInt(params.get('page')) || 1;
             pages.tv(category, page);
+        } else if (path.startsWith('/anime')) {
+            const [, queryString] = path.split('?');
+            const params = new URLSearchParams(queryString || '');
+            const category = params.get('category') || 'popular';
+            const page = parseInt(params.get('page')) || 1;
+            pages.anime(category, page);
         } else if (path.startsWith('/movie/')) {
             const id = path.split('/')[2];
             pages.movie(id);

@@ -1040,13 +1040,13 @@ ol {
 .content-row {
     display: flex;
     gap: 6px;
-    padding: var(--spacing-lg) var(--container-padding);
+    padding: 40px var(--container-padding);
     overflow-x: auto;
     overflow-y: visible;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    margin: 0 calc(-1 * var(--container-padding));
+    margin: -20px calc(-1 * var(--container-padding)) 0;
     padding-left: var(--container-padding);
     padding-right: var(--container-padding);
     scroll-behavior: smooth;
