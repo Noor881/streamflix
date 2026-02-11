@@ -85,7 +85,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const id = params.get('id') || window.location.pathname.split('/movie/')[1];
+            let id = params.get('id');
+            
+            // If no query param, try to extract from path
+            if (!id) {
+                const pathMatch = window.location.pathname.match(/\/movie\/(\d+)/);
+                if (pathMatch) {
+                    id = pathMatch[1];
+                }
+            }
+            
             if (id) {
                 DetailPage.loadMovie(id);
             } else {

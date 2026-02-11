@@ -85,10 +85,24 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const pathParts = window.location.pathname.split('/tv/')[1];
-            const id = params.get('id') || (pathParts ? pathParts.split('/')[0] : null);
-            const season = params.get('s') || (pathParts ? pathParts.split('/')[1] : null) || 1;
-            const episode = params.get('e') || (pathParts ? pathParts.split('/')[2] : null) || 1;
+            let id = params.get('id');
+            let season = params.get('s');
+            let episode = params.get('e');
+
+            // If no query params, try to extract from path
+            if (!id) {
+                const pathMatch = window.location.pathname.match(/\/tv\/(\d+)(?:\/(\d+))?(?:\/(\d+))?/);
+                if (pathMatch) {
+                    id = pathMatch[1];
+                    season = pathMatch[2] || season;
+                    episode = pathMatch[3] || episode;
+                }
+            }
+
+            // Default values
+            season = season || 1;
+            episode = episode || 1;
+
             if (id) {
                 DetailPage.loadTV(id, parseInt(season), parseInt(episode));
             } else {
