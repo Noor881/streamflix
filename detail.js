@@ -229,7 +229,7 @@ function renderNav() {
         <nav class="detail-nav" id="detail-nav">
             <div class="nav-left">
                 <a href="/" class="nav-logo">
-                    <img src="/logo.jpeg" alt="HD Watchzone" style="height: 30px; vertical-align: middle; margin-right: 8px;">
+                    <img src="/logo.jpeg" alt="HD Watchzone" style="height: 50px; vertical-align: middle; margin-right: 10px; mix-blend-mode: screen;">
                     HD Watchzone
                 </a>
                 <button class="nav-back" onclick="history.back()">
