@@ -66,7 +66,11 @@ function formatMoney(num) {
 function updateMeta(data, type) {
     const title = `Watch ${data.title || data.name} | StreamFlix`;
     const desc = data.overview ? data.overview.substring(0, 160) : 'Watch on StreamFlix';
-    const image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
+    let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
+    // Use logo as fallback if image is data URI (placeholder) or empty
+    if (!image || image.startsWith('data:')) {
+        image = 'https://hdwatchzone.com/logo.jpeg';
+    }
     const pageUrl = `${TMDB.SITE_URL}/${type}/${data.id}`;
 
     document.title = title;
