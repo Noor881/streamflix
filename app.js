@@ -900,19 +900,15 @@ const pages = {
         app.innerHTML = components.loading();
 
         try {
-            // Batch 1: Core content
-            const [trending, popularMovies, popularTV] = await Promise.all([
+            // Fetch all data in parallel
+            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows] = await Promise.all([
                 tmdbAPI.getTrending('all', 'day', 2),
-                tmdbAPI.getPopularMovies(1),
-                tmdbAPI.getPopularTV(1)
-            ]);
-
-            // Batch 2: Secondary content (load after Batch 1)
-            const [topRatedMovies, topRatedTV, animationMovies, animeTVShows] = await Promise.all([
-                tmdbAPI.getTopRatedMovies(1),
-                tmdbAPI.getTopRatedTV(1),
-                tmdbAPI.getAnimationMovies(1),
-                tmdbAPI.getAnimeTVShows(1)
+                tmdbAPI.getPopularMovies(2),
+                tmdbAPI.getPopularTV(2),
+                tmdbAPI.getTopRatedMovies(2),
+                tmdbAPI.getTopRatedTV(2),
+                tmdbAPI.getAnimationMovies(2),
+                tmdbAPI.getAnimeTVShows(2)
             ]);
 
             // Continue watching section
