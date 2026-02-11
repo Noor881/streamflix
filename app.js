@@ -617,12 +617,15 @@ const components = {
     },
 
     // Section
-    section(title, content, link = null) {
+    section(title, content, link = null, tabs = null) {
         return `
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title">${title}</h2>
-                    ${link ? `<a href="${link}" class="section-link">See All →</a>` : ''}
+                    <div class="section-header-right">
+                        ${tabs ? `<div class="section-tabs">${tabs}</div>` : ''}
+                        ${link ? `<a href="${link}" class="section-link">See All →</a>` : ''}
+                    </div>
                 </div>
                 ${content}
             </section>
@@ -695,6 +698,47 @@ const components = {
                 </div>
                 <div class="hero-progress">
                     <div class="hero-progress-bar"></div>
+                </div>
+            </section>
+        `;
+    },
+
+    // Top 10 Content Today section with large numbered cards
+    top10Section(items, title = 'TOP 10 CONTENT TODAY') {
+        if (!items || items.length === 0) return '';
+
+        const top10Items = items.slice(0, 10);
+        const rowId = 'row-top10';
+
+        const cards = top10Items.map((item, index) => {
+            const mediaType = item.media_type || 'movie';
+            const itemTitle = item.title || item.name;
+            const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
+            const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+            const ranking = index + 1;
+
+            return `
+                <div class="top10-card">
+                    <a href="${route}" class="top10-card-link">
+                        <div class="top10-card-number">${ranking}</div>
+                        <div class="top10-card-poster">
+                            <img src="${posterUrl}" alt="${itemTitle}" loading="lazy">
+                        </div>
+                    </a>
+                </div>`;
+        }).join('');
+
+        return `
+            <section class="section top10-section">
+                <div class="top10-header">
+                    <h2 class="top10-title">${title}</h2>
+                </div>
+                <div class="row-wrapper">
+                    <button class="scroll-arrow scroll-arrow--left" onclick="scrollRow('${rowId}', -1)" aria-label="Scroll left">‹</button>
+                    <div class="top10-row" id="${rowId}">
+                        ${cards}
+                    </div>
+                    <button class="scroll-arrow scroll-arrow--right" onclick="scrollRow('${rowId}', 1)" aria-label="Scroll right">›</button>
                 </div>
             </section>
         `;
@@ -823,6 +867,29 @@ window.navigateAnime = (category, page) => router.navigate(`#/anime?category=${c
 window.navigateGenre = (genreId, page) => router.navigate(`#/genre/${genreId}?page=${page}`);
 window.navigateNew = (category, page) => router.navigate(`#/new?category=${category}&page=${page}`);
 
+window.switchTrendingTab = async (type, btn) => {
+    // Update active state of buttons
+    const row = document.getElementById('row-trending');
+    const tabs = btn.parentElement.querySelectorAll('.section-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Show loading state in row
+    row.style.opacity = '0.5';
+
+    try {
+        const trending = await tmdbAPI.getTrending(type, 'day');
+        // If 'all', we usually slice from 10 if we used first 10 for Top 10, but let's be consistent
+        // For simplicity, let's just show top trending for that type
+        const items = trending?.results || [];
+        row.innerHTML = components.contentRow(items, type, 'row-trending');
+        row.style.opacity = '1';
+    } catch (error) {
+        console.error('Error switching trending tab:', error);
+        row.style.opacity = '1';
+    }
+};
+
 // ==========================================
 // Page Renderers
 // ==========================================
@@ -857,10 +924,17 @@ const pages = {
                 );
             }
 
+            const trendingTabs = `
+                <button class="section-tab active" onclick="switchTrendingTab('all', this)">All</button>
+                <button class="section-tab" onclick="switchTrendingTab('movie', this)">Movies</button>
+                <button class="section-tab" onclick="switchTrendingTab('tv', this)">Series</button>
+            `;
+
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
+                ${components.top10Section(trending?.results, 'TOP 10 CONTENT TODAY')}
                 ${continueWatchingHtml}
-                ${components.section('🔥 Trending Now', components.contentRow(trending?.results?.slice(5), 'all', 'row-trending'))}
+                ${components.section('Trending Today', components.contentRow(trending?.results?.slice(10), 'all', 'row-trending'), null, trendingTabs)}
                 ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
                 ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
                 ${components.section('🎨 Animation Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
@@ -1658,7 +1732,7 @@ function updateArrowVisibility(row) {
 
 // Initialize all row arrow visibility
 function initRowArrows() {
-    document.querySelectorAll('.content-row').forEach(row => {
+    document.querySelectorAll('.content-row, .top10-row').forEach(row => {
         updateArrowVisibility(row);
         row.addEventListener('scroll', utils.debounce(() => updateArrowVisibility(row), 100));
     });
