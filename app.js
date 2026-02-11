@@ -113,6 +113,17 @@ const utils = {
             console.error('Error loading from localStorage:', e);
             return null;
         }
+    },
+
+    // Create URL friendly slug
+    createSlug(text) {
+        if (!text) return '';
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
     }
 };
 
@@ -540,7 +551,8 @@ const components = {
         const date = item.release_date || item.first_air_date;
         const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
         const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
-        const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+        const slug = utils.createSlug(title);
+        const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
         const overview = utils.truncate(item.overview, 80);
 
         return `
@@ -573,9 +585,10 @@ const components = {
     continueCard(item) {
         const title = item.title || item.name;
         const backdropUrl = utils.getImageUrl(item.backdrop_path, 'small', 'backdrop');
+        const slug = utils.createSlug(title);
         const route = item.media_type === 'movie'
-            ? `/movie/${item.id}`
-            : `/tv/${item.id}/${item.season || 1}/${item.episode || 1}`;
+            ? `/movie/${item.id}-${slug}`
+            : `/tv/${item.id}-${slug}/${item.season || 1}/${item.episode || 1}`;
         const progressPercent = item.progress || 0;
 
         return `
@@ -646,7 +659,8 @@ const components = {
             const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
             const date = item.release_date || item.first_air_date;
             const mediaType = item.media_type || 'movie';
-            const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+            const slug = utils.createSlug(title);
+            const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
             const year = date ? new Date(date).getFullYear() : '';
 
             return `
@@ -714,7 +728,8 @@ const components = {
             const mediaType = item.media_type || 'movie';
             const itemTitle = item.title || item.name;
             const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
-            const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+            const slug = utils.createSlug(itemTitle);
+            const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
             const ranking = index + 1;
 
             return `
@@ -754,7 +769,8 @@ const components = {
         const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
         const date = item.release_date || item.first_air_date;
         const mediaType = item.media_type || 'movie';
-        const route = mediaType === 'movie' ? `#/movie/${item.id}` : `#/tv/${item.id}`;
+        const slug = utils.createSlug(title);
+        const route = mediaType === 'movie' ? `#/movie/${item.id}-${slug}` : `#/tv/${item.id}-${slug}`;
 
         return `
             <section class="hero" style="background-image: url('${backdropUrl}')">
@@ -1581,13 +1597,18 @@ const router = {
             const page = parseInt(params.get('page')) || 1;
             pages.anime(category, page);
         } else if (path.startsWith('/movie/')) {
-            const id = path.split('/')[2];
+            const segment = path.split('/')[2];
+            const id = parseInt(segment); // Extract ID from "123-slug"
             pages.movie(id);
         } else if (path.startsWith('/tv/')) {
             const parts = path.split('/');
-            const id = parts[2].split('?')[0];
+            const idSegment = parts[2];
+            const id = parseInt(idSegment); // Extract ID from "123-slug"
             const season = parts[3] || 1;
             const episode = parts[4] || 1;
+            // Pass original ID segment (with slug) if needed for URL consistency, 
+            // but for API calls we need the numeric ID. 
+            // The pages.tvShow function uses the ID for API calls.
             pages.tvShow(id, season, episode);
         } else if (path.startsWith('/search')) {
             const query = new URLSearchParams(path.split('?')[1]).get('q') || '';
