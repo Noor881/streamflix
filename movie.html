@@ -59,7 +59,7 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="detail.css">
+    <link rel="stylesheet" href="/detail.css">
 
     <!-- Schema.org (injected by JS) -->
     <script id="schema-movie" type="application/ld+json">{}</script>
@@ -81,12 +81,12 @@
             });
         }
     </script>
-    <script src="detail.js"></script>
+    <script src="/detail.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             let id = params.get('id');
-            
+
             // If no query param, try to extract from path
             if (!id) {
                 const pathMatch = window.location.pathname.match(/\/movie\/(\d+)/);
@@ -94,7 +94,7 @@
                     id = pathMatch[1];
                 }
             }
-            
+
             if (id) {
                 DetailPage.loadMovie(id);
             } else {
