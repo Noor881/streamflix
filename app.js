@@ -902,13 +902,13 @@ const pages = {
         try {
             // Fetch all data in parallel
             const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows] = await Promise.all([
-                tmdbAPI.getTrending('all', 'day'),
-                tmdbAPI.getPopularMovies(),
-                tmdbAPI.getPopularTV(),
-                tmdbAPI.getTopRatedMovies(),
-                tmdbAPI.getTopRatedTV(),
-                tmdbAPI.getAnimationMovies(),
-                tmdbAPI.getAnimeTVShows()
+                tmdbAPI.getTrending('all', 'day', 2),
+                tmdbAPI.getPopularMovies(2),
+                tmdbAPI.getPopularTV(2),
+                tmdbAPI.getTopRatedMovies(2),
+                tmdbAPI.getTopRatedTV(2),
+                tmdbAPI.getAnimationMovies(2),
+                tmdbAPI.getAnimeTVShows(2)
             ]);
 
             // Continue watching section
