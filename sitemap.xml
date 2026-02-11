@@ -9,7 +9,7 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Movie Detail Pages (675 movies) -->
+    <!-- Movie Detail Pages (678 movies) -->
     <url><loc>https://streamflix-six-amber.vercel.app/movie/840464</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1368166</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1168190</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -60,6 +60,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1291608</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1234821</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/575265</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1297842</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1412598</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1475490</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/238</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -69,7 +70,6 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/19995</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1196067</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1131759</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/278</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/269149</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/982843</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1618945</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -134,6 +134,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/872585</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1171145</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/671</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1429605</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/639988</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/950387</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/497</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -207,6 +208,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1259102</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1373198</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/414906</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/278</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/389</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/19404</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/429</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -374,8 +376,6 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/755812</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1026227</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/411088</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1297842</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1429605</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1575337</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1208348</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1284120</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -445,6 +445,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/974663</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1042834</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1262815</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1284496</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1254808</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1450257</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1154304</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -456,7 +457,6 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1436061</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/760329</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1110034</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1119449</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/993708</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1614061</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1182861</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -506,8 +506,8 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/281957</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1159831</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1354700</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1327819</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1359607</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1284496</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1296504</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1297953</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/24021</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -532,6 +532,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1219556</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1401281</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1464883</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1119449</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1436835</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/972232</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1307373</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -577,11 +578,12 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1223178</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1457938</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1421552</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1265032</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1327688</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1405769</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1422101</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1442211</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1551507</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1390382</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1400499</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1552684</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1404346</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -635,58 +637,59 @@
     <url><loc>https://streamflix-six-amber.vercel.app/movie/42726</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1383731</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1426964</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1268127</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/687163</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1410399</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1268127</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1288246</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1327819</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1146344</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1315772</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1410399</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/936075</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1314481</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1146344</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/766520</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1315772</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1078605</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1226863</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1439713</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1175942</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1275779</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1439713</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/812583</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1266127</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1084244</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1228710</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1443762</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1325734</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1175942</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1228710</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1003596</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1368337</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1212461</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1189885</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1520453</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1238188</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1071585</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1084244</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1407432</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1189885</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1071640</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1034716</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/749170</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1242011</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1305717</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1212461</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1575535</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1238188</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1407432</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1022787</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/558449</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1108427</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1374462</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1125899</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1417849</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1520453</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1034716</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1022787</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1119878</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1151031</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/1084066</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1129573</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1363123</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1010756</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1007734</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1559456</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/842924</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/696506</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/movie/969681</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/1613335</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/movie/454639</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1151031</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/movie/1304313</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-    <!-- TV Show Detail Pages (748 shows) -->
+    <!-- TV Show Detail Pages (751 shows) -->
     <url><loc>https://streamflix-six-amber.vercel.app/tv/66732</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/2734</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/79744</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -825,7 +828,6 @@
     <url><loc>https://streamflix-six-amber.vercel.app/tv/70672</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/60708</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/120089</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/283123</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/78191</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/4194</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/1403</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -866,13 +868,13 @@
     <url><loc>https://streamflix-six-amber.vercel.app/tv/4608</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/67384</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/9537</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/1104</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/39793</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/108978</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/62688</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/30983</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/94997</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/46260</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/198178</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/2875</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/210865</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/62286</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -884,6 +886,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/tv/2710</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/4239</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/220150</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/57911</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/94605</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/246</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/301507</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -1061,6 +1064,7 @@
     <url><loc>https://streamflix-six-amber.vercel.app/tv/117378</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/87432</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/79460</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/283123</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/98123</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/302463</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/74561</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -1354,87 +1358,89 @@
     <url><loc>https://streamflix-six-amber.vercel.app/tv/101102</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/119857</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/81610</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/198178</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/283370</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/61859</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/283370</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/280948</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/269160</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/226637</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/269160</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/218961</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/291339</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/111110</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/262793</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/291339</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/270600</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/254071</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/106449</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/157741</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/259554</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/88046</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/225171</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/129552</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/225171</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/259731</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/99353</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/255055</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/202411</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/85552</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/259856</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/229891</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/99353</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/255055</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/103540</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/200875</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/245927</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/287346</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/229891</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/224263</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/211089</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/295366</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/280916</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/103540</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/87940</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/200875</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/287346</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/204266</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/280916</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/83867</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/250505</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/285278</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/285479</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/271855</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/63926</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/231620</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/97525</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/286291</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/246386</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/296523</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/95396</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/306721</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/312693</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/239770</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/95603</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/84773</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/119051</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/46195</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/202555</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/250505</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/293144</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/211288</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/281233</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/157239</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/95396</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/233079</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/229443</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/312053</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/97525</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/83867</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/272418</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/241372</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/237748</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/110492</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/286291</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/241097</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/309400</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/296009</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/246412</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/306721</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/312046</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/283950</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/285933</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/246473</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/301886</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/312915</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/281233</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/131142</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/215943</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/271855</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/291904</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/87917</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/93740</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/287740</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/278577</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/95171</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/285788</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://streamflix-six-amber.vercel.app/tv/282946</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://streamflix-six-amber.vercel.app/tv/226045</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/272418</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/56570</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/241372</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/312693</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/289723</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/257534</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/126027</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://streamflix-six-amber.vercel.app/tv/275902</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
     <!-- Genre Pages -->
     <url><loc>https://streamflix-six-amber.vercel.app/#/genre/28</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
