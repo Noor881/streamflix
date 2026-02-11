@@ -574,8 +574,8 @@ const components = {
         const title = item.title || item.name;
         const backdropUrl = utils.getImageUrl(item.backdrop_path, 'small', 'backdrop');
         const route = item.media_type === 'movie'
-            ? `#/movie/${item.id}`
-            : `#/tv/${item.id}/${item.season || 1}/${item.episode || 1}`;
+            ? `/movie/${item.id}`
+            : `/tv/${item.id}/${item.season || 1}/${item.episode || 1}`;
         const progressPercent = item.progress || 0;
 
         return `
@@ -1532,8 +1532,13 @@ const router = {
     },
 
     handleRoute() {
-        const hash = window.location.hash || '#/';
-        const path = hash.slice(1); // Remove #
+        const hash = window.location.hash;
+        // Use hash if present, otherwise use pathname as fallback for clean URLs
+        let path = hash ? hash.slice(1) : window.location.pathname;
+
+        // Remove trailing slash and handle empty path
+        if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+        if (!path || path === '') path = '/';
 
         // Scroll to top on navigation
         window.scrollTo(0, 0);
