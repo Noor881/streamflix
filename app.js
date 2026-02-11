@@ -540,7 +540,7 @@ const components = {
         const date = item.release_date || item.first_air_date;
         const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
         const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
-        const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+        const route = mediaType === 'movie' ? `#/movie/${item.id}` : `#/tv/${item.id}`;
         const overview = utils.truncate(item.overview, 80);
 
         return `
@@ -643,7 +643,7 @@ const components = {
             const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
             const date = item.release_date || item.first_air_date;
             const mediaType = item.media_type || 'movie';
-            const route = mediaType === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+            const route = mediaType === 'movie' ? `#/movie/${item.id}` : `#/tv/${item.id}`;
             const year = date ? new Date(date).getFullYear() : '';
 
             return `
