@@ -21,7 +21,7 @@
             "destination": "/admin.html"
         },
         {
-            "source": "/((?!movie|tv|admin|manifest\\.json|sw\\.js|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
+            "source": "/((?!admin|manifest\\.json|sw\\.js|sitemap\\.xml|robots\\.txt|.*\\..*).*)",
             "destination": "/index.html"
         }
     ],
