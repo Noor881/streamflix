@@ -1,7 +1,7 @@
 {
-    "name": "StreamFlix - Watch Free Movies, TV Shows & Anime",
-    "short_name": "StreamFlix",
-    "description": "Stream thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.",
+    "name": "HD Watchzone - Watch Free Movies, TV Shows & Anime",
+    "short_name": "HD Watchzone",
+    "description": "Watch thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0a0a0a",
@@ -9,7 +9,11 @@
     "orientation": "any",
     "scope": "/",
     "lang": "en-US",
-    "categories": ["entertainment", "video", "streaming"],
+    "categories": [
+        "entertainment",
+        "video",
+        "streaming"
+    ],
     "icons": [
         {
             "src": "/icons/icon-72x72.png",
@@ -66,21 +70,36 @@
             "short_name": "Movies",
             "description": "Browse all movies",
             "url": "/#/movies",
-            "icons": [{ "src": "/icons/movies-shortcut.png", "sizes": "96x96" }]
+            "icons": [
+                {
+                    "src": "/icons/movies-shortcut.png",
+                    "sizes": "96x96"
+                }
+            ]
         },
         {
             "name": "TV Shows",
             "short_name": "TV Shows",
             "description": "Browse TV series",
             "url": "/#/tv",
-            "icons": [{ "src": "/icons/tv-shortcut.png", "sizes": "96x96" }]
+            "icons": [
+                {
+                    "src": "/icons/tv-shortcut.png",
+                    "sizes": "96x96"
+                }
+            ]
         },
         {
             "name": "My List",
             "short_name": "My List",
             "description": "View your watchlist",
             "url": "/#/my-list",
-            "icons": [{ "src": "/icons/list-shortcut.png", "sizes": "96x96" }]
+            "icons": [
+                {
+                    "src": "/icons/list-shortcut.png",
+                    "sizes": "96x96"
+                }
+            ]
         }
     ],
     "screenshots": [

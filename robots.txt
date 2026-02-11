@@ -1,5 +1,5 @@
-# StreamFlix Robots.txt
-# https://streamflix-six-amber.vercel.app/
+# HD Watchzone Robots.txt
+# https://hdwatchzone.com/
 
 # Allow all search engines
 User-agent: *
@@ -9,7 +9,7 @@ Disallow: /admin.html
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://streamflix-six-amber.vercel.app/sitemap.xml
+Sitemap: https://hdwatchzone.com/sitemap.xml
 
 # Allow Google and Bing to index everything (except admin)
 User-agent: Googlebot

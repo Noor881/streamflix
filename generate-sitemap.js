@@ -6,7 +6,7 @@
 
 const TMDB_KEY = 'd74b73cd4563f614919e6493152fbc1e';
 const BASE = 'https://api.themoviedb.org/3';
-const SITE = 'https://streamflix-six-amber.vercel.app';
+const SITE = 'https://hdwatchzone.com';
 const TODAY = new Date().toISOString().split('T')[0];
 
 function createSlug(text) {
