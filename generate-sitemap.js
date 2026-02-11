@@ -1,13 +1,23 @@
 /**
  * StreamFlix Sitemap Generator
  * Fetches popular, top-rated, and trending content from TMDB
- * and generates a comprehensive sitemap.xml
+ * and generates a comprehensive sitemap.xml with SEO-friendly URLs
  */
 
 const TMDB_KEY = 'd74b73cd4563f614919e6493152fbc1e';
 const BASE = 'https://api.themoviedb.org/3';
 const SITE = 'https://streamflix-six-amber.vercel.app';
 const TODAY = new Date().toISOString().split('T')[0];
+
+function createSlug(text) {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+}
 
 async function tmdbFetch(endpoint, page = 1) {
     const url = `${BASE}${endpoint}?api_key=${TMDB_KEY}&page=${page}`;
@@ -16,14 +26,19 @@ async function tmdbFetch(endpoint, page = 1) {
     return res.json();
 }
 
-async function fetchAllPages(endpoint, maxPages = 5) {
-    const ids = new Set();
+async function fetchAllPages(endpoint, maxPages = 5, type = 'movie') {
+    const items = new Map(); // Use Map to avoid duplicates, key=id, value=slug
     for (let p = 1; p <= maxPages; p++) {
         const data = await tmdbFetch(endpoint, p);
         if (!data.results || data.results.length === 0) break;
-        data.results.forEach(item => ids.add(item.id));
+
+        data.results.forEach(item => {
+            const title = type === 'movie' ? item.title : item.name;
+            const slug = createSlug(title);
+            items.set(item.id, slug);
+        });
     }
-    return [...ids];
+    return items;
 }
 
 async function generateSitemap() {
@@ -45,25 +60,25 @@ async function generateSitemap() {
         '/trending/tv/week'
     ];
 
-    const movieIds = new Set();
-    const tvIds = new Set();
+    const movies = new Map();
+    const tvShows = new Map();
 
     for (const ep of movieEndpoints) {
-        const ids = await fetchAllPages(ep, 10);
-        ids.forEach(id => movieIds.add(id));
-        console.log(`  ${ep}: ${ids.length} movies`);
+        const items = await fetchAllPages(ep, 10, 'movie');
+        items.forEach((slug, id) => movies.set(id, slug));
+        console.log(`  ${ep}: fetched batch`);
     }
 
     console.log(`\nFetching TV shows...`);
     for (const ep of tvEndpoints) {
-        const ids = await fetchAllPages(ep, 10);
-        ids.forEach(id => tvIds.add(id));
-        console.log(`  ${ep}: ${ids.length} shows`);
+        const items = await fetchAllPages(ep, 10, 'tv');
+        items.forEach((slug, id) => tvShows.set(id, slug));
+        console.log(`  ${ep}: fetched batch`);
     }
 
-    console.log(`\nTotal unique movies: ${movieIds.size}`);
-    console.log(`Total unique TV shows: ${tvIds.size}`);
-    console.log(`Total content URLs: ${movieIds.size + tvIds.size}`);
+    console.log(`\nTotal unique movies: ${movies.size}`);
+    console.log(`Total unique TV shows: ${tvShows.size}`);
+    console.log(`Total content URLs: ${movies.size + tvShows.size}`);
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -76,17 +91,17 @@ async function generateSitemap() {
         <priority>1.0</priority>
     </url>
 
-    <!-- Movie Detail Pages (${movieIds.size} movies) -->
+    <!-- Movie Detail Pages (${movies.size} movies) -->
 `;
 
-    for (const id of movieIds) {
-        xml += `    <url><loc>${SITE}/movie/${id}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+    for (const [id, slug] of movies) {
+        xml += `    <url><loc>${SITE}/movie/${id}-${slug}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
     }
 
-    xml += `\n    <!-- TV Show Detail Pages (${tvIds.size} shows) -->\n`;
+    xml += `\n    <!-- TV Show Detail Pages (${tvShows.size} shows) -->\n`;
 
-    for (const id of tvIds) {
-        xml += `    <url><loc>${SITE}/tv/${id}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+    for (const [id, slug] of tvShows) {
+        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
     }
 
     xml += `
@@ -124,3 +139,4 @@ async function generateSitemap() {
 }
 
 generateSitemap().catch(console.error);
+
