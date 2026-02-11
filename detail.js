@@ -228,7 +228,10 @@ function renderNav() {
     return `
         <nav class="detail-nav" id="detail-nav">
             <div class="nav-left">
-                <a href="/" class="nav-logo">StreamFlix</a>
+                <a href="/" class="nav-logo">
+                    <img src="/logo.jpeg" alt="HD Watchzone" style="height: 30px; vertical-align: middle; margin-right: 8px;">
+                    HD Watchzone
+                </a>
                 <button class="nav-back" onclick="history.back()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     Back
