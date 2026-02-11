@@ -442,6 +442,10 @@ const DetailPage = {
 
     async loadMovie(id) {
         const app = document.getElementById('detail-app');
+
+        // Add 1 second delay as requested
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         try {
             const movie = await tmdbFetch(`/movie/${id}`, {
                 append_to_response: 'credits,videos,recommendations'
@@ -522,6 +526,9 @@ const DetailPage = {
         const app = document.getElementById('detail-app');
         this.currentSeason = season;
         this.currentEpisode = episode;
+
+        // Add 1 second delay as requested
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         try {
             const tv = await tmdbFetch(`/tv/${id}`, {

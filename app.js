@@ -1599,17 +1599,22 @@ const router = {
         } else if (path.startsWith('/movie/')) {
             const segment = path.split('/')[2];
             const id = parseInt(segment); // Extract ID from "123-slug"
-            pages.movie(id);
+            const app = document.getElementById('app');
+            app.innerHTML = components.loading();
+            setTimeout(() => {
+                pages.movie(id);
+            }, 1000);
         } else if (path.startsWith('/tv/')) {
             const parts = path.split('/');
             const idSegment = parts[2];
             const id = parseInt(idSegment); // Extract ID from "123-slug"
             const season = parts[3] || 1;
             const episode = parts[4] || 1;
-            // Pass original ID segment (with slug) if needed for URL consistency, 
-            // but for API calls we need the numeric ID. 
-            // The pages.tvShow function uses the ID for API calls.
-            pages.tvShow(id, season, episode);
+            const app = document.getElementById('app');
+            app.innerHTML = components.loading();
+            setTimeout(() => {
+                pages.tvShow(id, season, episode);
+            }, 1000);
         } else if (path.startsWith('/search')) {
             const query = new URLSearchParams(path.split('?')[1]).get('q') || '';
             pages.search(query);
