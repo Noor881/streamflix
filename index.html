@@ -5,14 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHQKVYP1WN"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-ZHQKVYP1WN');
-    </script>
+    <!-- Google tag is loaded only after user consent (handled by /consent.js) -->
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="gUv3UPUWfc-0jPQ4eosSHLGJvSnKrdCyc8x_bfResfg" />
@@ -71,6 +64,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Content Security Policy (basic) -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://api.themoviedb.org https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
 
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -171,8 +168,12 @@
     <header class="header" role="banner">
         <div class="header-container">
             <a href="#/" class="logo" aria-label="HD Watchzone Home">
-                <img src="/logo.jpeg" alt="HD Watchzone Logo" class="logo-img"
-                    style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen; filter: invert(1);">
+                <picture>
+                    <source type="image/avif" srcset="/logo.avif">
+                    <source type="image/webp" srcset="/logo.webp">
+                    <img src="/logo.jpeg" alt="HD Watchzone Logo" class="logo-img"
+                        style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen; filter: invert(1);" loading="lazy">
+                </picture>
             </a>
 
             <nav class="nav" role="navigation" aria-label="Main navigation">
@@ -192,9 +193,9 @@
             </nav>
 
             <div class="header-right">
-                <div class="search-container" role="search">
+                    <div class="search-container" role="search">
                     <input type="text" id="search-input" class="search-input"
-                        placeholder="Search movies, TV shows, anime..." aria-label="Search movies, TV shows, anime">
+                        placeholder="Search movies, TV shows, anime..." aria-label="Search movies, TV shows, anime" loading="lazy">
                     <button class="search-btn" id="search-btn" aria-label="Search">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" aria-hidden="true">
@@ -261,8 +262,12 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="#/" class="logo" aria-label="HD Watchzone Home">
-                        <img src="/logo.jpeg" alt="HD Watchzone" class="logo-img"
-                            style="height: 60px; mix-blend-mode: screen; filter: invert(1);">
+                        <picture>
+                            <source type="image/avif" srcset="/logo.avif">
+                            <source type="image/webp" srcset="/logo.webp">
+                            <img src="/logo.jpeg" alt="HD Watchzone" class="logo-img"
+                                style="height: 60px; mix-blend-mode: screen; filter: invert(1);" loading="lazy">
+                        </picture>
                         <span class="logo-text">HD <span class="logo-accent">Watchzone</span></span>
                     </a>
                     <p class="footer-tagline">Your gateway to endless entertainment. Stream thousands of movies, TV
@@ -364,8 +369,9 @@
     </script>
 
     <!-- Scripts -->
-    <script src="/app.js"></script>
-    <script src="/mobile-fixes.js"></script>
+    <script src="/app.js" defer></script>
+    <script src="/mobile-fixes.js" defer></script>
+    <script src="/consent.js" defer></script>
 </body>
 
 </html>

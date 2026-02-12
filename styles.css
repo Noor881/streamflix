@@ -398,6 +398,30 @@ ol {
     color: var(--color-text-muted);
 }
 
+/* Accessibility: focus styles for keyboard users */
+.nav-link:focus,
+.hamburger-btn:focus,
+.user-avatar:focus,
+.search-input:focus,
+.mobile-nav-link:focus {
+    outline: 3px solid rgba(229, 9, 20, 0.95);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+}
+
+.search-input:focus {
+    opacity: 1;
+    width: 280px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* Cookie consent banner */
+#cookie-consent{
+    position:fixed;left:0;right:0;bottom:16px;display:flex;justify-content:center;z-index:9999;padding:0 12px}
+.cookie-consent-inner{max-width:980px;background:rgba(20,20,20,0.9);color:var(--color-text-primary);padding:12px 16px;border-radius:8px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow-md)}
+.cookie-text{color:var(--color-text-secondary);font-size:0.95rem}
+.cookie-actions .btn{background:var(--color-primary);color:#fff;padding:8px 12px;border-radius:6px}
+
 .search-input:focus {
     outline: none;
 }

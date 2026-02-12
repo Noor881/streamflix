@@ -1,11 +1,11 @@
 const CACHE_NAME = 'streamflix-v4';
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
     '/styles.css',
     '/app.js',
     '/favicon.jpeg',
-    '/manifest.json'
+    '/manifest.json',
+    '/offline.html',
+    '/consent.js'
 ];
 
 const CACHE_STRATEGIES = {
@@ -36,26 +36,79 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+// Helper: trim cache to max entries
+async function trimCache(cacheName, maxItems) {
+    const cache = await caches.open(cacheName);
+    const requests = await cache.keys();
+    if (requests.length <= maxItems) return;
+    const removeCount = requests.length - maxItems;
+    for (let i = 0; i < removeCount; i++) {
+        await cache.delete(requests[i]);
+    }
+}
+
+// Stale-While-Revalidate strategy
+async function staleWhileRevalidate(request, cacheName, maxEntries = 60) {
+    const cache = await caches.open(cacheName);
+    const cached = await cache.match(request);
+    const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.ok) {
+            cache.put(request, networkResponse.clone());
+            trimCache(cacheName, maxEntries);
+        }
+        return networkResponse;
+    }).catch(()=>{});
+
+    return cached || fetchPromise;
+}
+
+// Network-first with timeout
+async function networkFirst(request, cacheName, timeout = 500) {
+    const cache = await caches.open(cacheName);
+    try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        const response = await fetch(request, { signal: controller.signal });
+        clearTimeout(id);
+        if (response && response.ok) {
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch (e) {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        if (request.mode === 'navigate') {
+            const fallback = await caches.match('/offline.html');
+            if (fallback) return fallback;
+        }
+        return new Response('Offline', { status: 503 });
+    }
+}
+
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    if (url.origin === 'https://image.tmdb.org') {
-        event.respondWith(cacheFirst(event.request, 'streamflix-images'));
+    // Images (CDN + same-origin images)
+    if (url.origin === 'https://image.tmdb.org' || url.pathname.endsWith('.jpg') || url.pathname.endsWith('.png') || url.pathname.endsWith('.webp') || url.pathname.endsWith('.avif')) {
+        event.respondWith(staleWhileRevalidate(event.request, 'streamflix-images', 200));
         return;
     }
 
+    // API calls - network first
     if (url.origin === 'https://api.themoviedb.org') {
-        event.respondWith(networkFirst(event.request, 'streamflix-api', 300));
+        event.respondWith(networkFirst(event.request, 'streamflix-api', 700));
         return;
     }
 
+    // Navigation requests - prefer network, fallback to offline
     if (event.request.mode === 'navigate') {
         event.respondWith(networkFirst(event.request, CACHE_NAME, 3000));
         return;
     }
 
+    // Static assets on same-origin - cache first
     if (url.origin === self.location.origin) {
-        event.respondWith(cacheFirst(event.request, CACHE_NAME));
+        event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME, 100));
         return;
     }
 });
@@ -95,7 +148,7 @@ async function networkFirst(request, cacheName, timeout) {
         if (cached) return cached;
 
         if (request.mode === 'navigate') {
-            const fallback = await cache.match('/');
+            const fallback = await cache.match('/offline.html');
             if (fallback) return fallback;
         }
 
