@@ -27,6 +27,17 @@ async function tmdbFetch(endpoint, params = {}) {
     return res.json();
 }
 
+async function fetchWithRetry(endpoint, params = {}, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await tmdbFetch(endpoint, params);
+        } catch (err) {
+            if (i === retries - 1) throw err;
+            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+    }
+}
+
 function imgUrl(path, size = 'w500') {
     if (!path) return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750" fill="%23141414"/>';
     return `${TMDB.IMG}/${size}${path}`;
@@ -450,8 +461,11 @@ const DetailPage = {
         // Add 1 second delay as requested
         await new Promise(resolve => setTimeout(resolve, 1000));
 
+        // Add 1.5 second delay to ensure data readiness
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
         try {
-            const movie = await tmdbFetch(`/movie/${id}`, {
+            const movie = await fetchWithRetry(`/movie/${id}`, {
                 append_to_response: 'credits,videos,recommendations'
             });
             this.currentData = movie;
@@ -534,8 +548,11 @@ const DetailPage = {
         // Add 1 second delay as requested
         await new Promise(resolve => setTimeout(resolve, 1000));
 
+        // Add 1.5 second delay to ensure data readiness
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
         try {
-            const tv = await tmdbFetch(`/tv/${id}`, {
+            const tv = await fetchWithRetry(`/tv/${id}`, {
                 append_to_response: 'credits,videos,recommendations'
             });
             this.currentData = tv;
