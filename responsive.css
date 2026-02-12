@@ -40,6 +40,12 @@
     .mobile-nav { width: 80%; right: -80%; }
 
     .mobile-nav.open { right: 0; }
+
+    /* Avoid accidental blocking of taps by overlays/pseudo elements */
+    .mobile-nav { pointer-events: none; }
+    .mobile-nav.open { pointer-events: auto; }
+    .mobile-nav-overlay { pointer-events: none; }
+    .mobile-nav-overlay.open { pointer-events: auto; }
 }
 
 @media (max-width: 768px) {
@@ -93,6 +99,11 @@
         padding-bottom: 8px;
     }
 
+    /* Ensure items inside scrollable rows remain clickable */
+    .content-row a, .content-row button, .row-cards a, .row-cards button, .card, .card-item, .poster-card {
+        pointer-events: auto !important;
+    }
+
     .card, .card-item, .poster-card {
         flex: 0 0 calc(40vw);
         min-width: 140px;
@@ -130,3 +141,20 @@
         padding: 10px 12px !important;
     }
 }
+
+/* Do not let decorative hero/backdrop layers intercept pointer events */
+.hero::before,
+.hero-backdrop::after,
+.hero-backdrop,
+.hero-backdrop img {
+    pointer-events: none !important;
+}
+
+/* Dropdown hidden state should not capture pointer events */
+.nav-dropdown-content {
+    pointer-events: none;
+}
+.nav-dropdown-content.show {
+    pointer-events: auto;
+}
+
