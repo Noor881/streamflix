@@ -110,25 +110,30 @@ function updateMeta(data, type) {
 }
 
 /* ---------- Schema.org ---------- */
-function injectSchema(data, type) {
-    const baseSchema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
-    const el = document.getElementById('schema-movie');
-    if (el) el.textContent = JSON.stringify(baseSchema);
+async function injectSchema(data, type) {
+    try {
+        // Build base schema
+        let schema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
 
-    injectBreadcrumbs(data, type);
-
-    // Fetch and append reviews asynchronously (non-blocking)
-    (async () => {
-        try {
-            const reviews = await fetchReviews(type, data.id);
-            if (reviews && reviews.length) {
-                const enhanced = addReviewsToSchema(baseSchema, reviews);
-                if (el) el.textContent = JSON.stringify(enhanced);
-            }
-        } catch (e) {
-            // silent fail — schema remains without reviews
+        // Fetch reviews before injecting schema (blocking)
+        const reviews = await fetchReviews(type, data.id);
+        if (reviews && reviews.length) {
+            schema = addReviewsToSchema(schema, reviews);
         }
-    })();
+
+        // Inject complete schema
+        const el = document.getElementById('schema-movie');
+        if (el) el.textContent = JSON.stringify(schema);
+
+        injectBreadcrumbs(data, type);
+    } catch (e) {
+        console.error('Schema injection error:', e);
+        // Fallback: inject schema without reviews
+        const baseSchema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
+        const el = document.getElementById('schema-movie');
+        if (el) el.textContent = JSON.stringify(baseSchema);
+        injectBreadcrumbs(data, type);
+    }
 }
 
 async function fetchReviews(type, id) {
@@ -518,7 +523,7 @@ const DetailPage = {
             this.currentType = 'movie';
 
             updateMeta(movie, 'movie');
-            injectSchema(movie, 'movie');
+            await injectSchema(movie, 'movie');
 
             const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
             const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
@@ -605,7 +610,7 @@ const DetailPage = {
             this.currentType = 'tv';
 
             updateMeta(tv, 'tv');
-            injectSchema(tv, 'tv');
+            await injectSchema(tv, 'tv');
 
             const rating = tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A';
             const year = tv.first_air_date ? new Date(tv.first_air_date).getFullYear() : '';
