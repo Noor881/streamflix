@@ -10,9 +10,9 @@ const TMDB = {
 };
 
 const SERVERS = [
-    { id: 'embedsu', name: 'No Ads Server', movieUrl: (id) => `https://embed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidking', name: 'VidKing', movieUrl: (id) => `https://www.vidking.net/embed/movie/${id}?color=e50914&autoPlay=true`, tvUrl: (id, s, e) => `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true` }
+    { id: 'netmirror', name: 'NetMirror', movieUrl: (id) => `https://netmirror.org/embed/movie/${id}`, tvUrl: (id, s, e) => `https://netmirror.org/embed/tv/${id}/${s}/${e}` },
+    { id: 'cineby', name: 'CineBy', movieUrl: (id) => `https://cineby.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://cineby.to/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` }
 ];
 
 let activeServer = 0;
