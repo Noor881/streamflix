@@ -158,3 +158,22 @@
     pointer-events: auto;
 }
 
+/* Card overlays should not block clicks to the card itself; allow overlay controls */
+.card-overlay {
+    pointer-events: none !important;
+}
+.card-overlay a,
+.card-overlay button,
+.card-overlay .btn,
+.card-overlay .play-btn {
+    pointer-events: auto !important;
+}
+
+/* Toast should not block page interactions */
+.toast {
+    pointer-events: none;
+}
+.toast.show {
+    pointer-events: auto;
+}
+
