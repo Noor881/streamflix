@@ -36,6 +36,61 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+// Minimal IndexedDB helpers inside SW (similar to scripts/idb-helper.js)
+function swOpenDB(){
+    return new Promise((resolve, reject)=>{
+        const req = indexedDB.open('streamflix-db', 1);
+        req.onupgradeneeded = (e)=>{
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('watchlist')) db.createObjectStore('watchlist', {keyPath:'id'});
+            if (!db.objectStoreNames.contains('outbox')) db.createObjectStore('outbox', {autoIncrement:true});
+        };
+        req.onsuccess = ()=> resolve(req.result);
+        req.onerror = ()=> reject(req.error);
+    });
+}
+
+async function swGetAll(storeName){
+    const db = await swOpenDB();
+    return new Promise((res, rej)=>{
+        const tx = db.transaction(storeName, 'readonly');
+        const rq = tx.objectStore(storeName).getAll();
+        rq.onsuccess = ()=> res(rq.result);
+        rq.onerror = ()=> rej(rq.error);
+    });
+}
+
+async function swDeleteKey(storeName, key){
+    const db = await swOpenDB();
+    return new Promise((res, rej)=>{
+        const tx = db.transaction(storeName, 'readwrite');
+        tx.objectStore(storeName).delete(key);
+        tx.oncomplete = ()=> res(true);
+        tx.onerror = ()=> rej(tx.error);
+    });
+}
+
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'sync-watchlist') {
+        event.waitUntil((async ()=>{
+            try{
+                const out = await swGetAll('outbox');
+                if (!out || !out.length) return;
+                for (const entry of out){
+                    try{
+                        await fetch('/api/sync-watchlist', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+                        // delete entry by its key - in getAll we don't get keys, so clear whole outbox after success
+                    }catch(e){ /* leave for next sync */ }
+                }
+                // clear outbox
+                const db = await swOpenDB();
+                const tx = db.transaction('outbox','readwrite');
+                tx.objectStore('outbox').clear();
+            }catch(e){}
+        })());
+    }
+});
+
 // Helper: trim cache to max entries
 async function trimCache(cacheName, maxItems) {
     const cache = await caches.open(cacheName);

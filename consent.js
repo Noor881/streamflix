@@ -47,5 +47,19 @@
     if (document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', init);
     } else init();
+    // Load Sentry (optional) after consent if configured
+    async function loadSentry(){
+      try{
+        if (!window.SENTRY_DSN) return;
+        const s = document.createElement('script');
+        s.src = 'https://browser.sentry-cdn.com/7.20.0/bundle.min.js';
+        s.crossOrigin = 'anonymous';
+        document.head.appendChild(s);
+        s.onload = ()=>{
+          try{ Sentry.init({ dsn: window.SENTRY_DSN }); }catch(e){}
+        };
+      }catch(e){}
+    }
+    if (localStorage.getItem(key)) loadSentry();
   }catch(e){}
 })();

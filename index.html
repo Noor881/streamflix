@@ -225,6 +225,26 @@
             </div>
         </div>
     </header>
+    <button id="install-btn" aria-hidden="true" style="display:none;position:fixed;right:16px;bottom:16px;padding:10px 14px;border-radius:8px;border:none;background:var(--color-primary);color:#fff;z-index:400;">Install App</button>
+
+        <!-- Hero (image-first) -->
+        <section class="hero" aria-label="Featured">
+            <div class="hero-inner">
+                <picture>
+                    <source type="image/avif" srcset="/hero.avif">
+                    <source type="image/webp" srcset="/hero.webp">
+                    <img src="/hero.jpg" alt="Featured movie" class="hero-img" loading="lazy">
+                </picture>
+                <div class="hero-overlay">
+                    <h1 class="hero-title">Featured: Discover New Releases</h1>
+                    <p class="hero-desc">Stream the latest movies and TV shows in HD.</p>
+                        <div class="hero-actions">
+                        <button class="btn primary" data-play-src="/sample-video.mp4" data-subtitles='[{"src":"/subs/en.vtt","lang":"en","label":"English"}]'>Play</button>
+                        <button class="btn" data-watch-id="featured-1" data-watch-title="Featured">Add to My List</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     <!-- Mobile Navigation -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
@@ -372,6 +392,11 @@
     <script src="/app.js" defer></script>
     <script src="/mobile-fixes.js" defer></script>
     <script src="/consent.js" defer></script>
+    <script src="/scripts/idb-helper.js" defer></script>
+    <script src="/scripts/watchlist.js" defer></script>
+    <script src="/scripts/search.js" defer></script>
+    <script src="/scripts/recommendations.js" defer></script>
+    <script src="/scripts/install.js" defer></script>
 </body>
 
 </html>
