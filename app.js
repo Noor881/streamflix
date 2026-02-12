@@ -333,22 +333,22 @@ const tmdbAPI = {
 // ==========================================
 const videoServers = [
     {
-        id: 'netmirror',
-        name: 'NetMirror',
-        getMovieUrl: (id) => `https://netmirror.org/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://netmirror.org/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'cineby',
-        name: 'CineBy',
-        getMovieUrl: (id) => `https://cineby.to/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://cineby.to/embed/tv/${id}/${s}/${e}`
-    },
-    {
         id: 'vidsrc',
         name: 'VidSrc',
         getMovieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`
+    },
+    {
+        id: 'vidsrc2',
+        name: 'VidSrc Pro',
+        getMovieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`,
+        getTVUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`
+    },
+    {
+        id: 'multiembed',
+        name: 'MultiEmbed',
+        getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+        getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
     }
 ];
 

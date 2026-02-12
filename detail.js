@@ -10,9 +10,9 @@ const TMDB = {
 };
 
 const SERVERS = [
-    { id: 'netmirror', name: 'NetMirror', movieUrl: (id) => `https://netmirror.org/embed/movie/${id}`, tvUrl: (id, s, e) => `https://netmirror.org/embed/tv/${id}/${s}/${e}` },
-    { id: 'cineby', name: 'CineBy', movieUrl: (id) => `https://cineby.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://cineby.to/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` }
+    { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidsrc2', name: 'VidSrc Pro', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
+    { id: 'multiembed', name: 'MultiEmbed', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` }
 ];
 
 let activeServer = 0;
