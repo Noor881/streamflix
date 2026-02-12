@@ -111,11 +111,57 @@ function updateMeta(data, type) {
 
 /* ---------- Schema.org ---------- */
 function injectSchema(data, type) {
-    const schema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
+    const baseSchema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
     const el = document.getElementById('schema-movie');
-    if (el) el.textContent = JSON.stringify(schema);
+    if (el) el.textContent = JSON.stringify(baseSchema);
 
     injectBreadcrumbs(data, type);
+
+    // Fetch and append reviews asynchronously (non-blocking)
+    (async () => {
+        try {
+            const reviews = await fetchReviews(type, data.id);
+            if (reviews && reviews.length) {
+                const enhanced = addReviewsToSchema(baseSchema, reviews);
+                if (el) el.textContent = JSON.stringify(enhanced);
+            }
+        } catch (e) {
+            // silent fail — schema remains without reviews
+        }
+    })();
+}
+
+async function fetchReviews(type, id) {
+    try {
+        const res = await fetchWithRetry(`/${type}/${id}/reviews`, { language: 'en-US' });
+        return (res.results || []).slice(0, 3);
+    } catch (e) {
+        return [];
+    }
+}
+
+// enhance schema with reviews when available
+function addReviewsToSchema(baseSchema, reviews) {
+    if (!reviews || !reviews.length) return baseSchema;
+    const reviewObjs = reviews.map(r => {
+        const authorName = r.author || (r.author_details && (r.author_details.username || r.author_details.name)) || 'Anonymous';
+        const date = r.created_at ? r.created_at.split('T')[0] : undefined;
+        const body = r.content ? (r.content.length > 500 ? r.content.substring(0, 500) + '...' : r.content) : undefined;
+        const rating = r.author_details && r.author_details.rating ? String(r.author_details.rating) : undefined;
+
+        const rev = {
+            '@type': 'Review',
+            'author': { '@type': 'Person', 'name': authorName }
+        };
+        if (date) rev.datePublished = date;
+        if (body) rev.reviewBody = body;
+        if (rating) rev.reviewRating = { '@type': 'Rating', 'ratingValue': rating, 'bestRating': '10' };
+        return rev;
+    });
+
+    const enhanced = Object.assign({}, baseSchema);
+    enhanced.review = reviewObjs;
+    return enhanced;
 }
 
 function injectBreadcrumbs(data, type) {
