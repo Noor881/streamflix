@@ -26,6 +26,16 @@
         opacity: 0 !important;
     }
 
+    /* When JS toggles this class, reveal the search input on mobile */
+    .search-container.search-open .search-input {
+        width: 70vw !important;
+        max-width: 420px !important;
+        opacity: 1 !important;
+        background: rgba(0,0,0,0.85) !important;
+        border-color: var(--color-text-primary) !important;
+        padding-left: 44px !important;
+    }
+
     .hero, .hero-carousel {
         min-height: 60vh !important;
         max-height: 760px;
