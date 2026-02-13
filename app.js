@@ -887,6 +887,77 @@ window.switchTrendingTab = async (type, btn) => {
     }
 };
 
+// Switch platform tab function
+window.switchPlatformTab = async (provider, btn) => {
+    const row = document.getElementById('row-platforms');
+    const tabs = btn.parentElement.querySelectorAll('.section-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+
+    row.style.opacity = '0.5';
+
+    try {
+        let items = [];
+        // Map platform names to provider IDs (TMDB watch provider IDs)
+        const providerMap = {
+            'netflix': 8,
+            'prime': 9,
+            'disney': 337,
+            'max': 384,
+            'hulu': 15,
+            'apple': 350
+        };
+
+        const providerId = providerMap[provider];
+        if (providerId) {
+            // Fetch content available on this platform
+            const [movies, tv] = await Promise.all([
+                tmdbAPI.fetch('/discover/movie', { with_watch_providers: providerId, watch_region: 'US', sort_by: 'popularity.desc' }),
+                tmdbAPI.fetch('/discover/tv', { with_watch_providers: providerId, watch_region: 'US', sort_by: 'popularity.desc' })
+            ]);
+            // Combine and shuffle
+            items = [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
+            ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))];
+            items = items.sort(() => Math.random() - 0.5).slice(0, 20);
+        }
+
+        row.innerHTML = components.contentRow(items, 'all', 'row-platforms');
+        row.style.opacity = '1';
+    } catch (error) {
+        console.error('Error switching platform tab:', error);
+        row.style.opacity = '1';
+    }
+};
+
+// Switch genre tab function
+window.switchGenreTab = async (genreId, genreName, btn) => {
+    const row = document.getElementById('row-genres');
+    const tabs = btn.parentElement.querySelectorAll('.section-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+
+    row.style.opacity = '0.5';
+
+    try {
+        // Fetch both movies and TV shows for this genre
+        const [movies, tv] = await Promise.all([
+            tmdbAPI.fetch('/discover/movie', { with_genres: genreId, sort_by: 'popularity.desc' }),
+            tmdbAPI.fetch('/discover/tv', { with_genres: genreId, sort_by: 'popularity.desc' })
+        ]);
+
+        // Combine and mix them
+        const items = [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
+        ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))];
+        const shuffled = items.sort(() => Math.random() - 0.5).slice(0, 20);
+
+        row.innerHTML = components.contentRow(shuffled, 'all', 'row-genres');
+        row.style.opacity = '1';
+    } catch (error) {
+        console.error('Error switching genre tab:', error);
+        row.style.opacity = '1';
+    }
+};
+
 // ==========================================
 // Page Renderers
 // ==========================================
@@ -898,14 +969,28 @@ const pages = {
 
         try {
             // Fetch all data in parallel
-            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows] = await Promise.all([
+            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows, netflixContent, actionContent] = await Promise.all([
                 tmdbAPI.getTrending('all', 'day', 2),
                 tmdbAPI.getPopularMovies(2),
                 tmdbAPI.getPopularTV(2),
                 tmdbAPI.getTopRatedMovies(2),
                 tmdbAPI.getTopRatedTV(2),
                 tmdbAPI.getAnimationMovies(2),
-                tmdbAPI.getAnimeTVShows(2)
+                tmdbAPI.getAnimeTVShows(2),
+                // Fetch Netflix content for platform section
+                tmdbAPI.fetch('/discover/movie', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' })
+                    .then(async movies => {
+                        const tv = await tmdbAPI.fetch('/discover/tv', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' });
+                        return [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
+                        ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))].sort(() => Math.random() - 0.5).slice(0, 20);
+                    }),
+                // Fetch Action content for genre section
+                tmdbAPI.fetch('/discover/movie', { with_genres: 28, sort_by: 'popularity.desc' })
+                    .then(async movies => {
+                        const tv = await tmdbAPI.fetch('/discover/tv', { with_genres: 10759, sort_by: 'popularity.desc' });
+                        return [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
+                        ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))].sort(() => Math.random() - 0.5).slice(0, 20);
+                    })
             ]);
 
             // Continue watching section
@@ -927,11 +1012,32 @@ const pages = {
                 <button class="section-tab" onclick="switchTrendingTab('tv', this)">Series</button>
             `;
 
+            const platformTabs = `
+                <button class="section-tab active" onclick="switchPlatformTab('netflix', this)">Netflix</button>
+                <button class="section-tab" onclick="switchPlatformTab('prime', this)">Prime Video</button>
+                <button class="section-tab" onclick="switchPlatformTab('max', this)">Max</button>
+                <button class="section-tab" onclick="switchPlatformTab('disney', this)">Disney+</button>
+                <button class="section-tab" onclick="switchPlatformTab('hulu', this)">Hulu</button>
+                <button class="section-tab" onclick="switchPlatformTab('apple', this)">Apple TV+</button>
+            `;
+
+            const genreTabs = `
+                <button class="section-tab active" onclick="switchGenreTab('28', 'Action', this)">Action</button>
+                <button class="section-tab" onclick="switchGenreTab('35', 'Comedy', this)">Comedy</button>
+                <button class="section-tab" onclick="switchGenreTab('27', 'Horror', this)">Horror</button>
+                <button class="section-tab" onclick="switchGenreTab('18', 'Drama', this)">Drama</button>
+                <button class="section-tab" onclick="switchGenreTab('10749', 'Romance', this)">Romance</button>
+                <button class="section-tab" onclick="switchGenreTab('878', 'Sci-Fi', this)">Sci-Fi</button>
+                <button class="section-tab" onclick="switchGenreTab('53', 'Thriller', this)">Thriller</button>
+            `;
+
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
                 ${components.top10Section(trending?.results, 'TOP 10 CONTENT TODAY')}
                 ${continueWatchingHtml}
                 ${components.section('Trending Today', components.contentRow(trending?.results?.slice(10), 'all', 'row-trending'), null, trendingTabs)}
+                ${components.section('Browse by Platform', components.contentRow(netflixContent, 'all', 'row-platforms'), null, platformTabs)}
+                ${components.section('Browse by Genre', components.contentRow(actionContent, 'all', 'row-genres'), null, genreTabs)}
                 ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
                 ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
                 ${components.section('🎨 Animation Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
