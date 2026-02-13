@@ -1697,6 +1697,445 @@ const pages = {
                 </div>
             </div>
         `;
+    },
+
+    // FAQ page
+    faq() {
+        const app = document.getElementById('app');
+        const faqItems = [
+            { q: 'What is HD Watchzone?', a: 'HD Watchzone is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
+            { q: 'Is HD Watchzone free to use?', a: 'Yes, HD Watchzone is completely free. We aggregate content from various third-party providers so you can find and stream entertainment without any subscription or sign-up.' },
+            { q: 'Do I need to create an account?', a: 'No account is required. You can browse and watch content immediately. However, features like My List use your browser\'s local storage to save your preferences.' },
+            { q: 'What devices are supported?', a: 'HD Watchzone works on any device with a modern web browser including desktop computers, laptops, tablets, and smartphones. We recommend Chrome, Firefox, Safari, or Edge for the best experience.' },
+            { q: 'Why is a video not playing?', a: 'If a video is not playing, try switching to a different server using the server selector above the player. Different servers may have different availability for certain titles.' },
+            { q: 'Where does the content come from?', a: 'All content metadata (titles, descriptions, posters, ratings) is provided by The Movie Database (TMDB). Video streams are provided by third-party embed services. HD Watchzone does not host, store, or own any media content.' },
+            { q: 'How do I report a broken link?', a: 'You can report issues through our Contact Us page. Please include the title of the content and which server you were using so we can investigate.' },
+            { q: 'Can I download content for offline viewing?', a: 'No, HD Watchzone is a streaming-only platform. We do not offer downloads as we do not host any content directly.' },
+            { q: 'How often is new content added?', a: 'Our catalog updates automatically as new titles become available on TMDB and our third-party providers. Trending and popular sections refresh daily.' },
+            { q: 'Is my data safe?', a: 'We take privacy seriously. We only store your preferences (like your watchlist) locally in your browser. We do not collect personal information or require registration. See our Privacy Policy for full details.' }
+        ];
+
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Frequently Asked Questions</h1>
+                    <p>Find answers to common questions about HD Watchzone</p>
+                </div>
+                <div class="faq-list">
+                    ${faqItems.map((item, i) => `
+                        <div class="faq-item" id="faq-item-${i}">
+                            <button class="faq-question" onclick="toggleFaq(${i})" aria-expanded="false" aria-controls="faq-answer-${i}">
+                                <span>${item.q}</span>
+                                <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                            <div class="faq-answer" id="faq-answer-${i}" role="region">
+                                <p>${item.a}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="static-page-cta">
+                    <p>Still have questions?</p>
+                    <a href="#/contact" class="btn btn-primary">Contact Us</a>
+                </div>
+            </div>
+        `;
+    },
+
+    // Help Center page
+    help() {
+        const app = document.getElementById('app');
+        const helpCategories = [
+            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '#/faq' }, { text: 'Understanding the interface', href: '#/faq' }] },
+            { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '#/faq' }, { text: 'Switch streaming servers', href: '#/faq' }] },
+            { icon: '\ud83d\udccb', title: 'My List & Preferences', desc: 'Manage your watchlist and personalize your experience.', links: [{ text: 'Adding to My List', href: '#/my-list' }, { text: 'Managing saved content', href: '#/my-list' }] },
+            { icon: '\ud83d\udd12', title: 'Privacy & Security', desc: 'Understand how your data is handled and protected.', links: [{ text: 'Privacy Policy', href: '#/privacy' }, { text: 'Cookie Preferences', href: '#/cookies' }] },
+            { icon: '\ud83d\udcdc', title: 'Legal Information', desc: 'Review our terms of service and legal notices.', links: [{ text: 'Terms of Use', href: '#/terms' }, { text: 'Legal Notices', href: '#/legal' }] },
+            { icon: '\ud83d\udcac', title: 'Contact Support', desc: 'Get in touch with us for any other issues or feedback.', links: [{ text: 'Contact Us', href: '#/contact' }, { text: 'Report a Problem', href: '#/contact' }] }
+        ];
+
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Help Center</h1>
+                    <p>How can we help you today?</p>
+                </div>
+                <div class="help-grid">
+                    ${helpCategories.map(cat => `
+                        <div class="help-card">
+                            <div class="help-card-icon">${cat.icon}</div>
+                            <h3>${cat.title}</h3>
+                            <p>${cat.desc}</p>
+                            <div class="help-card-links">
+                                ${cat.links.map(link => `<a href="${link.href}">${link.text}</a>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    },
+
+    // Account page
+    account() {
+        const app = document.getElementById('app');
+        const myListItems = utils.loadFromStorage('streamflix_my_list') || [];
+        const watchHistoryRaw = utils.loadFromStorage('streamflix_watch_progress') || {};
+        const watchHistoryCount = Object.keys(watchHistoryRaw).length;
+
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Your Account</h1>
+                    <p>Manage your preferences and viewing data</p>
+                </div>
+                <div class="account-grid">
+                    <div class="account-card">
+                        <div class="account-card-icon">\ud83d\udccb</div>
+                        <h3>My List</h3>
+                        <p class="account-stat">${myListItems.length} saved titles</p>
+                        <a href="#/my-list" class="btn btn-primary btn-sm">View My List</a>
+                    </div>
+                    <div class="account-card">
+                        <div class="account-card-icon">\u25b6\ufe0f</div>
+                        <h3>Watch History</h3>
+                        <p class="account-stat">${watchHistoryCount} titles tracked</p>
+                        <button class="btn btn-secondary btn-sm" onclick="clearWatchHistory()">Clear History</button>
+                    </div>
+                    <div class="account-card">
+                        <div class="account-card-icon">\ud83d\udd12</div>
+                        <h3>Privacy</h3>
+                        <p class="account-stat">Local storage only</p>
+                        <a href="#/privacy" class="btn btn-secondary btn-sm">Privacy Policy</a>
+                    </div>
+                    <div class="account-card">
+                        <div class="account-card-icon">\ud83c\udf6a</div>
+                        <h3>Cookie Settings</h3>
+                        <p class="account-stat">Manage preferences</p>
+                        <a href="#/cookies" class="btn btn-secondary btn-sm">Cookie Preferences</a>
+                    </div>
+                </div>
+                <div class="disclaimer-banner">
+                    <p><strong>Note:</strong> HD Watchzone does not require an account. All your data (watchlist, history) is stored locally in your browser and never sent to any server.</p>
+                </div>
+            </div>
+        `;
+    },
+
+    // Contact Us page
+    contact() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Contact Us</h1>
+                    <p>Have a question, suggestion, or need to report an issue? We would love to hear from you.</p>
+                </div>
+                <div class="contact-container">
+                    <form class="contact-form" onsubmit="handleContactSubmit(event)">
+                        <div class="form-group">
+                            <label for="contact-name">Your Name</label>
+                            <input type="text" id="contact-name" placeholder="Enter your name" required autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-email">Email Address</label>
+                            <input type="email" id="contact-email" placeholder="you@example.com" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-subject">Subject</label>
+                            <select id="contact-subject" required>
+                                <option value="">Select a topic</option>
+                                <option value="bug">Report a Bug</option>
+                                <option value="content">Content Issue</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="legal">Legal / DMCA</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" rows="5" placeholder="Describe your issue or suggestion in detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                    </form>
+                    <div class="contact-info">
+                        <div class="contact-info-card">
+                            <h3>\ud83d\udce7 Email</h3>
+                            <p>support@hdwatchzone.com</p>
+                        </div>
+                        <div class="contact-info-card">
+                            <h3>\u23f1\ufe0f Response Time</h3>
+                            <p>We typically respond within 24-48 hours</p>
+                        </div>
+                        <div class="contact-info-card">
+                            <h3>\ud83d\udccb FAQ</h3>
+                            <p>Check our <a href="#/faq">FAQ page</a> for instant answers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    // Terms of Use page
+    terms() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Terms of Use</h1>
+                    <p>Last updated: February 14, 2026</p>
+                </div>
+                <div class="legal-content">
+                    <div class="disclaimer-banner">
+                        <p><strong>Third-Party Content Disclaimer:</strong> HD Watchzone does not host, store, or own any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. All trademarks, service marks, trade names, and content belong to their respective owners.</p>
+                    </div>
+
+                    <section class="legal-section">
+                        <h2>1. Acceptance of Terms</h2>
+                        <p>By accessing and using HD Watchzone, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you must not use this website.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>2. Description of Service</h2>
+                        <p>HD Watchzone is a content discovery and aggregation platform. We provide an interface to browse movie and TV show metadata sourced from The Movie Database (TMDB) API. Video playback is facilitated through third-party embed services. We do not upload, host, or store any video content on our servers.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>3. Third-Party Content</h2>
+                        <p>All video streams accessible through HD Watchzone are hosted by independent third-party providers. We have no control over the content, availability, or quality of these streams. We are not responsible for any content provided by third parties.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>4. Intellectual Property</h2>
+                        <p>All movie and TV show metadata, including titles, descriptions, posters, and ratings, is provided by TMDB under their API terms of use. All trademarks and copyrights for the media content belong to their respective owners. HD Watchzone claims no ownership over any third-party content.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>5. User Conduct</h2>
+                        <p>You agree to use HD Watchzone only for lawful purposes. You must not attempt to disrupt, overload, or interfere with the proper functioning of the website. Automated scraping, crawling, or data extraction is prohibited without express permission.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>6. Disclaimer of Warranties</h2>
+                        <p>HD Watchzone is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or that any content will always be available. Use the service at your own risk.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>7. Limitation of Liability</h2>
+                        <p>HD Watchzone shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the service, including any issues with third-party content or streams.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>8. Changes to Terms</h2>
+                        <p>We reserve the right to modify these Terms of Use at any time. Changes will be effective immediately upon posting. Your continued use of HD Watchzone after changes constitutes acceptance of the updated terms.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>9. Contact</h2>
+                        <p>If you have any questions about these Terms of Use, please <a href="#/contact">contact us</a>.</p>
+                    </section>
+                </div>
+            </div>
+        `;
+    },
+
+    // Privacy Policy page
+    privacy() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Privacy Policy</h1>
+                    <p>Last updated: February 14, 2026</p>
+                </div>
+                <div class="legal-content">
+                    <section class="legal-section">
+                        <h2>1. Overview</h2>
+                        <p>HD Watchzone is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and your choices regarding your data.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>2. Information We Collect</h2>
+                        <p><strong>We do not collect personal information.</strong> HD Watchzone does not require registration, login, or any personal data to use the service. The following data is stored locally in your browser only:</p>
+                        <ul>
+                            <li><strong>Watchlist:</strong> Titles you add to "My List" are saved in your browser's localStorage.</li>
+                            <li><strong>Watch Progress:</strong> Your viewing progress is tracked locally so you can resume where you left off.</li>
+                            <li><strong>Preferences:</strong> Theme and language preferences are stored in your browser.</li>
+                        </ul>
+                        <p>This data never leaves your device and is not transmitted to our servers or any third party.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>3. Third-Party Services</h2>
+                        <p>HD Watchzone uses the following third-party services:</p>
+                        <ul>
+                            <li><strong>TMDB API:</strong> We fetch movie and TV show metadata (titles, descriptions, images, ratings) from The Movie Database. TMDB's privacy policy applies to their data handling.</li>
+                            <li><strong>Video Embed Providers:</strong> Video streams are loaded via third-party embed services. These providers may set their own cookies and collect data according to their own privacy policies.</li>
+                            <li><strong>Google Analytics:</strong> If you have consented to analytics cookies, we use Google Analytics to understand site usage patterns. No personally identifiable information is collected.</li>
+                        </ul>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>4. Cookies</h2>
+                        <p>HD Watchzone uses minimal cookies. Essential cookies are required for basic site functionality. Analytics cookies are only enabled with your explicit consent. You can manage your cookie preferences on our <a href="#/cookies">Cookie Preferences</a> page.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>5. Data Security</h2>
+                        <p>Since all user data is stored locally in your browser, you have full control over it. You can clear your data at any time by clearing your browser's localStorage or using the clear options on the <a href="#/account">Account</a> page.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>6. Children's Privacy</h2>
+                        <p>HD Watchzone is not directed at children under 13. We do not knowingly collect any information from children.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>7. Changes to This Policy</h2>
+                        <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>8. Contact</h2>
+                        <p>For privacy-related questions, please <a href="#/contact">contact us</a>.</p>
+                    </section>
+                </div>
+            </div>
+        `;
+    },
+
+    // Cookie Preferences page
+    cookies() {
+        const app = document.getElementById('app');
+        const analyticsConsent = localStorage.getItem('analytics_consent') === 'true';
+
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Cookie Preferences</h1>
+                    <p>Manage how cookies are used on HD Watchzone</p>
+                </div>
+                <div class="legal-content">
+                    <section class="legal-section">
+                        <h2>What Are Cookies?</h2>
+                        <p>Cookies are small text files stored on your device by websites you visit. They help websites remember your preferences and improve your browsing experience.</p>
+                    </section>
+
+                    <div class="cookie-settings">
+                        <div class="cookie-option">
+                            <div class="cookie-option-info">
+                                <h3>Essential Cookies</h3>
+                                <p>Required for basic site functionality including navigation, localStorage for your watchlist, and video playback. These cannot be disabled.</p>
+                            </div>
+                            <div class="cookie-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="cookie-status">Always Active</span>
+                            </div>
+                        </div>
+
+                        <div class="cookie-option">
+                            <div class="cookie-option-info">
+                                <h3>Analytics Cookies</h3>
+                                <p>Help us understand how visitors interact with the site by collecting anonymous usage data through Google Analytics. No personal information is collected.</p>
+                            </div>
+                            <div class="cookie-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="analytics-toggle" ${analyticsConsent ? 'checked' : ''} onchange="toggleAnalyticsCookies(this.checked)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="cookie-status" id="analytics-status">${analyticsConsent ? 'Enabled' : 'Disabled'}</span>
+                            </div>
+                        </div>
+
+                        <div class="cookie-option">
+                            <div class="cookie-option-info">
+                                <h3>Third-Party Cookies</h3>
+                                <p>Video embed providers may set their own cookies when you play content. These are controlled by the respective third-party services and are subject to their privacy policies.</p>
+                            </div>
+                            <div class="cookie-toggle">
+                                <span class="cookie-status">Managed by third parties</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="legal-section">
+                        <h2>More Information</h2>
+                        <p>For more details about how we handle your data, please read our <a href="#/privacy">Privacy Policy</a>. If you have any questions, <a href="#/contact">contact us</a>.</p>
+                    </section>
+                </div>
+            </div>
+        `;
+    },
+
+    // Legal Notices page
+    legal() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="static-page">
+                <div class="static-page-header">
+                    <h1>Legal Notices</h1>
+                    <p>Important legal information about HD Watchzone</p>
+                </div>
+                <div class="legal-content">
+                    <div class="disclaimer-banner disclaimer-banner--prominent">
+                        <h2>\u26a0\ufe0f Third-Party Content Disclaimer</h2>
+                        <p>HD Watchzone <strong>does not host, store, or own</strong> any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. HD Watchzone acts solely as a content discovery and aggregation interface.</p>
+                        <p>All trademarks, service marks, trade names, logos, and content belong to their respective owners. If you believe that any content accessible through HD Watchzone infringes your copyright, please contact us immediately through our <a href="#/contact">Contact page</a>.</p>
+                    </div>
+
+                    <section class="legal-section">
+                        <h2>Content Attribution</h2>
+                        <p>Movie and TV show metadata \u2014 including titles, descriptions, posters, ratings, and cast information \u2014 is provided by <strong>The Movie Database (TMDB)</strong> under their API terms of service. HD Watchzone is not endorsed or certified by TMDB.</p>
+                        <p>This product uses the TMDB API but is not endorsed or certified by TMDB. All movie and show data is courtesy of TMDB contributors.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>Video Streaming</h2>
+                        <p>All video streams are provided by independent third-party embed services. HD Watchzone does not host, upload, or transcode any video files. We have no control over the availability, quality, or legality of content provided by these services.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>DMCA / Copyright Claims</h2>
+                        <p>If you are a copyright owner and believe that content accessible through HD Watchzone infringes your rights, please <a href="#/contact">contact us</a> with the following information:</p>
+                        <ul>
+                            <li>A description of the copyrighted work you claim has been infringed</li>
+                            <li>The URL on HD Watchzone where the infringing content is accessible</li>
+                            <li>Your contact information (name, email, phone)</li>
+                            <li>A statement that you have a good faith belief that the use is not authorized</li>
+                            <li>A statement under penalty of perjury that the information is accurate and you are authorized to act on behalf of the copyright owner</li>
+                        </ul>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>Open Source</h2>
+                        <p>HD Watchzone is built with open web technologies. We use the following open-source and free resources:</p>
+                        <ul>
+                            <li><strong>Inter Font:</strong> Licensed under the SIL Open Font License</li>
+                            <li><strong>TMDB API:</strong> Used under TMDB API terms of service</li>
+                        </ul>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>Governing Law</h2>
+                        <p>These legal notices and any disputes related to HD Watchzone shall be governed by applicable international laws. By using HD Watchzone, you agree to resolve any disputes through appropriate legal channels.</p>
+                    </section>
+
+                    <section class="legal-section">
+                        <h2>Related Pages</h2>
+                        <p>
+                            <a href="#/terms">Terms of Use</a> \u00b7
+                            <a href="#/privacy">Privacy Policy</a> \u00b7
+                            <a href="#/cookies">Cookie Preferences</a> \u00b7
+                            <a href="#/contact">Contact Us</a>
+                        </p>
+                    </section>
+                </div>
+            </div>
+        `;
     }
 };
 
@@ -1807,6 +2246,22 @@ const router = {
             pages.newPopular(category, page);
         } else if (path === '/my-list') {
             pages.myList();
+        } else if (path === '/faq') {
+            pages.faq();
+        } else if (path === '/help') {
+            pages.help();
+        } else if (path === '/account') {
+            pages.account();
+        } else if (path === '/contact') {
+            pages.contact();
+        } else if (path === '/terms') {
+            pages.terms();
+        } else if (path === '/privacy') {
+            pages.privacy();
+        } else if (path === '/cookies') {
+            pages.cookies();
+        } else if (path === '/legal') {
+            pages.legal();
         } else {
             // 404 - redirect to home
             this.navigate('#/');
@@ -2123,3 +2578,51 @@ window.navigateMovies = navigateMovies;
 window.navigateTV = navigateTV;
 window.navigateGenre = navigateGenre;
 window.navigateNew = navigateNew;
+
+// Static page helper functions
+function toggleFaq(index) {
+    const item = document.getElementById(`faq-item-${index}`);
+    const btn = item.querySelector('.faq-question');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+    }
+}
+
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    form.innerHTML = `
+        <div class="contact-success">
+            <div class="contact-success-icon">✓</div>
+            <h2>Message Sent</h2>
+            <p>Thank you for contacting us. We will get back to you within 24-48 hours.</p>
+            <a href="#/" class="btn btn-primary">Back to Home</a>
+        </div>
+    `;
+}
+
+function clearWatchHistory() {
+    if (confirm('Are you sure you want to clear your watch history? This cannot be undone.')) {
+        localStorage.removeItem('streamflix_watch_progress');
+        pages.account();
+    }
+}
+
+function toggleAnalyticsCookies(enabled) {
+    localStorage.setItem('analytics_consent', enabled.toString());
+    const statusEl = document.getElementById('analytics-status');
+    if (statusEl) {
+        statusEl.textContent = enabled ? 'Enabled' : 'Disabled';
+    }
+}
+
+window.toggleFaq = toggleFaq;
+window.handleContactSubmit = handleContactSubmit;
+window.clearWatchHistory = clearWatchHistory;
+window.toggleAnalyticsCookies = toggleAnalyticsCookies;
