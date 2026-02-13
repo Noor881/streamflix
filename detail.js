@@ -10,9 +10,9 @@ const TMDB = {
 };
 
 const SERVERS = [
-    { id: 'embedsu', name: 'No Ads Server', movieUrl: (id) => `https://embed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
     { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidking', name: 'VidKing', movieUrl: (id) => `https://www.vidking.net/embed/movie/${id}?color=e50914&autoPlay=true`, tvUrl: (id, s, e) => `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true` }
+    { id: 'vidsrc2', name: 'VidSrc Pro', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
+    { id: 'multiembed', name: 'MultiEmbed', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` }
 ];
 
 let activeServer = 0;
@@ -90,7 +90,7 @@ function updateMeta(data, type) {
     let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
     // Use logo as fallback if image is data URI (placeholder) or empty
     if (!image || image.startsWith('data:')) {
-        image = 'https://hdwatchzone.com/logo.jpeg';
+        image = 'https://hdwatchzone.com/logo.png';
     }
     const pageUrl = `${TMDB.SITE_URL}/${type}/${data.id}`;
 
@@ -120,12 +120,63 @@ function updateMeta(data, type) {
 }
 
 /* ---------- Schema.org ---------- */
-function injectSchema(data, type) {
-    const schema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
-    const el = document.getElementById('schema-movie');
-    if (el) el.textContent = JSON.stringify(schema);
+async function injectSchema(data, type) {
+    try {
+        // Build base schema
+        let schema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
 
-    injectBreadcrumbs(data, type);
+        // Fetch reviews before injecting schema (blocking)
+        const reviews = await fetchReviews(type, data.id);
+        if (reviews && reviews.length) {
+            schema = addReviewsToSchema(schema, reviews);
+        }
+
+        // Inject complete schema
+        const el = document.getElementById('schema-movie');
+        if (el) el.textContent = JSON.stringify(schema);
+
+        injectBreadcrumbs(data, type);
+    } catch (e) {
+        console.error('Schema injection error:', e);
+        // Fallback: inject schema without reviews
+        const baseSchema = type === 'movie' ? buildMovieSchema(data) : buildTVSchema(data);
+        const el = document.getElementById('schema-movie');
+        if (el) el.textContent = JSON.stringify(baseSchema);
+        injectBreadcrumbs(data, type);
+    }
+}
+
+async function fetchReviews(type, id) {
+    try {
+        const res = await fetchWithRetry(`/${type}/${id}/reviews`, { language: 'en-US' });
+        return (res.results || []).slice(0, 3);
+    } catch (e) {
+        return [];
+    }
+}
+
+// enhance schema with reviews when available
+function addReviewsToSchema(baseSchema, reviews) {
+    if (!reviews || !reviews.length) return baseSchema;
+    const reviewObjs = reviews.map(r => {
+        const authorName = r.author || (r.author_details && (r.author_details.username || r.author_details.name)) || 'Anonymous';
+        const date = r.created_at ? r.created_at.split('T')[0] : undefined;
+        const body = r.content ? (r.content.length > 500 ? r.content.substring(0, 500) + '...' : r.content) : undefined;
+        const rating = r.author_details && r.author_details.rating ? String(r.author_details.rating) : undefined;
+
+        const rev = {
+            '@type': 'Review',
+            'author': { '@type': 'Person', 'name': authorName }
+        };
+        if (date) rev.datePublished = date;
+        if (body) rev.reviewBody = body;
+        if (rating) rev.reviewRating = { '@type': 'Rating', 'ratingValue': rating, 'bestRating': '10' };
+        return rev;
+    });
+
+    const enhanced = Object.assign({}, baseSchema);
+    enhanced.review = reviewObjs;
+    return enhanced;
 }
 
 function injectBreadcrumbs(data, type) {
@@ -477,7 +528,7 @@ const DetailPage = {
             this.currentType = 'movie';
 
             updateMeta(movie, 'movie');
-            injectSchema(movie, 'movie');
+            await injectSchema(movie, 'movie');
 
             const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
             const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
@@ -558,7 +609,7 @@ const DetailPage = {
             this.currentType = 'tv';
 
             updateMeta(tv, 'tv');
-            injectSchema(tv, 'tv');
+            await injectSchema(tv, 'tv');
 
             const rating = tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A';
             const year = tv.first_air_date ? new Date(tv.first_air_date).getFullYear() : '';

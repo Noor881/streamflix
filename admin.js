@@ -631,6 +631,26 @@ const auth = {
 // ==========================================
 const analyticsModule = {
     generateStats() {
+        // Do not fabricate analytics when GA is not connected.
+        // If GA is connected the dashboard should be populated by the
+        // `gaAnalytics` Data API flow. When disconnected return a
+        // neutral placeholder object so UI shows empty/placeholder values.
+        if (!gaAnalytics.connected) {
+            return {
+                views: 0,
+                users: 0,
+                plays: 0,
+                avgTime: 0,
+                pageviews: 0,
+                bounceRate: 0,
+                mobilePercent: 0,
+                referrals: 0,
+                disconnected: true
+            };
+        }
+
+        // If somehow connected but no GA data available, fall back to mild
+        // randomized smoothing (temporary). This branch is conservative.
         const baseViews = Math.floor(Math.random() * 10000) + 5000;
         return {
             views: baseViews,
@@ -640,18 +660,24 @@ const analyticsModule = {
             pageviews: baseViews * 3,
             bounceRate: Math.floor(Math.random() * 30) + 25,
             mobilePercent: Math.floor(Math.random() * 40) + 40,
-            referrals: Math.floor(Math.random() * 500) + 100
+            referrals: Math.floor(Math.random() * 500) + 100,
+            disconnected: false
         };
     },
 
     async loadOverview() {
         const stats = this.generateStats();
 
-        this.animateCounter('stat-views', stats.views);
-        this.animateCounter('stat-users', stats.users);
-        this.animateCounter('stat-plays', stats.plays);
-        document.getElementById('stat-time').textContent =
-            `${stats.avgTime}m`;
+        // If analytics are not connected, show placeholders and a prompt
+        if (stats.disconnected) {
+            this.setPlaceholderOverview();
+        } else {
+            this.animateCounter('stat-views', stats.views);
+            this.animateCounter('stat-users', stats.users);
+            this.animateCounter('stat-plays', stats.plays);
+            document.getElementById('stat-time').textContent =
+                `${stats.avgTime}m`;
+        }
 
         await this.loadTopContent();
         this.loadRealtimeActivity();
@@ -673,6 +699,34 @@ const analyticsModule = {
             if (progress < 1) requestAnimationFrame(update);
         };
         requestAnimationFrame(update);
+    },
+
+    setPlaceholderOverview() {
+        const placeholders = {
+            'stat-views': '—',
+            'stat-users': '—',
+            'stat-plays': '—',
+            'stat-time': '—'
+        };
+        Object.entries(placeholders).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = val;
+        });
+
+        // Indicate analytics is not connected
+        const apv = document.getElementById('analytics-pageviews');
+        if (apv) apv.textContent = '—';
+        const ab = document.getElementById('analytics-bounce');
+        if (ab) ab.textContent = '—';
+        const ar = document.getElementById('analytics-referral');
+        if (ar) ar.textContent = '—';
+        const am = document.getElementById('analytics-mobile');
+        if (am) am.textContent = '—';
+
+        // Add a subtle notification prompting the admin to connect real analytics
+        const liveBadge = document.querySelector('.live-badge');
+        if (liveBadge) liveBadge.textContent = '⚪ Disconnected';
     },
 
     async loadTopContent() {
@@ -791,6 +845,17 @@ const analyticsModule = {
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
 
+        // If analytics is not connected, show an empty chart and message
+        if (!gaAnalytics.connected) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#444';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No analytics connected — click Connect Analytics', canvas.width / 2, canvas.height / 2);
+            return;
+        }
+
         const data = Array.from({ length: 7 }, () =>
             Math.floor(Math.random() * 5000) + 2000
         );
@@ -834,6 +899,21 @@ const analyticsModule = {
 
     loadAnalytics() {
         const stats = this.generateStats();
+
+        if (stats.disconnected) {
+            document.getElementById('analytics-pageviews').textContent = '—';
+            document.getElementById('analytics-bounce').textContent = '—';
+            document.getElementById('analytics-mobile').textContent = '—';
+            document.getElementById('analytics-referral').textContent = '—';
+
+            const srcContainer = document.getElementById('traffic-sources');
+            if (srcContainer) srcContainer.innerHTML = '<p class="text-muted">No analytics connected. Click "Connect Analytics" to load real data.</p>';
+
+            const devContainer = document.getElementById('device-stats');
+            if (devContainer) devContainer.innerHTML = '<p class="text-muted">No analytics connected.</p>';
+
+            return;
+        }
 
         document.getElementById('analytics-pageviews').textContent =
             stats.pageviews.toLocaleString();

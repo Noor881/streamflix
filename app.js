@@ -10,7 +10,6 @@ const CONFIG = {
     TMDB_IMAGE_BASE: 'https://image.tmdb.org/t/p',
 
     // Vidking Embed
-    VIDKING_BASE_URL: 'https://www.vidking.net/embed',
     PLAYER_COLOR: 'e50914', // Red color matching our theme
 
     // Local Storage Keys
@@ -346,28 +345,10 @@ const videoServers = [
         getTVUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`
     },
     {
-        id: 'embedsu',
-        name: 'Embed.su',
-        getMovieUrl: (id) => `https://embed.su/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`
-    },
-    {
         id: 'multiembed',
         name: 'MultiEmbed',
         getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
         getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
-    },
-    {
-        id: 'autoembed',
-        name: 'AutoEmbed',
-        getMovieUrl: (id) => `https://player.autoembed.cc/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'vidking',
-        name: 'VidKing',
-        getMovieUrl: (id) => `${CONFIG.VIDKING_BASE_URL}/movie/${id}?color=${CONFIG.PLAYER_COLOR}&autoPlay=true`,
-        getTVUrl: (id, s, e) => `${CONFIG.VIDKING_BASE_URL}/tv/${id}/${s}/${e}?color=${CONFIG.PLAYER_COLOR}&autoPlay=true&nextEpisode=true&episodeSelector=true`
     }
 ];
 
@@ -470,8 +451,8 @@ const watchProgress = {
     },
 
     handlePlayerMessage(event) {
-        // Ensure message is from Vidking
-        if (!event.origin.includes('vidking.net')) return;
+        // Accept messages from embedded players (origin check removed to support multiple providers)
+        if (!event.data) return;
 
         try {
             const data = event.data;

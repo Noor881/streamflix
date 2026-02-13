@@ -1,0 +1,22 @@
+{
+  "name": "streamflix-1",
+  "version": "1.0.0",
+  "description": "StreamFlix static site utilities",
+  "scripts": {
+    "convert-images": "node tools/convert-images.js",
+    "lighthouse": "lighthouse http://localhost:3000 --only-categories=performance,accessibility,seo --output=html --output-path=lh-report.html",
+    "start-server": "node server/server.js",
+    "build-sw": "node tools/build-sw-workbox.js",
+    "dev": "npm run start-server"
+  },
+  "devDependencies": {
+    "lighthouse": "^10.0.0",
+    "sharp": "^0.32.0"
+  },
+  "dependencies": {
+    "fuse.js": "^6.6.2",
+    "idb": "^7.1.1",
+    "express": "^4.18.2",
+    "workbox-build": "^6.6.0"
+  }
+}

@@ -5,21 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHQKVYP1WN"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-ZHQKVYP1WN');
-    </script>
+    <!-- Google tag is loaded only after user consent (handled by /consent.js) -->
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="gUv3UPUWfc-0jPQ4eosSHLGJvSnKrdCyc8x_bfResfg" />
 
     <!-- Primary Meta Tags -->
-    <title>HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online | HD Streaming</title>
-    <meta name="title" content="HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online | HD Streaming">
+    <title>HDWatchZone - Watch Free Movies, TV Shows, & Anime in HD</title>
+    <meta name="title" content="HDWatchZone - Watch Free Movies, TV Shows, & Anime in HD">
     <meta name="description"
         content="Watch thousands of movies, TV shows, anime, and animated content in HD quality. Watch the latest releases, trending titles, and classic favorites. Free streaming with no sign-up required.">
     <meta name="keywords"
@@ -43,7 +36,7 @@
     <meta property="og:title" content="HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online">
     <meta property="og:description"
         content="Watch thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.">
-    <meta property="og:image" content="https://hdwatchzone.com/logo.jpeg">
+    <meta property="og:image" content="https://hdwatchzone.com/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="HD Watchzone">
@@ -55,7 +48,7 @@
     <meta property="twitter:title" content="HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online">
     <meta property="twitter:description"
         content="Watch thousands of movies, TV shows, anime in HD. Free streaming with no sign-up.">
-    <meta property="twitter:image" content="https://hdwatchzone.com/logo.jpeg">
+    <meta property="twitter:image" content="https://hdwatchzone.com/logo.png">
     <meta name="twitter:site" content="@hdwatchzone">
     <meta name="twitter:creator" content="@hdwatchzone">
 
@@ -72,12 +65,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
+    <!-- Content Security Policy (basic) -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://api.themoviedb.org https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.themoviedb.org">
     <link rel="preconnect" href="https://image.tmdb.org">
-    <link rel="dns-prefetch" href="https://www.vidking.net">
+
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -85,6 +82,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/responsive.css">
 
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">
@@ -107,7 +105,7 @@
             "name": "HD Watchzone",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://hdwatchzone.com/logo.jpeg"
+                "url": "https://hdwatchzone.com/logo.png"
             }
         }
     }
@@ -170,8 +168,13 @@
     <header class="header" role="banner">
         <div class="header-container">
             <a href="#/" class="logo" aria-label="HD Watchzone Home">
-                <img src="/logo.jpeg" alt="HD Watchzone Logo" class="logo-img"
-                    style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen; filter: invert(1);">
+                <picture>
+                    <source type="image/avif" srcset="/logo.avif">
+                    <source type="image/webp" srcset="/logo.webp">
+                    <img src="/logo.png" alt="HD Watchzone Logo" class="logo-img"
+                        style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen; filter: invert(1);"
+                        loading="lazy">
+                </picture>
             </a>
 
             <nav class="nav" role="navigation" aria-label="Main navigation">
@@ -193,7 +196,8 @@
             <div class="header-right">
                 <div class="search-container" role="search">
                     <input type="text" id="search-input" class="search-input"
-                        placeholder="Search movies, TV shows, anime..." aria-label="Search movies, TV shows, anime">
+                        placeholder="Search movies, TV shows, anime..." aria-label="Search movies, TV shows, anime"
+                        loading="lazy">
                     <button class="search-btn" id="search-btn" aria-label="Search">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" aria-hidden="true">
@@ -223,6 +227,9 @@
             </div>
         </div>
     </header>
+    <button id="install-btn" aria-hidden="true"
+        style="display:none;position:fixed;right:16px;bottom:16px;padding:10px 14px;border-radius:8px;border:none;background:var(--color-primary);color:#fff;z-index:400;">Install
+        App</button>
 
     <!-- Mobile Navigation -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
@@ -260,8 +267,12 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="#/" class="logo" aria-label="HD Watchzone Home">
-                        <img src="/logo.jpeg" alt="HD Watchzone" class="logo-img"
-                            style="height: 60px; mix-blend-mode: screen; filter: invert(1);">
+                        <picture>
+                            <source type="image/avif" srcset="/logo.avif">
+                            <source type="image/webp" srcset="/logo.webp">
+                            <img src="/logo.png" alt="HD Watchzone" class="logo-img"
+                                style="height: 60px; mix-blend-mode: screen; filter: invert(1);" loading="lazy">
+                        </picture>
                         <span class="logo-text">HD <span class="logo-accent">Watchzone</span></span>
                     </a>
                     <p class="footer-tagline">Your gateway to endless entertainment. Stream thousands of movies, TV
@@ -329,7 +340,7 @@
                 </nav>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 StreamFlix. All Rights Reserved. Powered by TMDB.</p>
+                <p>&copy; 2026 HD Watchzone. All Rights Reserved. Powered by TM DB.</p>
                 <div class="footer-lang">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
@@ -363,7 +374,14 @@
     </script>
 
     <!-- Scripts -->
-    <script src="/app.js"></script>
+    <script src="/app.js" defer></script>
+    <script src="/mobile-fixes.js" defer></script>
+    <script src="/consent.js" defer></script>
+    <script src="/scripts/idb-helper.js" defer></script>
+    <script src="/scripts/watchlist.js" defer></script>
+    <script src="/scripts/search.js" defer></script>
+    <script src="/scripts/recommendations.js" defer></script>
+    <script src="/scripts/install.js" defer></script>
 </body>
 
 </html>

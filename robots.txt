@@ -24,4 +24,3 @@ Disallow: /admin
 User-agent: *
 Disallow: /*.tmp$
 Disallow: /*.bak$
-Disallow: /sw.js
