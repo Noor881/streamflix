@@ -1,7 +1,7 @@
 {
   "name": "streamflix-1",
   "version": "1.0.0",
-  "description": "StreamFlix static site utilities",
+  "description": "HD Watchzone static site utilities",
   "scripts": {
     "convert-images": "node tools/convert-images.js",
     "lighthouse": "lighthouse http://localhost:3000 --only-categories=performance,accessibility,seo --output=html --output-path=lh-report.html",
