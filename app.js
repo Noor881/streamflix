@@ -646,30 +646,31 @@ const components = {
 
             return `
                 <div class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="background-image: url('${backdropUrl}')">
+                    <div class="hero-gradient-overlay"></div>
                     <div class="hero-content">
                         <span class="hero-badge">
                             <span>★</span> #${index + 1} Trending
                         </span>
                         <h1 class="hero-title">${title}</h1>
-                        <p class="hero-description">${overview}</p>
                         <div class="hero-meta">
                             <span class="hero-meta-item hero-rating">★ ${rating}</span>
                             <span class="hero-meta-item">${year}</span>
                             <span class="hero-meta-item">${mediaType === 'movie' ? '🎬 Movie' : '📺 TV Series'}</span>
                         </div>
+                        <p class="hero-description">${overview}</p>
                         <div class="hero-buttons">
-                            <a href="${route}" class="btn btn-primary btn-lg">
+                            <a href="${route}" class="btn-cineby btn-cineby-primary">
                                 <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
                                 Watch Now
                             </a>
-                            <a href="${route}" class="btn btn-secondary btn-lg">
+                            <a href="${route}" class="btn-cineby btn-cineby-glass">
                                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <path d="M12 16v-4M12 8h.01"/>
                                 </svg>
-                                More Info
+                                View Info
                             </a>
                         </div>
                     </div>
@@ -688,6 +689,16 @@ const components = {
                 </div>
                 <button class="hero-arrow hero-arrow--left" onclick="prevSlide()">‹</button>
                 <button class="hero-arrow hero-arrow--right" onclick="nextSlide()">›</button>
+                <div class="hero-floating-cards">
+                    <div class="hero-floating-header">Next Up</div>
+                    ${carouselItems.slice(1, 4).map(item => {
+            const title = item.title || item.name;
+            const posterUrl = utils.getImageUrl(item.poster_path, 'small');
+            return `<div class="hero-floating-card">
+                            <img src="${posterUrl}" alt="${title}" loading="lazy">
+                        </div>`;
+        }).join('')}
+                </div>
                 <div class="hero-dots">
                     ${dots}
                 </div>
@@ -735,10 +746,10 @@ const components = {
             const ranking = index + 1;
 
             return `
-                <div class="top10-card">
-                    <div class="top10-number">${ranking}</div>
-                    <a href="${route}" class="top10-poster-link">
-                        <img src="${posterUrl}" alt="${itemTitle}" class="top10-poster" loading="lazy" onerror="imgErr(this)">
+                <div class="top10-card-cineby">
+                    <div class="top10-number-outline">${ranking}</div>
+                    <a href="${route}" class="top10-poster-link-cineby">
+                        <img src="${posterUrl}" alt="${itemTitle}" class="top10-poster-cineby" loading="lazy" onerror="imgErr(this)">
                     </a>
                 </div>`;
         }).join('');

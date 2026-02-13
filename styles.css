@@ -1,44 +1,46 @@
 /* ========================================
-   StreamFlix - Netflix-Inspired Design
+   HD Watchzone - Cineby.gd Premium Design
    ======================================== */
 
 /* CSS Custom Properties */
 :root {
-    /* Netflix Colors */
+    /* Premium Colors - Cineby.gd Style */
     --color-primary: #e50914;
     --color-primary-hover: #f40612;
     --color-primary-dark: #b20710;
 
-    --color-bg-primary: #141414;
-    --color-bg-secondary: #181818;
-    --color-bg-tertiary: #232323;
-    --color-bg-card: #181818;
-    --color-bg-hover: #252525;
-    --color-bg-glass: rgba(20, 20, 20, 0.9);
+    /* Pure Black Theme */
+    --color-bg-primary: #000000;
+    --color-bg-secondary: #000000;
+    --color-bg-tertiary: #000000;
+    --color-bg-card: #000000;
+    --color-bg-hover: #0a0a0a;
+    --color-bg-glass: rgba(0, 0, 0, 0.7);
 
+    /* Typography Colors */
     --color-text-primary: #ffffff;
-    --color-text-secondary: #b3b3b3;
-    --color-text-muted: #808080;
+    --color-text-secondary: #999999;
+    --color-text-muted: #666666;
 
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-border-light: rgba(255, 255, 255, 0.04);
+    /* Refined Borders */
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-light: rgba(255, 255, 255, 0.05);
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(to top, var(--color-bg-primary) 0%, transparent 100%);
-    --gradient-card: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.95) 100%);
+    /* Premium Gradients */
+    --gradient-hero: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+    --gradient-card: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #ff4d4d 100%);
-    --gradient-row-left: linear-gradient(to right, var(--color-bg-primary) 0%, transparent 10%);
-    --gradient-row-right: linear-gradient(to left, var(--color-bg-primary) 0%, transparent 10%);
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 14px 50px rgba(0, 0, 0, 0.6);
-    --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 0.8);
-    --shadow-glow: 0 0 40px rgba(229, 9, 20, 0.4);
+    /* Refined Shadows & Glows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.8);
+    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.9);
+    --shadow-lg: 0 14px 50px rgba(0, 0, 0, 0.95);
+    --shadow-card-hover: 0 20px 60px rgba(0, 0, 0, 1);
+    --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.2);
+    --shadow-glow-white: 0 0 30px rgba(255, 255, 255, 0.15);
 
-    /* Typography */
-    --font-family: 'Inter', 'Netflix Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Typography - Inter Font */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -49,7 +51,7 @@
     --font-size-4xl: 3rem;
     --font-size-5xl: 4rem;
 
-    /* Spacing */
+    /* Premium Spacing */
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
@@ -57,32 +59,35 @@
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
     --spacing-3xl: 4rem;
+    --spacing-4xl: 5rem;
+    --spacing-section: 5rem;
+    /* 80px */
 
-    /* Border Radius */
+    /* Border Radius - Cineby Style */
     --radius-sm: 4px;
-    --radius-md: 6px;
-    --radius-lg: 8px;
-    --radius-xl: 12px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
     --radius-full: 9999px;
 
-    /* Transitions */
+    /* Smooth Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-netflix: 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
-    /* Z-Index */
-    --z-dropdown: 100;
-    --z-header: 200;
-    --z-modal: 300;
-    --z-toast: 400;
+    /* Z-Index Hierarchy */
+    --z-number: 1;
+    --z-card: 2;
+    --z-arrow: 10;
+    --z-dropdown: 50;
+    --z-header: 100;
+    --z-modal: 200;
 
     /* Layout */
     --header-height: 68px;
-    --container-max: 100%;
+    --container-max: 1600px;
     --container-padding: 4%;
-    --card-width: 280px;
-    --card-width-sm: 200px;
+    --card-width: 200px;
 }
 
 /* Reset & Base */
@@ -105,7 +110,7 @@ body {
     font-size: var(--font-size-base);
     line-height: 1.6;
     color: var(--color-text-primary);
-    background-color: var(--color-bg-primary);
+    background-color: #000000;
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -127,6 +132,34 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+    border-radius: var(--radius-lg);
+}
+
+/* ========================================
+   Ultra-Thin Dark Scrollbar - Cineby Style
+   ======================================== */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444444;
+}
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #333333 #000000;
 }
 
 ul,
@@ -135,7 +168,7 @@ ol {
 }
 
 /* ========================================
-   Header - Netflix Style
+   Header - Cineby.gd Transparent Glassmorphism
    ======================================== */
 
 .header {
@@ -144,15 +177,16 @@ ol {
     left: 0;
     right: 0;
     height: var(--header-height);
-    background: linear-gradient(to bottom, rgba(20, 20, 20, 1) 0%, rgba(20, 20, 20, 0.9) 60%, transparent 100%);
+    background: transparent;
     z-index: var(--z-header);
-    transition: background var(--transition-slow);
+    transition: all var(--transition-slow);
 }
 
 .header.scrolled {
-    background: rgba(20, 20, 20, 0.97);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-container {
@@ -509,6 +543,64 @@ ol {
 }
 
 /* ========================================
+   Buttons - Cineby.gd Premium Style
+   ======================================== */
+
+.btn-cineby {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 14px 32px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    border: none;
+}
+
+.btn-cineby .btn-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Solid White Primary Button */
+.btn-cineby-primary {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+}
+
+.btn-cineby-primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+}
+
+/* Glassmorphism Transparent Button */
+.btn-cineby-glass {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn-cineby-glass:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+/* ========================================
    Skeleton Loading Screens
    ======================================== */
 
@@ -818,14 +910,14 @@ ol {
 }
 
 /* ========================================
-   Hero Carousel - Multiple Slides
+   Hero Carousel - Cineby.gd Premium Style
    ======================================== */
 
 .hero-carousel {
     position: relative;
-    height: 100vh;
-    max-height: 900px;
-    min-height: 700px;
+    height: 85vh;
+    max-height: 850px;
+    min-height: 600px;
     overflow: hidden;
 }
 
@@ -845,21 +937,19 @@ ol {
     align-items: center;
     padding: 0 var(--container-padding);
     background-size: cover;
-    background-position: center 20%;
+    background-position: center;
     background-repeat: no-repeat;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
 }
 
-.hero-slide::before {
-    content: '';
+/* Cineby.gd Style - Gradient Fade to Black */
+.hero-gradient-overlay {
     position: absolute;
     inset: 0;
-    background:
-        linear-gradient(to right, rgba(20, 20, 20, 0.98) 0%, rgba(20, 20, 20, 0.7) 25%, rgba(20, 20, 20, 0.3) 50%, transparent 75%),
-        linear-gradient(to top, var(--color-bg-primary) 0%, rgba(20, 20, 20, 0.5) 25%, transparent 50%),
-        linear-gradient(to bottom, rgba(20, 20, 20, 0.7) 0%, transparent 15%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 1) 100%);
+    z-index: 1;
 }
 
 .hero-slide.active {
@@ -869,18 +959,60 @@ ol {
 }
 
 .hero-slide .hero-content {
+    position: relative;
+    z-index: 2;
     max-width: 600px;
-    padding-top: calc(var(--header-height) + 2rem);
+    padding-top: calc(var(--header-height) + 3rem);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: #ffffff;
 }
 
 .hero-slide .hero-title {
-    font-size: clamp(2.5rem, 5vw, 5rem);
-    text-shadow: 4px 4px 30px rgba(0, 0, 0, 0.9);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: var(--spacing-md);
+    text-shadow: 2px 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+}
+
+.hero-meta-item {
+    color: var(--color-text-secondary);
+}
+
+.hero-rating {
+    color: #ffc107;
+    font-weight: 600;
 }
 
 .hero-slide .hero-description {
     font-size: var(--font-size-lg);
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2xl);
+    max-width: 500px;
+    text-shadow: 1px 2px 10px rgba(0, 0, 0, 0.6);
 }
 
 /* Hero Carousel Navigation Arrows */
@@ -922,6 +1054,56 @@ ol {
     right: 0;
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     padding-right: 10px;
+}
+
+/* Floating "Next Up" Preview Cards - Cineby.gd Style */
+.hero-floating-cards {
+    position: absolute;
+    bottom: 120px;
+    right: 40px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 200px;
+}
+
+.hero-floating-header {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.hero-floating-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.hero-floating-card:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+}
+
+.hero-floating-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 2/3;
+    object-fit: cover;
 }
 
 /* Hero Carousel Dots */
@@ -1030,7 +1212,7 @@ ol {
 /* ========================================
    Content Sections - Netflix Rows
    ========================================*/
-/* Content Sections - Centered with max-width */
+/* Content Sections - Centered with max-width and unified black background */
 .section {
     padding: var(--spacing-section) 0;
     position: relative;
@@ -1039,6 +1221,7 @@ ol {
     padding-left: var(--spacing-xl);
     padding-right: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
+    background: #000000;
 }
 
 @media (max-width: 768px) {
@@ -1214,19 +1397,22 @@ ol {
     display: none;
 }
 
-/* Scroll Arrows */
+/* Scroll Arrows - Sleek edge design */
 .scroll-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 50px;
-    height: 100%;
-    background: rgba(20, 20, 20, 0.7);
-    border: none;
+    width: 40px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     font-size: 2rem;
+    font-weight: 300;
     cursor: pointer;
-    z-index: 10;
+    z-index: var(--z-arrow);
     opacity: 0;
     transition: all var(--transition-fast);
     display: flex;
@@ -1239,21 +1425,23 @@ ol {
 }
 
 .scroll-arrow:hover {
-    background: rgba(20, 20, 20, 0.95);
+    background: rgba(0, 0, 0, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .scroll-arrow--left {
-    left: 0;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    left: 10px;
+    border-radius: 0 4px 4px 0;
 }
 
 .scroll-arrow--right {
-    right: 0;
-    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    right: 10px;
+    border-radius: 4px 0 0 4px;
 }
 
 .scroll-arrow:disabled {
-    opacity: 0.3;
+    opacity: 0;
     cursor: not-allowed;
 }
 
@@ -2625,8 +2813,11 @@ ol {
 
 .top10-card {
     flex: 0 0 auto;
-    width: 200px;
+    width: 260px;
     position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: -10px;
     transition: transform var(--transition-base);
 }
 
@@ -2635,18 +2826,18 @@ ol {
     z-index: 10;
 }
 
-/* Giant number BEHIND the poster */
+/* Giant number TO THE LEFT - fully visible */
 .top10-number {
-    position: absolute;
-    font-size: 220px;
+    font-size: 200px;
     font-weight: 900;
     line-height: 0.8;
     color: transparent;
     -webkit-text-stroke: 3px #444;
     text-stroke: 3px #444;
-    z-index: 0;
-    left: -30px;
-    bottom: -40px;
+    flex-shrink: 0;
+    width: 80px;
+    text-align: right;
+    padding-right: 8px;
     pointer-events: none;
     user-select: none;
 }
@@ -2656,7 +2847,7 @@ ol {
     text-stroke: 3px #666;
 }
 
-/* Poster link and image in FRONT */
+/* Poster link and image */
 .top10-poster-link {
     position: relative;
     z-index: 1;
@@ -2664,6 +2855,8 @@ ol {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    flex-shrink: 0;
+    width: 180px;
 }
 
 .top10-poster {
@@ -2671,6 +2864,71 @@ ol {
     height: auto;
     display: block;
     border-radius: 8px;
+}
+
+/* ========================================
+   TOP 10 Section - Cineby.gd Premium Style
+   ======================================== */
+
+.top10-card-cineby {
+    position: relative;
+    flex: 0 0 auto;
+    width: 280px;
+    display: flex;
+    align-items: flex-end;
+    transition: transform var(--transition-base);
+}
+
+.top10-card-cineby:hover {
+    transform: scale(1.05);
+    z-index: var(--z-card);
+}
+
+/* Giant Outlined Numbers - Behind Cards */
+.top10-number-outline {
+    position: absolute;
+    left: -40%;
+    bottom: 0;
+    font-size: 280px;
+    font-weight: 900;
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+    text-stroke: 1px rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    user-select: none;
+    z-index: var(--z-number);
+}
+
+.top10-card-cineby:hover .top10-number-outline {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6);
+    text-stroke: 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Poster Link - Overlaps Number by 40% */
+.top10-poster-link-cineby {
+    position: relative;
+    z-index: var(--z-card);
+    display: block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all var(--transition-base);
+}
+
+.top10-poster-link-cineby:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-glow-white);
+}
+
+.top10-poster-cineby {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 2/3;
+    object-fit: cover;
 }
 
 @media (max-width: 1024px) {
