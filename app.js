@@ -698,7 +698,28 @@ const components = {
         `;
     },
 
-    // Top 10 Content Today section with large numbered cards
+    // Section with RIGHT-aligned tabs (competitor style)
+    sectionWithRightTabs(title, content, rowId, tabs = null) {
+        const tabsHtml = tabs ? `<div class="section-tabs">${tabs}</div>` : '';
+
+        return `
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">${title}</h2>
+                    ${tabsHtml}
+                </div>
+                <div class="row-wrapper">
+                    <button class="scroll-arrow scroll-arrow--left" onclick="scrollRow('${rowId}', -1)" aria-label="Scroll left">‹</button>
+                    <div class="content-row" id="${rowId}">
+                        ${content}
+                    </div>
+                    <button class="scroll-arrow scroll-arrow--right" onclick="scrollRow('${rowId}', 1)" aria-label="Scroll right">›</button>
+                </div>
+            </section>
+        `;
+    },
+
+    // Top 10 Content Today section with GIANT numbered cards (Netflix style)
     top10Section(items, title = 'TOP 10 CONTENT TODAY') {
         if (!items || items.length === 0) return '';
 
@@ -715,19 +736,17 @@ const components = {
 
             return `
                 <div class="top10-card">
-                    <a href="${route}" class="top10-card-link">
-                        <div class="top10-card-number">${ranking}</div>
-                        <div class="top10-card-poster">
-                            <img src="${posterUrl}" alt="${itemTitle}" loading="lazy">
-                        </div>
+                    <div class="top10-number">${ranking}</div>
+                    <a href="${route}" class="top10-poster-link">
+                        <img src="${posterUrl}" alt="${itemTitle}" class="top10-poster" loading="lazy" onerror="imgErr(this)">
                     </a>
                 </div>`;
         }).join('');
 
         return `
             <section class="section top10-section">
-                <div class="top10-header">
-                    <h2 class="top10-title">${title}</h2>
+                <div class="section-header">
+                    <h2 class="section-title">${title}</h2>
                 </div>
                 <div class="row-wrapper">
                     <button class="scroll-arrow scroll-arrow--left" onclick="scrollRow('${rowId}', -1)" aria-label="Scroll left">‹</button>
@@ -887,6 +906,68 @@ window.switchTrendingTab = async (type, btn) => {
     }
 };
 
+// Switch "Series on [Platform]" tab - TV shows ONLY
+window.switchSeriesPlatform = async (provider, btn) => {
+    const row = document.getElementById('row-series-platform');
+    const tabs = btn.parentElement.querySelectorAll('.section-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+
+    row.style.opacity = '0.5';
+
+    try {
+        const providerMap = {
+            'netflix': 8,
+            'prime': 9,
+            'max': 384,
+            'disney': 337,
+            'hulu': 15,
+            'apple': 350,
+            'paramount': 531
+        };
+
+        const providerId = providerMap[provider];
+        if (providerId) {
+            // Fetch TV SHOWS only
+            const tv = await tmdbAPI.fetch('/discover/tv', {
+                with_watch_providers: providerId,
+                watch_region: 'US',
+                sort_by: 'popularity.desc'
+            });
+            const items = (tv?.results || []).map(t => ({ ...t, media_type: 'tv' }));
+            row.innerHTML = components.contentRow(items, 'tv', 'row-series-platform');
+        }
+        row.style.opacity = '1';
+    } catch (error) {
+        console.error('Error switching series platform:', error);
+        row.style.opacity = '1';
+    }
+};
+
+// Switch "Top Rated" tab - Movies or Series
+window.switchTopRated = async (type, btn) => {
+    const row = document.getElementById('row-toprated');
+    const tabs = btn.parentElement.querySelectorAll('.section-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    btn.classList.add('active');
+
+    row.style.opacity = '0.5';
+
+    try {
+        const endpoint = type === 'movie' ? '/movie/top_rated' : '/tv/top_rated';
+        const data = await tmdbAPI.fetch(endpoint);
+        const items = (data?.results || []).map(item => ({
+            ...item,
+            media_type: type
+        }));
+        row.innerHTML = components.contentRow(items, type, 'row-toprated');
+        row.style.opacity = '1';
+    } catch (error) {
+        console.error('Error switching top rated:', error);
+        row.style.opacity = '1';
+    }
+};
+
 // Switch platform tab function
 window.switchPlatformTab = async (provider, btn) => {
     const row = document.getElementById('row-platforms');
@@ -969,7 +1050,7 @@ const pages = {
 
         try {
             // Fetch all data in parallel
-            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows, netflixContent, actionContent] = await Promise.all([
+            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows, netflixSeries, actionContent] = await Promise.all([
                 tmdbAPI.getTrending('all', 'day', 2),
                 tmdbAPI.getPopularMovies(2),
                 tmdbAPI.getPopularTV(2),
@@ -977,13 +1058,9 @@ const pages = {
                 tmdbAPI.getTopRatedTV(2),
                 tmdbAPI.getAnimationMovies(2),
                 tmdbAPI.getAnimeTVShows(2),
-                // Fetch Netflix content for platform section
-                tmdbAPI.fetch('/discover/movie', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' })
-                    .then(async movies => {
-                        const tv = await tmdbAPI.fetch('/discover/tv', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' });
-                        return [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
-                        ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))].sort(() => Math.random() - 0.5).slice(0, 20);
-                    }),
+                // Fetch Netflix TV SHOWS for series platform section
+                tmdbAPI.fetch('/discover/tv', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' })
+                    .then(tv => (tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))),
                 // Fetch Action content for genre section
                 tmdbAPI.fetch('/discover/movie', { with_genres: 28, sort_by: 'popularity.desc' })
                     .then(async movies => {
@@ -1006,44 +1083,48 @@ const pages = {
                 );
             }
 
+            // Tab definitions - matching competitor design
             const trendingTabs = `
-                <button class="section-tab active" onclick="switchTrendingTab('all', this)">All</button>
-                <button class="section-tab" onclick="switchTrendingTab('movie', this)">Movies</button>
+                <button class="section-tab active" onclick="switchTrendingTab('all', this)">Movies</button>
                 <button class="section-tab" onclick="switchTrendingTab('tv', this)">Series</button>
             `;
 
-            const platformTabs = `
-                <button class="section-tab active" onclick="switchPlatformTab('netflix', this)">Netflix</button>
-                <button class="section-tab" onclick="switchPlatformTab('prime', this)">Prime Video</button>
-                <button class="section-tab" onclick="switchPlatformTab('max', this)">Max</button>
-                <button class="section-tab" onclick="switchPlatformTab('disney', this)">Disney+</button>
-                <button class="section-tab" onclick="switchPlatformTab('hulu', this)">Hulu</button>
-                <button class="section-tab" onclick="switchPlatformTab('apple', this)">Apple TV+</button>
+            const seriesPlatformTabs = `
+                <button class="section-tab active" onclick="switchSeriesPlatform('netflix', this)">Netflix</button>
+                <button class="section-tab" onclick="switchSeriesPlatform('prime', this)">Prime</button>
+                <button class="section-tab" onclick="switchSeriesPlatform('max', this)">Max</button>
+                <button class="section-tab" onclick="switchSeriesPlatform('disney', this)">Disney+</button>
+                <button class="section-tab" onclick="switchSeriesPlatform('apple', this)">AppleTV</button>
+                <button class="section-tab" onclick="switchSeriesPlatform('paramount', this)">Paramount</button>
+            `;
+
+            const topRatedTabs = `
+                <button class="section-tab active" onclick="switchTopRated('movie', this)">Movies</button>
+                <button class="section-tab" onclick="switchTopRated('tv', this)">Series</button>
             `;
 
             const genreTabs = `
-                <button class="section-tab active" onclick="switchGenreTab('28', 'Action', this)">Action</button>
-                <button class="section-tab" onclick="switchGenreTab('35', 'Comedy', this)">Comedy</button>
+                <button class="section-tab active" onclick="switchGenreTab('35', 'Comedy', this)">Comedy</button>
+                <button class="section-tab" onclick="switchGenreTab('28', 'Action', this)">Action</button>
                 <button class="section-tab" onclick="switchGenreTab('27', 'Horror', this)">Horror</button>
-                <button class="section-tab" onclick="switchGenreTab('18', 'Drama', this)">Drama</button>
                 <button class="section-tab" onclick="switchGenreTab('10749', 'Romance', this)">Romance</button>
-                <button class="section-tab" onclick="switchGenreTab('878', 'Sci-Fi', this)">Sci-Fi</button>
-                <button class="section-tab" onclick="switchGenreTab('53', 'Thriller', this)">Thriller</button>
+                <button class="section-tab" onclick="switchGenreTab('878', 'Sci-fi', this)">Sci-fi</button>
+                <button class="section-tab" onclick="switchGenreTab('18', 'Drama', this)">Drama</button>
+                <button class="section-tab" onclick="switchGenreTab('16', 'Animation', this)">Animation</button>
             `;
 
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
                 ${components.top10Section(trending?.results, 'TOP 10 CONTENT TODAY')}
                 ${continueWatchingHtml}
-                ${components.section('Trending Today', components.contentRow(trending?.results?.slice(10), 'all', 'row-trending'), null, trendingTabs)}
-                ${components.section('Browse by Platform', components.contentRow(netflixContent, 'all', 'row-platforms'), null, platformTabs)}
-                ${components.section('Browse by Genre', components.contentRow(actionContent, 'all', 'row-genres'), null, genreTabs)}
+                ${components.sectionWithRightTabs('Trending Today', components.contentRow(trending?.results?.slice(10), 'all', 'row-trending'), 'row-trending', trendingTabs)}
+                ${components.sectionWithRightTabs('Series on Netflix', components.contentRow(netflixSeries, 'tv', 'row-series-platform'), 'row-series-platform', seriesPlatformTabs)}
+                ${components.sectionWithRightTabs('Top rated', components.contentRow(topRatedMovies?.results, 'movie', 'row-toprated'), 'row-toprated', topRatedTabs)}
+                ${components.sectionWithRightTabs('Genres', components.contentRow(actionContent, 'all', 'row-genres'), 'row-genres', genreTabs)}
                 ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
                 ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
                 ${components.section('🎨 Animation Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
                 ${components.section('⚔️ Anime Series', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
-                ${components.section('🏆 Top Rated Movies', components.contentRow(topRatedMovies?.results, 'movie', 'row-top-movies'))}
-                ${components.section('🌟 Top Rated TV Shows', components.contentRow(topRatedTV?.results, 'tv', 'row-top-tv'))}
             `;
 
             // Start hero carousel auto-rotation

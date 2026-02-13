@@ -1029,12 +1029,23 @@ ol {
 
 /* ========================================
    Content Sections - Netflix Rows
-   ======================================== */
-
+   ========================================*/
+/* Content Sections - Centered with max-width */
 .section {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-section) 0;
     position: relative;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding-left: var(--spacing-md);
+        padding-right: var(--spacing-md);
+    }
 }
 
 /* Section Header with Tabs */
@@ -2598,33 +2609,10 @@ ol {
     overflow: hidden;
 }
 
-.top10-header {
-    margin-bottom: var(--spacing-xl);
-}
-
-.top10-title {
-    font-size: clamp(2rem, 4vw, 3.5rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -2px;
-    line-height: 1;
-    color: var(--color-text-primary);
-    display: flex;
-    flex-direction: column;
-}
-
-.top10-title::after {
-    content: 'CONTENT TODAY';
-    font-size: 0.3em;
-    letter-spacing: 5px;
-    margin-top: 5px;
-    font-weight: 500;
-    color: var(--color-text-primary);
-}
-
+/* TOP 10 Section - Giant Background Numbers */
 .top10-row {
     display: flex;
-    gap: 30px;
+    gap: 16px;
     overflow-x: auto;
     padding: 20px 0 40px;
     scroll-behavior: smooth;
@@ -2637,55 +2625,52 @@ ol {
 
 .top10-card {
     flex: 0 0 auto;
-    width: 280px;
+    width: 200px;
     position: relative;
     transition: transform var(--transition-base);
 }
 
 .top10-card:hover {
     transform: scale(1.05);
-    z-index: 2;
+    z-index: 10;
 }
 
-.top10-card-link {
-    display: flex;
-    align-items: flex-end;
-    gap: -20px;
-    position: relative;
-}
-
-.top10-card-number {
-    font-size: 200px;
+/* Giant number BEHIND the poster */
+.top10-number {
+    position: absolute;
+    font-size: 220px;
     font-weight: 900;
     line-height: 0.8;
-    color: #000;
-    -webkit-text-stroke: 2px #e50914;
-    position: absolute;
-    left: -40px;
-    bottom: -10px;
-    z-index: 1;
+    color: transparent;
+    -webkit-text-stroke: 3px #444;
+    text-stroke: 3px #444;
+    z-index: 0;
+    left: -30px;
+    bottom: -40px;
     pointer-events: none;
-    transition: -webkit-text-stroke var(--transition-base);
+    user-select: none;
 }
 
-.top10-card:hover .top10-card-number {
-    -webkit-text-stroke: 3px #ff4d4d;
+.top10-card:hover .top10-number {
+    -webkit-text-stroke: 3px #666;
+    text-stroke: 3px #666;
 }
 
-.top10-card-poster {
-    width: 200px;
-    margin-left: 60px;
+/* Poster link and image in FRONT */
+.top10-poster-link {
     position: relative;
-    z-index: 2;
+    z-index: 1;
+    display: block;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
-.top10-card-poster img {
+.top10-poster {
     width: 100%;
     height: auto;
     display: block;
+    border-radius: 8px;
 }
 
 @media (max-width: 1024px) {
