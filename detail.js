@@ -84,6 +84,43 @@ function formatMoney(num) {
 }
 
 /* ---------- Meta Updates ---------- */
+function generateMetaKeywords(type, title, data = {}) {
+    const baseKeywords = [
+        'free streaming', 'HD movies', 'watch online free',
+        'stream free', 'online cinema', 'latest releases',
+        'watch series free', 'free movie streaming'
+    ];
+
+    const titleSlug = title.toLowerCase();
+    const titleKeywords = [
+        `watch ${title} online free`,
+        `${title} full ${type === 'movie' ? 'movie' : 'episodes'}`,
+        `stream ${title} HD`,
+        `${title} free streaming`,
+        `watch ${title} india`
+    ];
+
+    // Special case for Spartacus: House of Ashur
+    if (titleSlug.includes('spartacus') && titleSlug.includes('ashur')) {
+        return [
+            'spartacus house of ashur', 'watch spartacus house of ashur',
+            'spartacus house of ashur watch online free', 'house of ashur full episodes',
+            'spartacus house of ashur streaming', 'watch house of ashur',
+            'house of ashur watch', 'spartacus house of ashur free',
+            'spartacus house of ashur watch in india', 'spartacus house of ashur online',
+            'spartacus: house of ashur where to watch', 'spartacus house of ashur episodes'
+        ].join(', ');
+    }
+
+    // Genre-specific keywords
+    const genreKeywords = [];
+    if (data.genres && Array.isArray(data.genres)) {
+        genreKeywords.push(...data.genres.slice(0, 2).map(g => `${g.name.toLowerCase()} ${type}s`));
+    }
+
+    return [...titleKeywords, ...genreKeywords, ...baseKeywords].slice(0, 20).join(', ');
+}
+
 function updateMeta(data, type) {
     const title = `Watch ${data.title || data.name} | HD Watchzone`;
     const desc = data.overview ? data.overview.substring(0, 160) : 'Watch on HD Watchzone';
@@ -95,6 +132,15 @@ function updateMeta(data, type) {
     const pageUrl = `${TMDB.SITE_URL}/${type}/${data.id}`;
 
     document.title = title;
+
+    // Update meta keywords dynamically
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.setAttribute('content', generateMetaKeywords(type, data.title || data.name, data));
 
     const metaUpdates = {
         'meta[name="description"]': desc,
