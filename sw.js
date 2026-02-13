@@ -1,10 +1,10 @@
-const CACHE_NAME = 'streamflix-v4';
+const CACHE_NAME = 'streamflix-v5';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/styles.css',
     '/app.js',
-    '/favicon.jpeg',
+    '/favicon.svg',
     '/manifest.json'
 ];
 

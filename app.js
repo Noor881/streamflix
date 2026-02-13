@@ -770,7 +770,7 @@ const components = {
         const date = item.release_date || item.first_air_date;
         const mediaType = item.media_type || 'movie';
         const slug = utils.createSlug(title);
-        const route = mediaType === 'movie' ? `#/movie/${item.id}-${slug}` : `#/tv/${item.id}-${slug}`;
+        const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
 
         return `
             <section class="hero" style="background-image: url('${backdropUrl}')">
@@ -1598,23 +1598,19 @@ const router = {
             pages.anime(category, page);
         } else if (path.startsWith('/movie/')) {
             const segment = path.split('/')[2];
-            const id = parseInt(segment); // Extract ID from "123-slug"
+            const id = parseInt(segment.split('-')[0], 10);
             const app = document.getElementById('app');
             app.innerHTML = components.loading();
-            setTimeout(() => {
-                pages.movie(id);
-            }, 1000);
+            pages.movie(id);
         } else if (path.startsWith('/tv/')) {
             const parts = path.split('/');
             const idSegment = parts[2];
-            const id = parseInt(idSegment); // Extract ID from "123-slug"
+            const id = parseInt(idSegment.split('-')[0], 10);
             const season = parts[3] || 1;
             const episode = parts[4] || 1;
             const app = document.getElementById('app');
             app.innerHTML = components.loading();
-            setTimeout(() => {
-                pages.tvShow(id, season, episode);
-            }, 1000);
+            pages.tvShow(id, season, episode);
         } else if (path.startsWith('/search')) {
             const query = new URLSearchParams(path.split('?')[1]).get('q') || '';
             pages.search(query);

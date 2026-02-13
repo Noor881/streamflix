@@ -1,12 +1,12 @@
 /* ==========================================
-   StreamFlix Detail Page Engine
+   HD Watchzone Detail Page Engine
    ========================================== */
 
 const TMDB = {
     KEY: 'd74b73cd4563f614919e6493152fbc1e',
     BASE: 'https://api.themoviedb.org/3',
     IMG: 'https://image.tmdb.org/t/p',
-    SITE_URL: 'https://streamflix-six-amber.vercel.app'
+    SITE_URL: 'https://hdwatchzone.com'
 };
 
 const SERVERS = [
@@ -48,6 +48,16 @@ function backdropUrl(path) {
     return `${TMDB.IMG}/w1280${path}`;
 }
 
+function createSlug(text) {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+}
+
 function sanitize(text) {
     if (!text) return '';
     const el = document.createElement('div');
@@ -75,8 +85,8 @@ function formatMoney(num) {
 
 /* ---------- Meta Updates ---------- */
 function updateMeta(data, type) {
-    const title = `Watch ${data.title || data.name} | StreamFlix`;
-    const desc = data.overview ? data.overview.substring(0, 160) : 'Watch on StreamFlix';
+    const title = `Watch ${data.title || data.name} | HD Watchzone`;
+    const desc = data.overview ? data.overview.substring(0, 160) : 'Watch on HD Watchzone';
     let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
     // Use logo as fallback if image is data URI (placeholder) or empty
     if (!image || image.startsWith('data:')) {
@@ -205,7 +215,7 @@ function buildTVSchema(tv) {
 /* ---------- Share ---------- */
 function buildShareButtons(title, url) {
     const encoded = encodeURIComponent(url);
-    const text = encodeURIComponent(`Watch ${title} on StreamFlix`);
+    const text = encodeURIComponent(`Watch ${title} on HD Watchzone`);
     return `
         <div class="share-buttons">
             <button class="share-btn twitter" onclick="window.open('https://twitter.com/intent/tweet?text=${text}&url=${encoded}','_blank','width=600,height=400')">
@@ -327,7 +337,8 @@ function buildRecos(items, type) {
         const date = item.release_date || item.first_air_date;
         const year = date ? new Date(date).getFullYear() : '';
         const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
-        const href = `/${mediaType}/${item.id}`;
+        const slug = createSlug(title);
+        const href = `/${mediaType}/${item.id}-${slug}`;
 
         return `
             <a href="${href}" class="reco-card">
@@ -418,7 +429,7 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
     if (!grid) return;
 
     try {
-        const season = await tmdbFetch(`/tv/${tvId}/season/${seasonNum}`);
+        const season = await fetchWithRetry(`/tv/${tvId}/season/${seasonNum}`);
         const episodes = season.episodes || [];
 
         grid.innerHTML = episodes.map(ep => {
@@ -457,12 +468,6 @@ const DetailPage = {
 
     async loadMovie(id) {
         const app = document.getElementById('detail-app');
-
-        // Add 1 second delay as requested
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Add 1.5 second delay to ensure data readiness
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
         try {
             const movie = await fetchWithRetry(`/movie/${id}`, {
@@ -544,12 +549,6 @@ const DetailPage = {
         const app = document.getElementById('detail-app');
         this.currentSeason = season;
         this.currentEpisode = episode;
-
-        // Add 1 second delay as requested
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Add 1.5 second delay to ensure data readiness
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
         try {
             const tv = await fetchWithRetry(`/tv/${id}`, {
