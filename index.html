@@ -172,9 +172,11 @@
                     <source type="image/avif" srcset="/logo.avif">
                     <source type="image/webp" srcset="/logo.webp">
                     <img src="/logo.png" alt="HD Watchzone Logo" class="logo-img"
-                        style="height: 60px; width: auto; object-fit: contain; mix-blend-mode: screen; filter: invert(1);"
-                        loading="lazy">
+                        style="height: 40px; width: auto; object-fit: contain;" loading="lazy"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                 </picture>
+                <span class="logo-text" style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD
+                    <span style="color: var(--color-primary);">Watchzone</span></span>
             </a>
 
             <nav class="nav" role="navigation" aria-label="Main navigation">
@@ -271,9 +273,12 @@
                             <source type="image/avif" srcset="/logo.avif">
                             <source type="image/webp" srcset="/logo.webp">
                             <img src="/logo.png" alt="HD Watchzone" class="logo-img"
-                                style="height: 60px; mix-blend-mode: screen; filter: invert(1);" loading="lazy">
+                                style="height: 50px; width: auto; object-fit: contain;" loading="lazy"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                         </picture>
-                        <span class="logo-text">HD <span class="logo-accent">Watchzone</span></span>
+                        <span class="logo-text"
+                            style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD <span
+                                style="color: var(--color-primary);">Watchzone</span></span>
                     </a>
                     <p class="footer-tagline">Your gateway to endless entertainment. Stream thousands of movies, TV
                         shows, anime, and animations in HD quality, anytime, anywhere.</p>
