@@ -60,8 +60,8 @@
     --spacing-2xl: 3rem;
     --spacing-3xl: 4rem;
     --spacing-4xl: 5rem;
-    --spacing-section: 2.5rem;
-    /* 40px - reduced for cohesive flow */
+    --spacing-section: 1.5rem;
+    /* 24px - very tight cinematic spacing */
 
     /* Border Radius - Cineby Style */
     --radius-sm: 4px;
@@ -1414,16 +1414,17 @@ ol {
 /* Scroll Arrows - Sleek edge design */
 .scroll-arrow {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 80px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    /* Wider hit area */
+    background: rgba(0, 0, 0, 0.5);
+    /* Subtle darkness */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
     color: white;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 300;
     cursor: pointer;
     z-index: var(--z-arrow);
@@ -1432,6 +1433,24 @@ ol {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    /* Full height of row */
+    margin: 0;
+    /* Reset margin */
+}
+
+/* Position strictly at edges */
+.scroll-arrow.left {
+    left: 0;
+}
+
+.scroll-arrow.right {
+    right: 0;
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--color-primary);
 }
 
 .row-wrapper:hover .scroll-arrow {
@@ -2817,12 +2836,30 @@ ol {
     display: flex;
     gap: 16px;
     overflow-x: auto;
+    overflow-y: hidden;
     padding: 20px 0 40px;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    /* Hide scrollbars completely */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
 }
 
+/* Hide scrollbar for Webkit browsers */
 .top10-row::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+/* Extra insurance - hide scrollbar track and thumb */
+.top10-row::-webkit-scrollbar-track {
+    display: none;
+}
+
+.top10-row::-webkit-scrollbar-thumb {
     display: none;
 }
 
