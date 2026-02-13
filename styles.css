@@ -60,8 +60,8 @@
     --spacing-2xl: 3rem;
     --spacing-3xl: 4rem;
     --spacing-4xl: 5rem;
-    --spacing-section: 5rem;
-    /* 80px */
+    --spacing-section: 2.5rem;
+    /* 40px - reduced for cohesive flow */
 
     /* Border Radius - Cineby Style */
     --radius-sm: 4px;
@@ -1104,6 +1104,20 @@ ol {
     display: block;
     aspect-ratio: 2/3;
     object-fit: cover;
+}
+
+/* ========================================
+   UI/UX Cleanup - Hide Header Icons & Floating Cards
+   ======================================== */
+
+/* Hide header right icons for clean cinematic feel */
+.header-right {
+    display: none !important;
+}
+
+/* Hide floating hero cards */
+.hero-floating-cards {
+    display: none !important;
 }
 
 /* Hero Carousel Dots */
@@ -2793,7 +2807,8 @@ ol {
 
 .top10-section {
     padding: var(--spacing-2xl) var(--container-padding);
-    background: linear-gradient(to bottom, #0a0a0a 0%, #141414 100%);
+    background: #000000;
+    /* Pure black to match page */
     overflow: hidden;
 }
 
