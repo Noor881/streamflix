@@ -1,0 +1,31 @@
+name: Auto Facebook Post (7x/Day)
+
+on:
+  schedule:
+    # Runs at 4,6,8,10,12,14,16 UTC — same as n8n schedule
+    - cron: '0 4,6,8,10,12,14,16 * * *'
+  workflow_dispatch: # Manual trigger for testing
+
+jobs:
+  post-to-facebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Post to Facebook pages
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          FB_HD_WATCHZONE_TOKEN: ${{ secrets.FB_HD_WATCHZONE_TOKEN }}
+          FB_FREE_HD_MOVIES_TOKEN: ${{ secrets.FB_FREE_HD_MOVIES_TOKEN }}
+          FB_MOVIE_HUB_HD_TOKEN: ${{ secrets.FB_MOVIE_HUB_HD_TOKEN }}
+          FB_CINEMA_STREAM_HD_TOKEN: ${{ secrets.FB_CINEMA_STREAM_HD_TOKEN }}
+          FB_WATCHZONE_MOVIES_TOKEN: ${{ secrets.FB_WATCHZONE_MOVIES_TOKEN }}
+        run: node scripts/post-to-facebook.js
