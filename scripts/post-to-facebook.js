@@ -201,30 +201,22 @@ async function postToTwitter(postData) {
         throw new Error('Missing Twitter API credentials in environment');
     }
 
-    // Use v1.1 API — doesn't require a Project (unlike v2)
-    const tweetUrl = 'https://api.twitter.com/1.1/statuses/update.json';
-    const bodyParams = { status: postData.tweetText };
-
-    // v1.1 requires body params in the OAuth signature
-    const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret, bodyParams);
-
-    const formBody = Object.keys(bodyParams)
-        .map((k) => `${percentEncode(k)}=${percentEncode(bodyParams[k])}`)
-        .join('&');
+    const tweetUrl = 'https://api.twitter.com/2/tweets';
+    const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret);
 
     const res = await fetch(tweetUrl, {
         method: 'POST',
         headers: {
             Authorization: authHeader,
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         },
-        body: formBody,
+        body: JSON.stringify({ text: postData.tweetText }),
     });
 
     const body = await res.json();
 
     if (!res.ok) {
-        const errMsg = body.errors ? body.errors.map((e) => e.message).join(', ') : JSON.stringify(body);
+        const errMsg = body.detail || body.title || (body.errors ? body.errors.map((e) => e.message).join(', ') : JSON.stringify(body));
         throw new Error(`Twitter: ${errMsg}`);
     }
 
