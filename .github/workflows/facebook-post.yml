@@ -1,4 +1,4 @@
-name: Auto Facebook Post (7x/Day)
+name: Auto Social Media Post (7x/Day)
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Manual trigger for testing
 
 jobs:
-  post-to-facebook:
+  post-to-socials:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Post to Facebook pages
+      - name: Post to Facebook + Twitter
         env:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           FB_HD_WATCHZONE_TOKEN: ${{ secrets.FB_HD_WATCHZONE_TOKEN }}
@@ -28,4 +28,8 @@ jobs:
           FB_MOVIE_HUB_HD_TOKEN: ${{ secrets.FB_MOVIE_HUB_HD_TOKEN }}
           FB_CINEMA_STREAM_HD_TOKEN: ${{ secrets.FB_CINEMA_STREAM_HD_TOKEN }}
           FB_WATCHZONE_MOVIES_TOKEN: ${{ secrets.FB_WATCHZONE_MOVIES_TOKEN }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
         run: node scripts/post-to-facebook.js

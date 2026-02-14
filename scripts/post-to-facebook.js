@@ -1,5 +1,5 @@
 /**
- * Automated Facebook Poster — GitHub Actions Version
+ * Automated Social Media Poster — GitHub Actions Version
  * Replicates the n8n "HDW - Auto Social Media (7 Posts/Day)" workflow.
  *
  * Flow:
@@ -8,7 +8,10 @@
  *  3. Pick a random movie (bias toward newer releases in morning hours)
  *  4. Build a caption from randomized templates
  *  5. Post as a photo (TMDB poster) to all 5 Facebook pages
+ *  6. Post a tweet with movie poster to Twitter/X
  */
+
+const crypto = require('crypto');
 
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const FB_GRAPH = 'https://graph.facebook.com/v18.0';
@@ -34,6 +37,19 @@ const POST_TEMPLATES = [
         `📺 Featured: ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n🎬 ${link}`,
     (m, r, _y, link) =>
         `🌟 ${m.title} is now available!\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n▶️ Watch: ${link}`,
+];
+
+const TWEET_TEMPLATES = [
+    (m, r, link) =>
+        `🎬 ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}🍿 Watch free in HD!\n\n${link} #Movies #Streaming #FreeMovies`,
+    (m, r, link) =>
+        `🔥 Now Streaming: ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}👉 ${link}\n\n#NowPlaying #HDMovies #WatchFree`,
+    (m, r, link) =>
+        `🎥 ${m.title} is streaming now!\n\n${r ? `Rating: ${r}\n` : ''}🍿 ${link}\n\n#MovieNight #FreeStreaming`,
+    (m, r, link) =>
+        `📺 ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}Stream it free in HD 🎬\n\n${link} #Movies #HDWatchzone`,
+    (m, r, link) =>
+        `🌟 Don't miss ${m.title}!\n\n${r ? `${r} ⭐\n` : ''}Free HD streaming 🍿\n\n${link} #MovieTime #Free`,
 ];
 
 async function fetchJson(url) {
@@ -88,10 +104,13 @@ function buildPost(movie) {
     const posterUrl = movie.poster_path ? `${POSTER_BASE}${movie.poster_path}` : '';
     const movieLink = `${SITE_URL}/movie.html?id=${movie.id}`;
 
-    const template = POST_TEMPLATES[Math.floor(Math.random() * POST_TEMPLATES.length)];
-    const postText = template(movie, rating, year, movieLink);
+    const fbTemplate = POST_TEMPLATES[Math.floor(Math.random() * POST_TEMPLATES.length)];
+    const fbText = fbTemplate(movie, rating, year, movieLink);
 
-    return { postText, movieLink, posterUrl, movieTitle: movie.title, movieId: movie.id };
+    const tweetTemplate = TWEET_TEMPLATES[Math.floor(Math.random() * TWEET_TEMPLATES.length)];
+    const tweetText = tweetTemplate(movie, rating, movieLink);
+
+    return { fbText, tweetText, movieLink, posterUrl, movieTitle: movie.title, movieId: movie.id };
 }
 
 async function postToFacebook(page, postData) {
@@ -101,7 +120,7 @@ async function postToFacebook(page, postData) {
     }
 
     const params = new URLSearchParams({
-        message: `${postData.postText}\n\n🔗 Watch now: ${postData.movieLink}`,
+        message: `${postData.fbText}\n\n🔗 Watch now: ${postData.movieLink}`,
         url: postData.posterUrl,
         access_token: token,
     });
@@ -113,6 +132,92 @@ async function postToFacebook(page, postData) {
     if (!res.ok || body.error) {
         const errMsg = body.error ? body.error.message : JSON.stringify(body);
         throw new Error(`FB ${page.name}: ${errMsg}`);
+    }
+
+    return body;
+}
+
+/* ─── Twitter/X OAuth 1.0a Signing ─── */
+
+function percentEncode(str) {
+    return encodeURIComponent(str)
+        .replace(/!/g, '%21')
+        .replace(/\*/g, '%2A')
+        .replace(/'/g, '%27')
+        .replace(/\(/g, '%28')
+        .replace(/\)/g, '%29');
+}
+
+function generateNonce() {
+    return crypto.randomBytes(16).toString('hex');
+}
+
+function buildOAuthSignature(method, baseUrl, params, consumerSecret, tokenSecret) {
+    const sortedKeys = Object.keys(params).sort();
+    const paramString = sortedKeys.map((k) => `${percentEncode(k)}=${percentEncode(params[k])}`).join('&');
+
+    const signatureBase = [
+        method.toUpperCase(),
+        percentEncode(baseUrl),
+        percentEncode(paramString),
+    ].join('&');
+
+    const signingKey = `${percentEncode(consumerSecret)}&${percentEncode(tokenSecret)}`;
+    const hmac = crypto.createHmac('sha1', signingKey);
+    hmac.update(signatureBase);
+    return hmac.digest('base64');
+}
+
+function buildOAuthHeader(method, url, consumerKey, consumerSecret, accessToken, tokenSecret) {
+    const oauthParams = {
+        oauth_consumer_key: consumerKey,
+        oauth_nonce: generateNonce(),
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+        oauth_token: accessToken,
+        oauth_version: '1.0',
+    };
+
+    const signature = buildOAuthSignature(method, url, oauthParams, consumerSecret, tokenSecret);
+    oauthParams.oauth_signature = signature;
+
+    const headerParts = Object.keys(oauthParams)
+        .sort()
+        .map((k) => `${percentEncode(k)}="${percentEncode(oauthParams[k])}"`)
+        .join(', ');
+
+    return `OAuth ${headerParts}`;
+}
+
+async function postToTwitter(postData) {
+    const apiKey = process.env.TWITTER_API_KEY;
+    const apiSecret = process.env.TWITTER_API_SECRET;
+    const accessToken = process.env.TWITTER_ACCESS_TOKEN;
+    const accessSecret = process.env.TWITTER_ACCESS_SECRET;
+
+    if (!apiKey || !apiSecret || !accessToken || !accessSecret) {
+        throw new Error('Missing Twitter API credentials in environment');
+    }
+
+    const tweetUrl = 'https://api.x.com/2/tweets';
+    const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret);
+
+    const tweetBody = { text: postData.tweetText };
+
+    const res = await fetch(tweetUrl, {
+        method: 'POST',
+        headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tweetBody),
+    });
+
+    const body = await res.json();
+
+    if (!res.ok) {
+        const errMsg = body.detail || body.title || JSON.stringify(body);
+        throw new Error(`Twitter: ${errMsg}`);
     }
 
     return body;
@@ -133,24 +238,37 @@ async function main() {
     console.log(`🎬 Selected: "${post.movieTitle}" (ID: ${post.movieId})`);
     console.log(`🖼️  Poster: ${post.posterUrl}`);
 
-    console.log(`\n📤 Posting to ${FACEBOOK_PAGES.length} Facebook pages...`);
+    const allResults = [];
 
-    const results = [];
+    /* ── Facebook ── */
+    console.log(`\n📤 Posting to ${FACEBOOK_PAGES.length} Facebook pages...`);
     for (const page of FACEBOOK_PAGES) {
         try {
             const result = await postToFacebook(page, post);
             console.log(`   ✅ ${page.name}: post_id=${result.post_id || result.id}`);
-            results.push({ page: page.name, success: true, postId: result.post_id || result.id });
+            allResults.push({ platform: 'Facebook', target: page.name, success: true });
         } catch (err) {
             console.error(`   ❌ ${page.name}: ${err.message}`);
-            results.push({ page: page.name, success: false, error: err.message });
+            allResults.push({ platform: 'Facebook', target: page.name, success: false });
         }
     }
 
-    const succeeded = results.filter((r) => r.success).length;
-    const failed = results.filter((r) => !r.success).length;
+    /* ── Twitter/X ── */
+    console.log('\n🐦 Posting to Twitter/X...');
+    try {
+        const result = await postToTwitter(post);
+        const tweetId = result.data ? result.data.id : 'unknown';
+        console.log(`   ✅ Twitter: tweet_id=${tweetId}`);
+        allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: true });
+    } catch (err) {
+        console.error(`   ❌ Twitter: ${err.message}`);
+        allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: false });
+    }
 
-    console.log(`\n📊 Results: ${succeeded} succeeded, ${failed} failed`);
+    /* ── Summary ── */
+    const succeeded = allResults.filter((r) => r.success).length;
+    const failed = allResults.filter((r) => !r.success).length;
+    console.log(`\n📊 Results: ${succeeded}/${allResults.length} succeeded, ${failed} failed`);
 
     if (failed > 0) {
         process.exit(1);
