@@ -191,6 +191,44 @@ function buildOAuthHeader(method, url, consumerKey, consumerSecret, accessToken,
     return `OAuth ${headerParts}`;
 }
 
+async function uploadTwitterMedia(imageUrl, apiKey, apiSecret, accessToken, accessSecret) {
+    // Download the image from TMDB
+    const imgRes = await fetch(imageUrl);
+    if (!imgRes.ok) {
+        throw new Error(`Failed to download poster: HTTP ${imgRes.status}`);
+    }
+    const imgBuffer = Buffer.from(await imgRes.arrayBuffer());
+    const base64Image = imgBuffer.toString('base64');
+
+    // Upload to Twitter media endpoint (v1.1 — available on Free tier)
+    const uploadUrl = 'https://upload.twitter.com/1.1/media/upload.json';
+    const bodyParams = { media_data: base64Image };
+
+    const authHeader = buildOAuthHeader('POST', uploadUrl, apiKey, apiSecret, accessToken, accessSecret, bodyParams);
+
+    const formBody = Object.keys(bodyParams)
+        .map((k) => `${percentEncode(k)}=${percentEncode(bodyParams[k])}`)
+        .join('&');
+
+    const res = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+            Authorization: authHeader,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody,
+    });
+
+    const body = await res.json();
+
+    if (!res.ok) {
+        const errMsg = body.errors ? body.errors.map((e) => e.message).join(', ') : JSON.stringify(body);
+        throw new Error(`Media upload: ${errMsg}`);
+    }
+
+    return body.media_id_string;
+}
+
 async function postToTwitter(postData) {
     const apiKey = process.env.TWITTER_API_KEY;
     const apiSecret = process.env.TWITTER_API_SECRET;
@@ -201,8 +239,25 @@ async function postToTwitter(postData) {
         throw new Error('Missing Twitter API credentials in environment');
     }
 
+    // Step 1: Upload movie poster image
+    let mediaId = null;
+    if (postData.posterUrl) {
+        try {
+            mediaId = await uploadTwitterMedia(postData.posterUrl, apiKey, apiSecret, accessToken, accessSecret);
+            console.log(`   📸 Poster uploaded: media_id=${mediaId}`);
+        } catch (err) {
+            console.warn(`   ⚠️ Poster upload failed (posting text only): ${err.message}`);
+        }
+    }
+
+    // Step 2: Post tweet with optional media attachment
     const tweetUrl = 'https://api.twitter.com/2/tweets';
     const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret);
+
+    const tweetBody = { text: postData.tweetText };
+    if (mediaId) {
+        tweetBody.media = { media_ids: [mediaId] };
+    }
 
     const res = await fetch(tweetUrl, {
         method: 'POST',
@@ -210,7 +265,7 @@ async function postToTwitter(postData) {
             Authorization: authHeader,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: postData.tweetText }),
+        body: JSON.stringify(tweetBody),
     });
 
     const body = await res.json();
