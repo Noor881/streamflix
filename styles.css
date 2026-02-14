@@ -1107,23 +1107,27 @@ ol {
 }
 
 /* ========================================
-   UI/UX Cleanup - Hide Header Icons & Floating Cards
+   UI/UX Cleanup - Hide Floating Cards Only
    ======================================== */
 
-/* Hide header right icons for clean cinematic feel */
-.header-right {
+/* Hide floating hero cards (keep header-right visible for hamburger/search) */
+.hero-floating-cards {
     display: none !important;
 }
 
-/* Hide floating hero cards */
-.hero-floating-cards {
-    display: none !important;
+/* On mobile, hide only notification bell and avatar, keep search + hamburger */
+@media (max-width: 1024px) {
+
+    .header-right .notification-btn,
+    .header-right .user-avatar {
+        display: none;
+    }
 }
 
 /* Hero Carousel Dots */
 .hero-dots {
     position: absolute;
-    bottom: 120px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -2213,6 +2217,7 @@ ol {
     display: flex;
     gap: var(--spacing-3xl);
     margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
 }
 
 .footer-brand {
@@ -2364,8 +2369,8 @@ ol {
     }
 
     .hero {
-        height: 80vh;
-        min-height: 500px;
+        height: 75vh;
+        min-height: 420px;
     }
 
     .hero-title {
@@ -2383,11 +2388,19 @@ ol {
 
     .hero-buttons {
         flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .hero-dots {
+        bottom: 50px;
     }
 
     .btn {
         padding: 0.5rem 1.25rem;
         font-size: var(--font-size-base);
+        min-height: 44px;
+        min-width: 44px;
     }
 
     .section-title {
@@ -2399,31 +2412,85 @@ ol {
     }
 
     .card-continue {
-        flex: 0 0 280px;
+        flex: 0 0 260px;
+    }
+
+    /* Footer stacking */
+    .footer-top {
+        flex-direction: column;
+        gap: var(--spacing-xl);
+    }
+
+    .footer-brand {
+        flex: 1 1 auto;
+        max-width: 100%;
     }
 
     .footer-links {
         flex-direction: column;
         gap: var(--spacing-xl);
     }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    /* Top 10 cards scale */
+    .top10-card {
+        width: 200px;
+    }
+
+    .top10-card-number {
+        font-size: 110px;
+    }
+
+    .top10-card-poster {
+        width: 120px;
+    }
 }
 
 @media (max-width: 480px) {
     :root {
-        --card-width: 130px;
+        --card-width: 140px;
     }
 
     .content-row {
-        gap: 4px;
+        gap: 6px;
     }
 
     .search-container:focus-within .search-input,
     .search-input:not(:placeholder-shown) {
-        width: 150px;
+        width: 140px;
+    }
+
+    .hero {
+        height: 70vh;
+        min-height: 340px;
     }
 
     .hero-title {
         font-size: var(--font-size-2xl);
+    }
+
+    .hero-description {
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-dots {
+        bottom: 30px;
     }
 
     .hero-meta {
@@ -2436,7 +2503,7 @@ ol {
     }
 
     .episode-card {
-        flex: 0 0 220px;
+        flex: 0 0 min(220px, 75vw);
     }
 
     .server-selector {
@@ -2444,8 +2511,32 @@ ol {
     }
 
     .server-btn {
-        padding: var(--spacing-xs) var(--spacing-md);
+        padding: var(--spacing-sm) var(--spacing-md);
         font-size: var(--font-size-xs);
+        min-height: 44px;
+    }
+
+    /* Top 10 cards scale further */
+    .top10-card {
+        width: 160px;
+    }
+
+    .top10-card-number {
+        font-size: 90px;
+    }
+
+    .top10-card-poster {
+        width: 100px;
+        margin-left: 20px;
+    }
+
+    /* Footer on tiny screens */
+    .footer {
+        padding: var(--spacing-xl) var(--spacing-lg);
+    }
+
+    .footer-disclaimer {
+        max-width: 100%;
     }
 }
 
@@ -2891,6 +2982,7 @@ ol {
     text-align: right;
     padding-right: 8px;
     pointer-events: none;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -2948,6 +3040,7 @@ ol {
     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
     text-stroke: 1px rgba(255, 255, 255, 0.4);
     pointer-events: none;
+    -webkit-user-select: none;
     user-select: none;
     z-index: var(--z-number);
 }
@@ -3666,4 +3759,33 @@ ol {
     .account-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ========================================
+   Accessibility: Reduced Motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   Touch/Tap Reset
+   ======================================== */
+
+a,
+button,
+input,
+select,
+textarea,
+[role="button"] {
+    -webkit-tap-highlight-color: transparent;
 }
