@@ -314,7 +314,7 @@ async function main() {
     }
 
     /* ── Twitter/X (rate-limited: 3/day to stay under 100/month Free tier) ── */
-    const twitterHours = [6, 10, 14, 18]; // Temp: added 18 for testing
+    const twitterHours = [6, 10, 14]; // Only tweet at these UTC hours
     const currentHour = new Date().getUTCHours();
     const shouldTweet = twitterHours.includes(currentHour);
 
