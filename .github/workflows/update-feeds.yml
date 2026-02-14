@@ -1,0 +1,40 @@
+name: Update RSS Feed & Sitemap (Daily)
+
+on:
+  schedule:
+    # Runs daily at 00:30 UTC
+    - cron: '30 0 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-feeds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate RSS Feed
+        run: node generate-rss.js
+
+      - name: Generate Sitemap
+        run: node generate-sitemap.js
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet feed.xml sitemap.xml || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit & push updated feeds
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add feed.xml sitemap.xml
+          git commit -m "chore: auto-update RSS feed & sitemap [skip ci]"
+          git push
