@@ -168,7 +168,7 @@ function buildOAuthSignature(method, baseUrl, params, consumerSecret, tokenSecre
     return hmac.digest('base64');
 }
 
-function buildOAuthHeader(method, url, consumerKey, consumerSecret, accessToken, tokenSecret) {
+function buildOAuthHeader(method, url, consumerKey, consumerSecret, accessToken, tokenSecret, extraParams = {}) {
     const oauthParams = {
         oauth_consumer_key: consumerKey,
         oauth_nonce: generateNonce(),
@@ -178,7 +178,9 @@ function buildOAuthHeader(method, url, consumerKey, consumerSecret, accessToken,
         oauth_version: '1.0',
     };
 
-    const signature = buildOAuthSignature(method, url, oauthParams, consumerSecret, tokenSecret);
+    // For v1.1, body params must be included in the signature base string
+    const allParams = { ...oauthParams, ...extraParams };
+    const signature = buildOAuthSignature(method, url, allParams, consumerSecret, tokenSecret);
     oauthParams.oauth_signature = signature;
 
     const headerParts = Object.keys(oauthParams)
@@ -199,24 +201,30 @@ async function postToTwitter(postData) {
         throw new Error('Missing Twitter API credentials in environment');
     }
 
-    const tweetUrl = 'https://api.x.com/2/tweets';
-    const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret);
+    // Use v1.1 API — doesn't require a Project (unlike v2)
+    const tweetUrl = 'https://api.twitter.com/1.1/statuses/update.json';
+    const bodyParams = { status: postData.tweetText };
 
-    const tweetBody = { text: postData.tweetText };
+    // v1.1 requires body params in the OAuth signature
+    const authHeader = buildOAuthHeader('POST', tweetUrl, apiKey, apiSecret, accessToken, accessSecret, bodyParams);
+
+    const formBody = Object.keys(bodyParams)
+        .map((k) => `${percentEncode(k)}=${percentEncode(bodyParams[k])}`)
+        .join('&');
 
     const res = await fetch(tweetUrl, {
         method: 'POST',
         headers: {
             Authorization: authHeader,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(tweetBody),
+        body: formBody,
     });
 
     const body = await res.json();
 
     if (!res.ok) {
-        const errMsg = body.detail || body.title || JSON.stringify(body);
+        const errMsg = body.errors ? body.errors.map((e) => e.message).join(', ') : JSON.stringify(body);
         throw new Error(`Twitter: ${errMsg}`);
     }
 
