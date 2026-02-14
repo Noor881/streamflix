@@ -28,28 +28,28 @@ const FACEBOOK_PAGES = [
 
 const POST_TEMPLATES = [
     (m, r, y, link) =>
-        `🎬 ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n🍿 Watch now on HD Watchzone!\n🔗 ${link}`,
+        `🔗 ${link}\n\n🎬 ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ Rating: ${r}` : ''}\n\n🍿 Watch now free on HD Watchzone!`,
     (m, r, _y, link) =>
-        `🔥 NOW STREAMING: ${m.title}\n\n${m.overview}\n\n${r ? `Rating: ⭐ ${r}` : ''}\n\n👉 ${link}`,
+        `🔗 ${link}\n\n🔥 NOW STREAMING: ${m.title}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n👉 Stream free in HD now!`,
     (m, r, _y, link) =>
-        `🎥 Don't miss ${m.title}!\n\n${m.overview}\n\n${r ? `⭐ IMDb: ${r}` : ''}\n\n🍿 Stream free: ${link}`,
+        `🔗 ${link}\n\n🎥 Don't miss ${m.title}!\n\n${m.overview}\n\n${r ? `⭐ IMDb: ${r}` : ''}\n\n🍿 Free HD streaming!`,
     (m, r, y, link) =>
-        `📺 Featured: ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n🎬 ${link}`,
+        `🔗 ${link}\n\n📺 Featured: ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n🎬 Available now in HD!`,
     (m, r, _y, link) =>
-        `🌟 ${m.title} is now available!\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n▶️ Watch: ${link}`,
+        `🔗 ${link}\n\n🌟 ${m.title} is now available!\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n▶️ Watch free in HD!`,
 ];
 
 const TWEET_TEMPLATES = [
-    (m, r, link) =>
-        `🎬 ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}🍿 Watch free in HD!\n\n${link} #Movies #Streaming #FreeMovies`,
-    (m, r, link) =>
-        `🔥 Now Streaming: ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}👉 ${link}\n\n#NowPlaying #HDMovies #WatchFree`,
-    (m, r, link) =>
-        `🎥 ${m.title} is streaming now!\n\n${r ? `Rating: ${r}\n` : ''}🍿 ${link}\n\n#MovieNight #FreeStreaming`,
-    (m, r, link) =>
-        `📺 ${m.title}\n\n${r ? `⭐ ${r}\n` : ''}Stream it free in HD 🎬\n\n${link} #Movies #HDWatchzone`,
-    (m, r, link) =>
-        `🌟 Don't miss ${m.title}!\n\n${r ? `${r} ⭐\n` : ''}Free HD streaming 🍿\n\n${link} #MovieTime #Free`,
+    (m, r, link, desc) =>
+        `🔗 ${link}\n\n🎬 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#Movies #Streaming #FreeMovies`,
+    (m, r, link, desc) =>
+        `🔗 ${link}\n\n🔥 Now Streaming: ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#NowPlaying #HDMovies #WatchFree`,
+    (m, r, link, desc) =>
+        `🔗 ${link}\n\n🎥 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#MovieNight #FreeStreaming`,
+    (m, r, link, desc) =>
+        `🔗 ${link}\n\n📺 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#Movies #HDWatchzone`,
+    (m, r, link, desc) =>
+        `🔗 ${link}\n\n🌟 Don't miss ${m.title}!\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#MovieTime #Free`,
 ];
 
 async function fetchJson(url) {
@@ -107,8 +107,13 @@ function buildPost(movie) {
     const fbTemplate = POST_TEMPLATES[Math.floor(Math.random() * POST_TEMPLATES.length)];
     const fbText = fbTemplate(movie, rating, year, movieLink);
 
+    // Truncate overview for Twitter (280 char limit)
+    const maxDescLen = 100;
+    const desc = movie.overview
+        ? (movie.overview.length > maxDescLen ? movie.overview.slice(0, maxDescLen) + '...' : movie.overview)
+        : '';
     const tweetTemplate = TWEET_TEMPLATES[Math.floor(Math.random() * TWEET_TEMPLATES.length)];
-    const tweetText = tweetTemplate(movie, rating, movieLink);
+    const tweetText = tweetTemplate(movie, rating, movieLink, desc);
 
     return { fbText, tweetText, movieLink, posterUrl, movieTitle: movie.title, movieId: movie.id };
 }
@@ -120,7 +125,7 @@ async function postToFacebook(page, postData) {
     }
 
     const params = new URLSearchParams({
-        message: `${postData.fbText}\n\n🔗 Watch now: ${postData.movieLink}`,
+        message: postData.fbText,
         url: postData.posterUrl,
         access_token: token,
     });
@@ -309,7 +314,7 @@ async function main() {
     }
 
     /* ── Twitter/X (rate-limited: 3/day to stay under 100/month Free tier) ── */
-    const twitterHours = [6, 10, 14]; // Only tweet at these UTC hours
+    const twitterHours = [6, 10, 14, 18]; // Temp: added 18 for testing
     const currentHour = new Date().getUTCHours();
     const shouldTweet = twitterHours.includes(currentHour);
 
