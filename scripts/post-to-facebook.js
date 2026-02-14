@@ -253,16 +253,24 @@ async function main() {
         }
     }
 
-    /* ── Twitter/X ── */
-    console.log('\n🐦 Posting to Twitter/X...');
-    try {
-        const result = await postToTwitter(post);
-        const tweetId = result.data ? result.data.id : 'unknown';
-        console.log(`   ✅ Twitter: tweet_id=${tweetId}`);
-        allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: true });
-    } catch (err) {
-        console.error(`   ❌ Twitter: ${err.message}`);
-        allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: false });
+    /* ── Twitter/X (rate-limited: 3/day to stay under 100/month Free tier) ── */
+    const twitterHours = [6, 10, 14]; // Only tweet at these UTC hours
+    const currentHour = new Date().getUTCHours();
+    const shouldTweet = twitterHours.includes(currentHour);
+
+    if (shouldTweet) {
+        console.log('\n🐦 Posting to Twitter/X...');
+        try {
+            const result = await postToTwitter(post);
+            const tweetId = result.data ? result.data.id : 'unknown';
+            console.log(`   ✅ Twitter: tweet_id=${tweetId}`);
+            allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: true });
+        } catch (err) {
+            console.error(`   ❌ Twitter: ${err.message}`);
+            allResults.push({ platform: 'Twitter', target: '@NoorUlH54887369', success: false });
+        }
+    } else {
+        console.log(`\n🐦 Twitter/X: skipped (hour ${currentHour} UTC — tweets at ${twitterHours.join(',')} UTC only, ~90/month)`);
     }
 
     /* ── Summary ── */
