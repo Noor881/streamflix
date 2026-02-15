@@ -333,6 +333,13 @@ const tmdbAPI = {
 // ==========================================
 const videoServers = [
     {
+        id: 'vidsrccc',
+        name: 'VidSrc.cc',
+        description: 'Fast Loading • 4K Support',
+        getMovieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
+        getTVUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
+    },
+    {
         id: 'vidsrc',
         name: 'VidSrc',
         description: 'Fastest • HD Quality',
@@ -352,55 +359,6 @@ const videoServers = [
         description: 'Premium Quality • Stable',
         getMovieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'vidsrccc',
-        name: 'VidSrc.cc',
-        description: 'Fast Loading • 4K Support',
-        getMovieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'embedsu',
-        name: 'Embed.su',
-        description: 'Multi-Language • Subtitles',
-        getMovieUrl: (id) => `https://embed.su/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'autoembed',
-        name: 'AutoEmbed',
-        description: 'Auto Quality • Smooth',
-        getMovieUrl: (id) => `https://player.autoembed.cc/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: '2embed',
-        name: '2Embed',
-        description: 'Backup Server • Good Speed',
-        getMovieUrl: (id) => `https://www.2embed.cc/embed/${id}`,
-        getTVUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}`
-    },
-    {
-        id: 'vidlink',
-        name: 'VidLink',
-        description: 'Low Buffer • Fast',
-        getMovieUrl: (id) => `https://vidlink.pro/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'smashystream',
-        name: 'Smashy',
-        description: 'New Episodes First',
-        getMovieUrl: (id) => `https://player.smashy.stream/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'multiembed',
-        name: 'MultiEmbed',
-        description: 'Multiple Sources • Reliable',
-        getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-        getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
     }
 ];
 
