@@ -104,6 +104,36 @@ img {
     border-color: rgba(255, 255, 255, 0.25);
 }
 
+.server-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.server-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+}
+
+.server-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
 /* ---------- Hero Section ---------- */
 .detail-hero {
     position: relative;

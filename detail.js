@@ -10,16 +10,16 @@ const TMDB = {
 };
 
 const SERVERS = [
-    { id: 'vidsrc', name: 'VidSrc', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrcto', name: 'VidSrc.to', movieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrc2', name: 'VidSrc Pro', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrccc', name: 'VidSrc.cc', movieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` },
-    { id: 'embedsu', name: 'Embed.su', movieUrl: (id) => `https://embed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
-    { id: 'autoembed', name: 'AutoEmbed', movieUrl: (id) => `https://player.autoembed.cc/embed/movie/${id}`, tvUrl: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}` },
-    { id: '2embed', name: '2Embed', movieUrl: (id) => `https://www.2embed.cc/embed/${id}`, tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
-    { id: 'vidlink', name: 'VidLink', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
-    { id: 'smashystream', name: 'Smashy', movieUrl: (id) => `https://player.smashy.stream/movie/${id}`, tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}/${s}/${e}` },
-    { id: 'multiembed', name: 'MultiEmbed', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` }
+    { id: 'vidsrc', name: 'VidSrc', description: 'Fastest • HD Quality', movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidsrcto', name: 'VidSrc.to', description: 'No Ads • Reliable', movieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidsrc2', name: 'VidSrc Pro', description: 'Premium Quality • Stable', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidsrccc', name: 'VidSrc.cc', description: 'Fast Loading • 4K Support', movieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` },
+    { id: 'embedsu', name: 'Embed.su', description: 'Multi-Language • Subtitles', movieUrl: (id) => `https://embed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
+    { id: 'autoembed', name: 'AutoEmbed', description: 'Auto Quality • Smooth', movieUrl: (id) => `https://player.autoembed.cc/embed/movie/${id}`, tvUrl: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}` },
+    { id: '2embed', name: '2Embed', description: 'Backup Server • Good Speed', movieUrl: (id) => `https://www.2embed.cc/embed/${id}`, tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+    { id: 'vidlink', name: 'VidLink', description: 'Low Buffer • Fast', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+    { id: 'smashystream', name: 'Smashy', description: 'New Episodes First', movieUrl: (id) => `https://player.smashy.stream/movie/${id}`, tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}/${s}/${e}` },
+    { id: 'multiembed', name: 'MultiEmbed', description: 'Multiple Sources • Reliable', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` }
 ];
 
 let activeServer = 0;
@@ -379,7 +379,8 @@ function buildPlayer(type, id, season, episode) {
     const serverBtns = SERVERS.map((s, i) => `
         <button class="server-btn ${i === activeServer ? 'active' : ''}"
                 onclick="DetailPage.switchServer(${i}, '${type}', '${id}', ${season || 'null'}, ${episode || 'null'})">
-            ${s.name}
+            <span class="server-name">${s.name}</span>
+            <span class="server-desc">${s.description}</span>
         </button>`).join('');
 
     return `

@@ -1746,7 +1746,7 @@ ol {
 }
 
 .server-btn {
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: 10px 16px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -1758,6 +1758,24 @@ ol {
     transition: all var(--transition-fast);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.server-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.server-desc {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    white-space: nowrap;
 }
 
 .server-btn::before {
@@ -1786,6 +1804,14 @@ ol {
     color: #fff;
     font-weight: 700;
     box-shadow: 0 0 20px rgba(229, 9, 20, 0.35);
+}
+
+.server-btn.active .server-name {
+    color: #fff;
+}
+
+.server-btn.active .server-desc {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .server-btn.active::before {
