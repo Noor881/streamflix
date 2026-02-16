@@ -124,7 +124,10 @@ function generateMetaKeywords(type, title, data = {}) {
 
 function updateMeta(data, type) {
     const title = `Watch ${data.title || data.name} | HD Watchzone`;
-    const desc = data.overview ? data.overview.substring(0, 160) : 'Watch on HD Watchzone';
+
+    // Build rich meta description (120-300 chars)
+    const desc = generateRichDescription(data, type);
+
     let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
     // Use logo as fallback if image is data URI (placeholder) or empty
     if (!image || image.startsWith('data:')) {
@@ -164,6 +167,65 @@ function updateMeta(data, type) {
             el.setAttribute('content', value);
         }
     });
+}
+
+function generateRichDescription(data, type) {
+    const mediaTitle = data.title || data.name;
+    const parts = [];
+
+    // Start with "Watch [Title] online in HD"
+    parts.push(`Watch ${mediaTitle} online in HD`);
+
+    // Add year
+    const year = type === 'movie' ? data.release_date : data.first_air_date;
+    if (year) {
+        const yearNum = new Date(year).getFullYear();
+        parts.push(`(${yearNum})`);
+    }
+
+    // Add overview snippet or genre context
+    if (data.overview && data.overview.length > 50) {
+        const snippet = data.overview.substring(0, 80).trim();
+        const lastSpace = snippet.lastIndexOf(' ');
+        parts.push('- ' + snippet.substring(0, lastSpace > 0 ? lastSpace : snippet.length) + '...');
+    } else if (data.genres && data.genres.length > 0) {
+        const genreNames = data.genres.slice(0, 2).map(g => g.name).join(', ');
+        parts.push(`- ${genreNames} ${type}`);
+    }
+
+    // Add cast if available
+    if (data.credits?.cast && data.credits.cast.length > 0) {
+        const topCast = data.credits.cast.slice(0, 2).map(c => c.name).join(', ');
+        parts.push(`Starring ${topCast}`);
+    }
+
+    // Add director/creator
+    if (type === 'movie' && data.credits?.crew) {
+        const director = data.credits.crew.find(c => c.job === 'Director');
+        if (director) {
+            parts.push(`Directed by ${director.name}`);
+        }
+    } else if (type === 'tv' && data.created_by && data.created_by.length > 0) {
+        parts.push(`Created by ${data.created_by[0].name}`);
+    }
+
+    // Add call to action
+    parts.push('Free streaming on HD Watchzone');
+
+    // Join and ensure length constraints
+    let description = parts.join('. ').replace(/\.\./g, '.');
+
+    // Ensure minimum 120 characters
+    if (description.length < 120 && data.overview) {
+        description = `Watch ${mediaTitle} online in HD. ${data.overview.substring(0, 200)}. Free streaming on HD Watchzone.`;
+    }
+
+    // Ensure maximum 300 characters
+    if (description.length > 300) {
+        description = description.substring(0, 297) + '...';
+    }
+
+    return description;
 }
 
 /* ---------- Schema.org ---------- */
@@ -333,6 +395,148 @@ function buildShareButtons(title, url) {
                 Copy Link
             </button>
         </div>`;
+}
+
+/* ---------- Internal Linking Sections ---------- */
+function buildBreadcrumbs(data, type) {
+    const title = data.title || data.name;
+    const categoryName = type === 'movie' ? 'Movies' : 'TV Shows';
+    const categoryPath = type === 'movie' ? '/#/movies' : '/#/tv';
+
+    return `
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">›</span>
+            <a href="${categoryPath}" class="breadcrumb-link">${categoryName}</a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">${sanitize(title)}</span>
+        </nav>`;
+}
+
+function buildGenreSection(genres, type) {
+    if (!genres || genres.length === 0) return '';
+
+    const genreLinks = genres.map(g =>
+        `<a href="/#/genre/${g.id}" class="genre-link-card">
+            <span class="genre-icon">🎬</span>
+            <span class="genre-name">${g.name}</span>
+            <span class="genre-arrow">→</span>
+        </a>`
+    ).join('');
+
+    return `
+        <div class="detail-section">
+            <h2 class="section-title">Browse by Genre</h2>
+            <div class="genre-links-grid">${genreLinks}</div>
+        </div>`;
+}
+
+function buildYearSection(releaseDate, type) {
+    if (!releaseDate) return '';
+
+    const year = new Date(releaseDate).getFullYear();
+    const mediaType = type === 'movie' ? 'Movies' : 'TV Shows';
+
+    return `
+        <div class="detail-section">
+            <h2 class="section-title">More from ${year}</h2>
+            <p class="year-description">
+                Explore more ${mediaType.toLowerCase()} released in ${year}. 
+                Discover trending titles, critically acclaimed releases, and hidden gems from this year.
+            </p>
+            <a href="/#/${type}?year=${year}" class="btn-browse-year">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Browse ${year} ${mediaType}
+            </a>
+        </div>`;
+}
+
+async function buildTrendingSection(type) {
+    try {
+        const trending = await fetchWithRetry(`/trending/${type}/week`);
+        const items = trending.results?.slice(0, 8);
+
+        if (!items || items.length === 0) return '';
+
+        const cards = items.map(item => {
+            const title = item.title || item.name;
+            const year = item.release_date || item.first_air_date;
+            const yearNum = year ? new Date(year).getFullYear() : '';
+            const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
+            const slug = createSlug(title);
+            const href = `/${type}/${item.id}-${slug}`;
+
+            return `
+                <a href="${href}" class="trending-card">
+                    <img src="${imgUrl(item.poster_path, 'w342')}" alt="${sanitize(title)}" loading="lazy">
+                    <div class="trending-card-info">
+                        <div class="trending-card-title">${sanitize(title)}</div>
+                        <div class="trending-card-meta">
+                            ${rating ? `<span>★ ${rating}</span>` : ''}
+                            ${yearNum ? `<span>${yearNum}</span>` : ''}
+                        </div>
+                    </div>
+                </a>`;
+        }).join('');
+
+        return `
+            <div class="detail-section">
+                <h2 class="section-title">Trending Now</h2>
+                <div class="trending-grid">${cards}</div>
+            </div>`;
+    } catch (err) {
+        return '';
+    }
+}
+
+function buildDetailFooter() {
+    return `
+        <footer class="detail-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-heading">Browse</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#/movies">Movies</a></li>
+                        <li><a href="/#/tv">TV Shows</a></li>
+                        <li><a href="/#/trending">Trending</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-heading">Genres</h4>
+                    <ul class="footer-links">
+                        <li><a href="/#/genre/28">Action</a></li>
+                        <li><a href="/#/genre/35">Comedy</a></li>
+                        <li><a href="/#/genre/18">Drama</a></li>
+                        <li><a href="/#/genre/878">Sci-Fi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-heading">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/#/help">Help Center</a></li>
+                        <li><a href="/#/contact">Contact Us</a></li>
+                        <li><a href="/#/faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-heading">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/#/privacy">Privacy Policy</a></li>
+                        <li><a href="/#/terms">Terms of Use</a></li>
+                        <li><a href="/#/legal">Legal Notices</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; ${new Date().getFullYear()} HD Watchzone. All content sourced from The Movie Database (TMDB). HD Watchzone is not responsible for third-party content.</p>
+            </div>
+        </footer>`;
 }
 
 /* ---------- Toast ---------- */
@@ -582,8 +786,12 @@ const DetailPage = {
             const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
             const pageUrl = `${TMDB.SITE_URL}/movie/${id}`;
 
+            // Fetch trending content asynchronously (non-blocking)
+            const trendingPromise = buildTrendingSection('movie');
+
             app.innerHTML = `
                 ${renderNav()}
+                ${buildBreadcrumbs(movie, 'movie')}
 
                 <div class="detail-hero">
                     <div class="hero-backdrop">
@@ -621,16 +829,39 @@ const DetailPage = {
 
                 <div class="detail-content">
                     ${buildPlayer('movie', id)}
+                    
+                    ${movie.overview ? `
+                    <div class="detail-section">
+                        <h2 class="section-title">About This Movie</h2>
+                        <p class="about-text">${sanitize(movie.overview)}</p>
+                        ${movie.tagline ? `<p class="about-tagline"><em>"${sanitize(movie.tagline)}"</em></p>` : ''}
+                    </div>` : ''}
+                    
                     ${buildCast(movie.credits)}
                     ${buildTrailer(movie.videos)}
                     ${buildDetailsGrid(movie, 'movie')}
+                    
+                    <div id="trending-placeholder"></div>
+                    
                     ${buildRecos(movie.recommendations?.results, 'movie')}
+                    ${buildGenreSection(movie.genres, 'movie')}
+                    ${buildYearSection(movie.release_date, 'movie')}
 
                     <div class="detail-section">
                         <h2 class="section-title">Share</h2>
                         ${buildShareButtons(movie.title, pageUrl)}
                     </div>
+                    
+                    ${buildDetailFooter()}
                 </div>`;
+
+            // Load trending content after page renders
+            trendingPromise.then(trendingHTML => {
+                const placeholder = document.getElementById('trending-placeholder');
+                if (placeholder && trendingHTML) {
+                    placeholder.outerHTML = trendingHTML;
+                }
+            });
 
             this.initNavScroll();
 
@@ -665,8 +896,12 @@ const DetailPage = {
             const yearRange = endYear && endYear !== year ? `${year}–${endYear}` : year;
             const pageUrl = `${TMDB.SITE_URL}/tv/${id}`;
 
+            // Fetch trending content asynchronously (non-blocking)
+            const trendingPromise = buildTrendingSection('tv');
+
             app.innerHTML = `
                 ${renderNav()}
+                ${buildBreadcrumbs(tv, 'tv')}
 
                 <div class="detail-hero">
                     <div class="hero-backdrop">
@@ -704,17 +939,41 @@ const DetailPage = {
 
                 <div class="detail-content">
                     ${buildPlayer('tv', id, season, episode)}
+                    
+                    ${tv.overview ? `
+                    <div class="detail-section">
+                        <h2 class="section-title">About This Show</h2>
+                        <p class="about-text">${sanitize(tv.overview)}</p>
+                        ${tv.tagline ? `<p class="about-tagline"><em>"${sanitize(tv.tagline)}"</em></p>` : ''}
+                        ${tv.number_of_seasons ? `<p class="about-info">This series has ${tv.number_of_seasons} season${tv.number_of_seasons > 1 ? 's' : ''} with a total of ${tv.number_of_episodes || 'multiple'} episodes.</p>` : ''}
+                    </div>` : ''}
+                    
                     ${buildEpisodes(tv, season, episode, id)}
                     ${buildCast(tv.credits)}
                     ${buildTrailer(tv.videos)}
                     ${buildDetailsGrid(tv, 'tv')}
+                    
+                    <div id="trending-placeholder"></div>
+                    
                     ${buildRecos(tv.recommendations?.results, 'tv')}
+                    ${buildGenreSection(tv.genres, 'tv')}
+                    ${buildYearSection(tv.first_air_date, 'tv')}
 
                     <div class="detail-section">
                         <h2 class="section-title">Share</h2>
                         ${buildShareButtons(tv.name, pageUrl)}
                     </div>
+                    
+                    ${buildDetailFooter()}
                 </div>`;
+
+            // Load trending content after page renders
+            trendingPromise.then(trendingHTML => {
+                const placeholder = document.getElementById('trending-placeholder');
+                if (placeholder && trendingHTML) {
+                    placeholder.outerHTML = trendingHTML;
+                }
+            });
 
             this.initNavScroll();
             loadEpisodes(id, season, episode);

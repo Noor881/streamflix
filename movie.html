@@ -60,7 +60,8 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/detail.css">
+    <link rel="stylesheet" href="detail.css">
+    <link rel="stylesheet" href="seo-enhancements.css">
     <link rel="stylesheet" href="/responsive.css">
 
     <!-- Schema.org (injected by JS) -->
@@ -69,8 +70,11 @@
 
 <body>
     <div id="detail-app">
+        <!-- Static H1 for SEO crawlers (replaced by JS) -->
+        <h1 style="position:absolute;left:-9999px;" id="static-h1">Watch Movie on HD Watchzone</h1>
         <div class="detail-loading">
             <div class="loader"></div>
+            <p>Loading movie...</p>
         </div>
     </div>
 
