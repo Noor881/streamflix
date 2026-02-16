@@ -21,7 +21,7 @@
             "destination": "/admin.html"
         },
         {
-            "source": "/((?!admin|manifest\\.json|sw\\.js|sitemap\\.xml|robots\\.txt|logo\\.png|favicon\\.(ico|svg|png|jpeg)|.*\\..*).*)",
+            "source": "/:path*",
             "destination": "/index.html"
         }
     ],
