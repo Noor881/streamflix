@@ -690,7 +690,7 @@ const components = {
         }).join('');
 
         const dots = carouselItems.map((_, index) =>
-            `<button class="hero-dot ${index === 0 ? 'active' : ''}" data-index="${index}" onclick="goToSlide(${index})"></button>`
+            `<button class="hero-dot ${index === 0 ? 'active' : ''}" data-index="${index}" onclick="goToSlide(${index})" aria-label="Go to slide ${index + 1}"></button>`
         ).join('');
 
         return `

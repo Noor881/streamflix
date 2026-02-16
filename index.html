@@ -77,20 +77,19 @@
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https:; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://api.themoviedb.org https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
 
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://api.themoviedb.org">
-    <link rel="preconnect" href="https://image.tmdb.org">
+    <!-- Preconnect links already declared above (lines 34-35) for fonts -->
+    <!-- Added dns-prefetch for API performance -->
+    <link rel="dns-prefetch" href="https://api.themoviedb.org">
+    <link rel="dns-prefetch" href="https://image.tmdb.org">
 
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/responsive.css">
+    <!-- Styles (Minified for Performance) -->
+    <link rel="stylesheet" href="/styles.min.css">
+    <link rel="stylesheet" href="/responsive.min.css">
 
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">
@@ -181,7 +180,7 @@
                     <source type="image/webp" srcset="/logo.webp">
                     <img src="/logo.png" alt="HD Watchzone Logo" class="logo-img"
                         style="height: 40px; width: auto; object-fit: contain;" loading="lazy"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-block';">
                 </picture>
                 <span class="logo-text" style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD
                     <span style="color: var(--color-primary);">Watchzone</span></span>
@@ -282,7 +281,7 @@
                             <source type="image/webp" srcset="/logo.webp">
                             <img src="/logo.png" alt="HD Watchzone" class="logo-img"
                                 style="height: 50px; width: auto; object-fit: contain;" loading="lazy"
-                                onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-block';">
                         </picture>
                         <span class="logo-text"
                             style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD <span
@@ -388,15 +387,10 @@
         }
     </script>
 
-    <!-- Scripts -->
-    <script src="/app.js" defer></script>
-    <script src="/mobile-fixes.js" defer></script>
-    <script src="/consent.js" defer></script>
-    <script src="/scripts/idb-helper.js" defer></script>
-    <script src="/scripts/watchlist.js" defer></script>
-    <script src="/scripts/search.js" defer></script>
-    <script src="/scripts/recommendations.js" defer></script>
-    <script src="/scripts/install.js" defer></script>
+    <!-- Scripts (Minified for Performance) -->
+    <script src="/app.min.js" defer></script>
+    <script src="/mobile-consent.min.js" defer></script>
+    <script src="/scripts/combined.min.js" defer></script>
 </body>
 
 </html>
