@@ -147,7 +147,7 @@ async function fetchCast(movieData) {
     return { ...movieData, cast: castList };
 }
 
-// ── Step 3: Generate Article with Groq AI ──
+// ── Step 3: Generate Article with Groq AI (with retry) ──
 async function generateArticle(movieData) {
     console.log('Step 3: Generating article with Groq AI...');
     const prompt = `Write a 600-word SEO blog article about '${movieData.title}'
@@ -180,29 +180,72 @@ IMPORTANT: Do NOT include h1, cast section, images, or style tags.
 SEO REQUIREMENTS: Use keywords naturally: ${movieData.keywords}
 Return ONLY the HTML article body.`;
 
-    const body = JSON.stringify({
+    const requestBody = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-            { role: 'system', content: 'You are an expert movie blogger writing SEO-optimized articles for HDWatchZone. Write engaging, natural content. Return ONLY HTML article body - no markdown, no h1, no style tags, no images.' },
+            { role: 'system', content: 'You are an expert movie blogger writing SEO-optimized articles for HDWatchZone. Write engaging, natural content. Return ONLY clean HTML - paragraphs and h2 tags only. No markdown code fences, no h1, no style tags, no images, no backticks.' },
             { role: 'user', content: prompt }
         ],
         temperature: 0.7,
         max_tokens: 1500
     });
 
-    const r = await httpsRequest('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${GROQ_API_KEY}`,
-            'Content-Length': Buffer.byteLength(body)
-        },
-        body
-    });
+    // Retry up to 3 times
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        console.log(`   Attempt ${attempt}/3...`);
+        const r = await httpsRequest('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'Content-Length': Buffer.byteLength(requestBody)
+            },
+            body: requestBody
+        });
 
-    const article = r.data.choices?.[0]?.message?.content || '';
-    console.log(`   Generated ${article.length} chars`);
-    return article;
+        // Debug: log the response structure
+        console.log(`   API status: ${r.status}`);
+        if (r.data.error) {
+            console.log(`   API error: ${JSON.stringify(r.data.error).substring(0, 200)}`);
+            if (attempt < 3) { await new Promise(r => setTimeout(r, 2000)); continue; }
+        }
+
+        let article = r.data.choices?.[0]?.message?.content || '';
+        console.log(`   Raw content length: ${article.length}`);
+        console.log(`   First 100 chars: ${article.substring(0, 100)}`);
+
+        // Strip markdown code fences if present
+        article = article.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
+
+        if (article.length > 50) {
+            console.log(`   Final article: ${article.length} chars`);
+            return article;
+        }
+
+        console.log(`   Article too short (${article.length} chars), retrying...`);
+        if (attempt < 3) await new Promise(r => setTimeout(r, 2000));
+    }
+
+    // Fallback: generate a basic article from movie data
+    console.log('   All retries failed. Using fallback article.');
+    return generateFallbackArticle(movieData);
+}
+
+function generateFallbackArticle(m) {
+    return `
+<p>Looking for where to watch ${m.title} (${m.year}) online? This ${m.contentType.toLowerCase()} has been making waves with a rating of ${m.rating}/10, and for good reason. ${m.overview} <a href='${m.movieUrl}' target='_blank' class='hdw-watch-btn'>Watch ${m.title} Now</a></p>
+
+<h2>Why You Should Watch ${m.title}</h2>
+<p>${m.title} is one of the most talked-about ${m.contentType.toLowerCase()}s of ${m.year}. With its compelling storyline and strong performances, it has quickly become a favorite among viewers. Whether you are a fan of gripping drama, intense action, or thought-provoking narratives, this ${m.contentType.toLowerCase()} delivers on all fronts. You can <a href='${m.movieUrl}' target='_blank'>Stream ${m.title} free in HD</a> right now and experience the excitement for yourself. The film has garnered praise from critics and audiences alike, making it a must-watch for anyone who loves quality entertainment.</p>
+
+<h2>Plot Summary</h2>
+<p>${m.overview} The story takes unexpected turns that keep viewers engaged from start to finish. Every scene is crafted with precision, building tension and emotional depth that makes <a href='${m.movieUrl}' target='_blank'>${m.title} online</a> streaming an immersive experience. The characters are well-developed, and the narrative arc is both satisfying and thought-provoking, leaving audiences wanting more.</p>
+
+<h2>Where to Watch ${m.title} Online</h2>
+<p>You can watch ${m.title} (${m.year}) in full HD on <a href='${m.homeUrl}' target='_blank'>HDWatchZone</a>, your premier destination for free movie streaming. No sign-up required and no subscription fees — just click and watch. HDWatchZone offers the best streaming experience with fast loading times and crystal-clear quality.</p>
+
+<p>In conclusion, ${m.title} is a standout ${m.contentType.toLowerCase()} that deserves your attention. With its stellar cast, engaging plot, and high production value, it is one of the best releases of ${m.year}. Do not miss out — <a href='${m.movieUrl}' target='_blank'>Start watching ${m.title} now</a> and enjoy a cinematic experience from the comfort of your home.</p>
+`.trim();
 }
 
 // ── Step 4: Format Premium HTML ──
