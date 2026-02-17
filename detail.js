@@ -283,8 +283,13 @@ function addReviewsToSchema(baseSchema, reviews) {
         return rev;
     });
 
-    const enhanced = Object.assign({}, baseSchema);
-    enhanced.review = reviewObjs;
+    const enhanced = JSON.parse(JSON.stringify(baseSchema));
+    // Inject reviews into the Movie/TVSeries object inside @graph
+    if (enhanced['@graph'] && enhanced['@graph'].length > 0) {
+        enhanced['@graph'][0].review = reviewObjs;
+    } else {
+        enhanced.review = reviewObjs;
+    }
     return enhanced;
 }
 
@@ -329,8 +334,7 @@ function injectBreadcrumbs(data, type) {
 }
 
 function buildMovieSchema(m) {
-    return {
-        '@context': 'https://schema.org',
+    const movieSchema = {
         '@type': 'Movie',
         name: m.title,
         description: m.overview,
@@ -348,11 +352,34 @@ function buildMovieSchema(m) {
         } : undefined,
         url: `${TMDB.SITE_URL}/movie/${m.id}`
     };
+
+    const thumbnails = [imgUrl(m.poster_path, 'w780')];
+    if (m.backdrop_path) thumbnails.push(backdropUrl(m.backdrop_path));
+
+    const videoSchema = {
+        '@type': 'VideoObject',
+        name: `Watch ${m.title} Online in HD`,
+        description: m.overview || `Stream ${m.title} in HD quality for free on HD Watchzone.`,
+        thumbnailUrl: thumbnails,
+        uploadDate: m.release_date || undefined,
+        duration: m.runtime ? `PT${m.runtime}M` : undefined,
+        contentUrl: `${TMDB.SITE_URL}/movie/${m.id}`,
+        embedUrl: SERVERS[0].movieUrl(m.id),
+        interactionStatistic: m.vote_count > 0 ? {
+            '@type': 'InteractionCounter',
+            interactionType: { '@type': 'WatchAction' },
+            userInteractionCount: m.vote_count
+        } : undefined
+    };
+
+    return {
+        '@context': 'https://schema.org',
+        '@graph': [movieSchema, videoSchema]
+    };
 }
 
 function buildTVSchema(tv) {
-    return {
-        '@context': 'https://schema.org',
+    const tvSchema = {
         '@type': 'TVSeries',
         name: tv.name,
         description: tv.overview,
@@ -369,6 +396,29 @@ function buildTVSchema(tv) {
             ratingCount: tv.vote_count
         } : undefined,
         url: `${TMDB.SITE_URL}/tv/${tv.id}`
+    };
+
+    const thumbnails = [imgUrl(tv.poster_path, 'w780')];
+    if (tv.backdrop_path) thumbnails.push(backdropUrl(tv.backdrop_path));
+
+    const videoSchema = {
+        '@type': 'VideoObject',
+        name: `Watch ${tv.name} Online in HD`,
+        description: tv.overview || `Stream ${tv.name} in HD quality for free on HD Watchzone.`,
+        thumbnailUrl: thumbnails,
+        uploadDate: tv.first_air_date || undefined,
+        contentUrl: `${TMDB.SITE_URL}/tv/${tv.id}`,
+        embedUrl: SERVERS[0].tvUrl(tv.id, 1, 1),
+        interactionStatistic: tv.vote_count > 0 ? {
+            '@type': 'InteractionCounter',
+            interactionType: { '@type': 'WatchAction' },
+            userInteractionCount: tv.vote_count
+        } : undefined
+    };
+
+    return {
+        '@context': 'https://schema.org',
+        '@graph': [tvSchema, videoSchema]
     };
 }
 
