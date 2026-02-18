@@ -81,7 +81,8 @@ async function generateSitemap() {
     console.log(`Total content URLs: ${movies.size + tvShows.size}`);
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
     
     <!-- Homepage -->
     <url>
@@ -94,48 +95,90 @@ async function generateSitemap() {
     <!-- Movie Detail Pages (${movies.size} movies) -->
 `;
 
+    let movieCount = 0;
     for (const [id, slug] of movies) {
-        xml += `    <url><loc>${SITE}/movie/${id}-${slug}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+        xml += `    <url><loc>${SITE}/movie/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>`;
+        if (movieCount < 100) {
+            const title = slug.replace(/-/g, ' ');
+            xml += `\n        <video:video>`;
+            xml += `\n            <video:thumbnail_loc>${SITE}/logo.png</video:thumbnail_loc>`;
+            xml += `\n            <video:title>Watch ${title} Online in HD</video:title>`;
+            xml += `\n            <video:description>Stream ${title} in HD quality for free on HD Watchzone.</video:description>`;
+            xml += `\n            <video:content_loc>${SITE}/movie/${id}-${slug}</video:content_loc>`;
+            xml += `\n        </video:video>`;
+        }
+        xml += `</url>\n`;
+        movieCount++;
     }
 
     xml += `\n    <!-- TV Show Detail Pages (${tvShows.size} shows) -->\n`;
 
+    let tvCount = 0;
     for (const [id, slug] of tvShows) {
-        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>`;
+        if (tvCount < 100) {
+            const title = slug.replace(/-/g, ' ');
+            xml += `\n        <video:video>`;
+            xml += `\n            <video:thumbnail_loc>${SITE}/logo.png</video:thumbnail_loc>`;
+            xml += `\n            <video:title>Watch ${title} Online in HD</video:title>`;
+            xml += `\n            <video:description>Stream ${title} in HD quality for free on HD Watchzone.</video:description>`;
+            xml += `\n            <video:content_loc>${SITE}/tv/${id}-${slug}</video:content_loc>`;
+            xml += `\n        </video:video>`;
+        }
+        xml += `</url>\n`;
+        tvCount++;
     }
 
     xml += `
-    <!-- Genre Pages -->
-    <url><loc>${SITE}/#/genre/28</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/35</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/18</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/27</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/878</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/16</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/10749</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/53</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/99</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/10751</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/12</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/14</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/36</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/10402</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/9648</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/10752</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-    <url><loc>${SITE}/#/genre/37</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-
-    <!-- Legal & Help Pages -->
-    <url><loc>${SITE}/#/faq</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-    <url><loc>${SITE}/#/help</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-    <url><loc>${SITE}/#/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-    <url><loc>${SITE}/#/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-    <url><loc>${SITE}/#/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-
 </urlset>`;
 
     const fs = require('fs');
     fs.writeFileSync('sitemap.xml', xml, 'utf-8');
     console.log(`\nSitemap written to sitemap.xml (${(xml.length / 1024).toFixed(1)} KB)`);
+    console.log(`Video tags added for top ${Math.min(movieCount, 100)} movies and ${Math.min(tvCount, 100)} TV shows`);
+
+    // Submit top URLs to IndexNow for instant indexing (Bing, Yandex, etc.)
+    await pingIndexNow(movies, tvShows);
+}
+
+const INDEXNOW_KEY = '540bb093e1ba44239f8dc4bb75201b7d';
+
+async function pingIndexNow(movies, tvShows) {
+    console.log('\nPinging IndexNow...');
+
+    // Collect top 100 movie + 100 TV URLs + homepage
+    const urlList = [`${SITE}/`];
+    let count = 0;
+    for (const [id, slug] of movies) {
+        if (count >= 100) break;
+        urlList.push(`${SITE}/movie/${id}-${slug}`);
+        count++;
+    }
+    count = 0;
+    for (const [id, slug] of tvShows) {
+        if (count >= 100) break;
+        urlList.push(`${SITE}/tv/${id}-${slug}`);
+        count++;
+    }
+
+    const payload = {
+        host: 'hdwatchzone.com',
+        key: INDEXNOW_KEY,
+        keyLocation: `${SITE}/${INDEXNOW_KEY}.txt`,
+        urlList
+    };
+
+    try {
+        const res = await fetch('https://api.indexnow.org/indexnow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        console.log(`IndexNow response: ${res.status} ${res.statusText}`);
+        console.log(`Submitted ${urlList.length} URLs for instant indexing`);
+    } catch (err) {
+        console.warn('IndexNow ping failed (non-blocking):', err.message);
+    }
 }
 
 generateSitemap().catch(console.error);

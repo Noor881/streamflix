@@ -108,14 +108,14 @@
             "sizes": "1920x1080",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "StreamFlix Home - Desktop"
+            "label": "HD Watchzone Home - Desktop"
         },
         {
             "src": "/screenshots/mobile-home.png",
             "sizes": "390x844",
             "type": "image/png",
             "form_factor": "narrow",
-            "label": "StreamFlix Home - Mobile"
+            "label": "HD Watchzone Home - Mobile"
         }
     ],
     "related_applications": [],
