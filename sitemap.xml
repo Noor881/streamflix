@@ -10,7 +10,6 @@
         <priority>1.0</priority>
     </url>
 
-<<<<<<< HEAD
     <!-- Movie Detail Pages (660 movies) -->
     <url><loc>https://hdwatchzone.com/movie/434853-spacetime</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://hdwatchzone.com/movie/840464-greenland-2-migration</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -1432,7 +1431,6 @@
     <url><loc>https://hdwatchzone.com/#/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
     <url><loc>https://hdwatchzone.com/#/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
     <url><loc>https://hdwatchzone.com/#/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-=======
     <!-- Movie Detail Pages (693 movies) -->
     <url><loc>https://hdwatchzone.com/movie/434853-spacetime</loc><lastmod>2026-02-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority>
         <video:video>
@@ -4106,6 +4104,5 @@
     <url><loc>https://hdwatchzone.com/tv/285788-tojima-wants-to-be-a-kamen-rider</loc><lastmod>2026-02-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
     <url><loc>https://hdwatchzone.com/tv/82684-that-time-i-got-reincarnated-as-a-slime</loc><lastmod>2026-02-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
     <url><loc>https://hdwatchzone.com/tv/254492-hana-kimi</loc><lastmod>2026-02-18</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
->>>>>>> e0cdba5f2984a7f77b27ccf870d8e258fbd059ea
 
 </urlset>
