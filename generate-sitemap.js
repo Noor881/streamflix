@@ -97,17 +97,7 @@ async function generateSitemap() {
 
     let movieCount = 0;
     for (const [id, slug] of movies) {
-        xml += `    <url><loc>${SITE}/movie/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>`;
-        if (movieCount < 100) {
-            const title = slug.replace(/-/g, ' ');
-            xml += `\n        <video:video>`;
-            xml += `\n            <video:thumbnail_loc>${SITE}/logo.png</video:thumbnail_loc>`;
-            xml += `\n            <video:title>Watch ${title} Online in HD</video:title>`;
-            xml += `\n            <video:description>Stream ${title} in HD quality for free on HD Watchzone.</video:description>`;
-            xml += `\n            <video:content_loc>${SITE}/movie/${id}-${slug}</video:content_loc>`;
-            xml += `\n        </video:video>`;
-        }
-        xml += `</url>\n`;
+        xml += `    <url><loc>${SITE}/movie/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
         movieCount++;
     }
 
@@ -115,17 +105,7 @@ async function generateSitemap() {
 
     let tvCount = 0;
     for (const [id, slug] of tvShows) {
-        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>`;
-        if (tvCount < 100) {
-            const title = slug.replace(/-/g, ' ');
-            xml += `\n        <video:video>`;
-            xml += `\n            <video:thumbnail_loc>${SITE}/logo.png</video:thumbnail_loc>`;
-            xml += `\n            <video:title>Watch ${title} Online in HD</video:title>`;
-            xml += `\n            <video:description>Stream ${title} in HD quality for free on HD Watchzone.</video:description>`;
-            xml += `\n            <video:content_loc>${SITE}/tv/${id}-${slug}</video:content_loc>`;
-            xml += `\n        </video:video>`;
-        }
-        xml += `</url>\n`;
+        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
         tvCount++;
     }
 
