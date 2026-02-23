@@ -19,10 +19,6 @@
         {
             "source": "/admin",
             "destination": "/admin.html"
-        },
-        {
-            "source": "/:path*",
-            "destination": "/index.html"
         }
     ],
     "headers": [
