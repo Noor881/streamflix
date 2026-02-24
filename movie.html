@@ -19,6 +19,22 @@
 
     <!-- Primary Meta (updated by JS) -->
     <title>Watch Movie - HD Watchzone</title>
+    <!-- Fast SEO Injection from URL so bots don't index identical empty states -->
+    <script>
+        (function () {
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            if (parts.length >= 3 && parts[1] === 'movie') {
+                const idSlug = parts[2];
+                const slugMatch = idSlug.match(/^\d+-(.+)$/);
+                if (slugMatch) {
+                    let titleStr = slugMatch[1].replace(/-/g, ' ');
+                    titleStr = titleStr.replace(/\b\w/g, c => c.toUpperCase());
+                    document.title = "Watch " + titleStr + " In HD Free - HD Watchzone";
+                }
+            }
+        })();
+    </script>
     <meta name="description" content="Watch movies in HD on HD Watchzone. Free streaming, no sign-up required.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="language" content="English">
@@ -41,8 +57,7 @@
     <meta name="twitter:description" content="Watch movies in HD on HD Watchzone.">
     <meta name="twitter:image" content="https://hdwatchzone.com/logo.png">
 
-    <!-- Canonical -->
-    <link rel="canonical" href="">
+    <!-- Canonical (dynamically injected via app.js) -->
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" sizes="any">

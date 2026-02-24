@@ -105,7 +105,7 @@ async function generateSitemap() {
 
     let tvCount = 0;
     for (const [id, slug] of tvShows) {
-        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+        xml += `    <url><loc>${SITE}/tv/${id}-${slug}/1/1</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
         tvCount++;
     }
 
