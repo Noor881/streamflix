@@ -1,12 +1,12 @@
 /* ==========================================
-   HD Watchzone Detail Page Engine
+   Streamflix Detail Page Engine
    ========================================== */
 
 const TMDB = {
     KEY: 'd74b73cd4563f614919e6493152fbc1e',
     BASE: 'https://api.themoviedb.org/3',
     IMG: 'https://image.tmdb.org/t/p',
-    SITE_URL: 'https://hdwatchzone.com'
+    SITE_URL: 'https://streamflix.com'
 };
 
 const SERVERS = [
@@ -123,7 +123,7 @@ function generateMetaKeywords(type, title, data = {}) {
 }
 
 function updateMeta(data, type) {
-    const title = `Watch ${data.title || data.name} | HD Watchzone`;
+    const title = `Watch ${data.title || data.name} | Streamflix`;
 
     // Build rich meta description (120-300 chars)
     const desc = generateRichDescription(data, type);
@@ -131,7 +131,7 @@ function updateMeta(data, type) {
     let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
     // Use logo as fallback if image is data URI (placeholder) or empty
     if (!image || image.startsWith('data:')) {
-        image = 'https://hdwatchzone.com/logo.png';
+        image = 'https://streamflix.com/logo.png';
     }
     const pageUrl = `${TMDB.SITE_URL}/${type}/${data.id}`;
 
@@ -210,14 +210,14 @@ function generateRichDescription(data, type) {
     }
 
     // Add call to action
-    parts.push('Free streaming on HD Watchzone');
+    parts.push('Free streaming on Streamflix');
 
     // Join and ensure length constraints
     let description = parts.join('. ').replace(/\.\./g, '.');
 
     // Ensure minimum 120 characters
     if (description.length < 120 && data.overview) {
-        description = `Watch ${mediaTitle} online in HD. ${data.overview.substring(0, 200)}. Free streaming on HD Watchzone.`;
+        description = `Watch ${mediaTitle} online in HD. ${data.overview.substring(0, 200)}. Free streaming on Streamflix.`;
     }
 
     // Ensure maximum 300 characters
@@ -359,7 +359,7 @@ function buildMovieSchema(m) {
     const videoSchema = {
         '@type': 'VideoObject',
         name: `Watch ${m.title} Online in HD`,
-        description: m.overview || `Stream ${m.title} in HD quality for free on HD Watchzone.`,
+        description: m.overview || `Stream ${m.title} in HD quality for free on Streamflix.`,
         thumbnailUrl: thumbnails,
         uploadDate: m.release_date || undefined,
         duration: m.runtime ? `PT${m.runtime}M` : undefined,
@@ -404,7 +404,7 @@ function buildTVSchema(tv) {
     const videoSchema = {
         '@type': 'VideoObject',
         name: `Watch ${tv.name} Online in HD`,
-        description: tv.overview || `Stream ${tv.name} in HD quality for free on HD Watchzone.`,
+        description: tv.overview || `Stream ${tv.name} in HD quality for free on Streamflix.`,
         thumbnailUrl: thumbnails,
         uploadDate: tv.first_air_date || undefined,
         contentUrl: `${TMDB.SITE_URL}/tv/${tv.id}`,
@@ -425,7 +425,7 @@ function buildTVSchema(tv) {
 /* ---------- Share ---------- */
 function buildShareButtons(title, url) {
     const encoded = encodeURIComponent(url);
-    const text = encodeURIComponent(`Watch ${title} on HD Watchzone`);
+    const text = encodeURIComponent(`Watch ${title} on Streamflix`);
     return `
         <div class="share-buttons">
             <button class="share-btn twitter" onclick="window.open('https://twitter.com/intent/tweet?text=${text}&url=${encoded}','_blank','width=600,height=400')">
@@ -584,7 +584,7 @@ function buildDetailFooter() {
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; ${new Date().getFullYear()} HD Watchzone. All content sourced from The Movie Database (TMDB). HD Watchzone is not responsible for third-party content.</p>
+                <p>&copy; ${new Date().getFullYear()} Streamflix. All content sourced from The Movie Database (TMDB). Streamflix is not responsible for third-party content.</p>
             </div>
         </footer>`;
 }
@@ -603,8 +603,8 @@ function renderNav() {
         <nav class="detail-nav" id="detail-nav">
             <div class="nav-left">
                 <a href="/" class="nav-logo">
-                    <img src="/logo.png" alt="HD Watchzone" style="height: 50px; vertical-align: middle; margin-right: 10px; mix-blend-mode: screen; filter: invert(1);">
-                    HD Watchzone
+                    <img src="/logo.png" alt="Streamflix" style="height: 50px; vertical-align: middle; margin-right: 10px; mix-blend-mode: screen; filter: invert(1);">
+                    Streamflix
                 </a>
                 <button class="nav-back" onclick="history.back()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>

@@ -6,7 +6,7 @@
 
 const TMDB_KEY = 'd74b73cd4563f614919e6493152fbc1e';
 const BASE = 'https://api.themoviedb.org/3';
-const SITE = 'https://hdwatchzone.com';
+const SITE = 'https://streamflix.com';
 const TODAY = new Date().toISOString().split('T')[0];
 
 function createSlug(text) {
@@ -142,7 +142,7 @@ async function pingIndexNow(movies, tvShows) {
     }
 
     const payload = {
-        host: 'hdwatchzone.com',
+        host: 'streamflix.com',
         key: INDEXNOW_KEY,
         keyLocation: `${SITE}/${INDEXNOW_KEY}.txt`,
         urlList
