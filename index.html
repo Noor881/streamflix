@@ -377,6 +377,30 @@
                     <span>English</span>
                 </div>
             </div>
+            <!-- Visitor Counter -->
+            <div class="visitor-counter"
+                style="margin-top: 20px; text-align: center; color: var(--text-muted, rgba(255, 255, 255, 0.7)); font-size: 0.9rem; align-items: center; justify-content: center; display: flex; gap: 20px;">
+                <span style="display: flex; align-items: center;">
+                    <svg style="margin-right: 6px;" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Current Online: <strong id="live-visitors"
+                        style="color: var(--color-primary, #e50914); margin-left: 6px; font-weight: 700;">...</strong>
+                </span>
+                <span style="display: flex; align-items: center;">
+                    <svg style="margin-right: 6px;" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Total Visits: <strong id="total-visitors"
+                        style="color: #fff; margin-left: 6px; font-weight: 700;">...</strong>
+                </span>
+            </div>
         </div>
     </footer>
 
@@ -401,6 +425,7 @@
     <script src="/app.min.js" defer></script>
     <script src="/mobile-consent.min.js" defer></script>
     <script src="/scripts/combined.min.js" defer></script>
+    <script type="module" src="/scripts/visitor-counter.js" defer></script>
 </body>
 
 </html>
