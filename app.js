@@ -1,5 +1,5 @@
 /* ==========================================
-   StreamFlix - Main Application
+   HD Watchzone - Main Application
    ========================================== */
 
 // Configuration
@@ -14,8 +14,8 @@ const CONFIG = {
 
     // Local Storage Keys
     STORAGE_KEYS: {
-        WATCH_HISTORY: 'streamflix_watch_history',
-        CONTINUE_WATCHING: 'streamflix_continue_watching'
+        WATCH_HISTORY: 'hdwatchzone_watch_history',
+        CONTINUE_WATCHING: 'hdwatchzone_continue_watching'
     }
 };
 
