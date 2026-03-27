@@ -33,11 +33,11 @@
     <meta name="description"
         content="Watch thousands of movies, TV shows, anime, and web series in HD quality for free. Stream latest releases and trending shows like Spartacus: House of Ashur online with no sign-up required.">
     <meta name="keywords"
-        content="free movies, watch movies online, stream tv shows, anime streaming, animation movies, HD movies, free streaming, watch anime online, hd watchzone, movie streaming site, tv series online, latest movies, trending movies, watch free, online movies, streaming platform, online cinema, video streaming, full movie online, watch online free, stream free, latest releases, new releases, web series, watch series free, free movie streaming, HD streaming, cineby, fmovies, netmirror, cineby alternative, fmovies alternative, netmirror alternative, spartacus house of ashur, house of ashur watch, watch spartacus online, streaming in india, watch series india, watch full episodes free, stream web series, free tv shows online, watch anime free">
+        content="free movies online, watch movies online free, free streaming site, watch TV shows online free, anime streaming free, HD movies online, watch full movies free no signup, free movie site no registration, stream movies HD, watch series online free, free online cinema, watch episodes free, best free streaming sites 2025, fmovies alternative, netmirror alternative, cineby alternative, sflix alternative, watch anime free HD, free anime streaming site, watch web series free, latest movies 2025, new movies streaming, free TV series online, watch bollywood movies free, watch hollywood movies free, action movies free, comedy movies online, drama series free, horror movies streaming, sci-fi movies online, watch animation free, cartoon streaming, watch without account, no login streaming, hd watchzone, hdwatchzone, watch spartacus house of ashur, watch streaming india, free streaming india, binge watch free, latest web series free">
     <meta name="author" content="HD Watchzone">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="language" content="English">
-    <meta name="revisit-after" content="1 days">
+
     <meta name="distribution" content="global">
     <meta name="rating" content="general">
 
@@ -87,9 +87,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Content Security Policy (basic) -->
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' https:; script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://api.themoviedb.org https://www.googletagmanager.com https://www.google-analytics.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+    <!-- CSP is enforced via vercel.json server-side headers, not meta tag, to avoid blocking ad/analytics scripts -->
 
     <!-- Preconnect links already declared above (lines 34-35) for fonts -->
     <!-- Added dns-prefetch for API performance -->
@@ -97,9 +95,6 @@
     <link rel="dns-prefetch" href="https://image.tmdb.org">
 
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
 
     <!-- Styles (Minified for Performance) -->
     <link rel="stylesheet" href="/styles.min.css">
@@ -178,13 +173,115 @@
                 "position": 3,
                 "name": "TV Shows",
                 "item": "https://hdwatchzone.com/#/tv"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Anime",
+                "item": "https://hdwatchzone.com/#/anime"
             }
+        ]
+    }
+    </script>
+
+    <!-- Structured Data - FAQPage (Rich Results) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Is HD Watchzone free to use?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, HD Watchzone is completely free. You can watch movies, TV shows, and anime in HD quality without any subscription or sign-up required."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do I need to create an account to watch movies on HD Watchzone?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No account or registration is required. Simply visit HD Watchzone and start streaming movies, TV series, and anime instantly for free."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What types of content are available on HD Watchzone?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "HD Watchzone offers thousands of movies, TV shows, anime series, web series, and animated content across genres like Action, Comedy, Drama, Horror, Sci-Fi, Romance, and more — all in HD quality."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I watch HD Watchzone on mobile?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, HD Watchzone is fully optimized for mobile devices. You can stream on any smartphone, tablet, laptop, or desktop browser without installing any app."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What are alternatives to Fmovies or Netmirror for free streaming?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "HD Watchzone is a top alternative to Fmovies, Netmirror, and Cineby. It offers the same free, no-login HD streaming experience with a wider library of movies, TV shows, and anime."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <!-- Structured Data - ItemList (Top Genres) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Browse Free Movies & Shows by Genre",
+        "description": "Explore thousands of free HD movies, TV shows, and anime by genre on HD Watchzone.",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Action Movies", "url": "https://hdwatchzone.com/#/genre/28"},
+            {"@type": "ListItem", "position": 2, "name": "Comedy Movies", "url": "https://hdwatchzone.com/#/genre/35"},
+            {"@type": "ListItem", "position": 3, "name": "Drama", "url": "https://hdwatchzone.com/#/genre/18"},
+            {"@type": "ListItem", "position": 4, "name": "Horror Movies", "url": "https://hdwatchzone.com/#/genre/27"},
+            {"@type": "ListItem", "position": 5, "name": "Sci-Fi Movies", "url": "https://hdwatchzone.com/#/genre/878"},
+            {"@type": "ListItem", "position": 6, "name": "Animation", "url": "https://hdwatchzone.com/#/genre/16"},
+            {"@type": "ListItem", "position": 7, "name": "Anime", "url": "https://hdwatchzone.com/#/anime"},
+            {"@type": "ListItem", "position": 8, "name": "TV Shows", "url": "https://hdwatchzone.com/#/tv"}
         ]
     }
     </script>
 </head>
 
 <body>
+    <!-- Noscript SEO fallback: visible to crawlers & users with JS disabled -->
+    <noscript>
+        <div style="max-width:900px;margin:40px auto;padding:20px;font-family:sans-serif;color:#fff;background:#141414;">
+            <h1>HD Watchzone — Free HD Movie & TV Show Streaming</h1>
+            <p>HD Watchzone lets you watch thousands of movies, TV shows, anime, and web series in HD quality — completely free, no sign-up required. Browse top genres including Action, Comedy, Drama, Horror, Sci-Fi, and Animation. Stream the latest releases and binge full seasons of popular series including anime like Naruto, Attack on Titan, and more.</p>
+            <h2>Browse by Category</h2>
+            <ul>
+                <li><a href="/#/movies" style="color:#e50914;">Free Movies</a></li>
+                <li><a href="/#/tv" style="color:#e50914;">Free TV Shows</a></li>
+                <li><a href="/#/anime" style="color:#e50914;">Free Anime Streaming</a></li>
+                <li><a href="/#/new" style="color:#e50914;">New &amp; Popular</a></li>
+            </ul>
+            <h2>Popular Genres</h2>
+            <ul>
+                <li><a href="/#/genre/28" style="color:#e50914;">Action Movies</a></li>
+                <li><a href="/#/genre/35" style="color:#e50914;">Comedy Movies</a></li>
+                <li><a href="/#/genre/18" style="color:#e50914;">Drama</a></li>
+                <li><a href="/#/genre/27" style="color:#e50914;">Horror</a></li>
+                <li><a href="/#/genre/878" style="color:#e50914;">Sci-Fi</a></li>
+                <li><a href="/#/genre/16" style="color:#e50914;">Animation</a></li>
+            </ul>
+            <p>HD Watchzone is a top free alternative to Fmovies, Netmirror, and Cineby. Stream in HD on any device.</p>
+            <p><strong>Please enable JavaScript for the full streaming experience.</strong></p>
+        </div>
+    </noscript>
+
     <!-- Header -->
     <header class="header" role="banner">
         <div class="header-container">

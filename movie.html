@@ -2,11 +2,18 @@
 <html lang="en">
 
 <head>
+    <!-- Admaven Popunder Ad Network -->
+    <meta name='admaven-placement' content=BqjsEqTU5>
+    <script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1245130"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="gUv3UPUWfc-0jPQ4eosSHLGJvSnKrdCyc8x_bfResfg" />
+
+    <!-- Facebook Domain Verification -->
+    <meta name="facebook-domain-verification" content="8bgdrm3l1z17cy9ahrb2aesr3htirg" />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHQKVYP1WN"></script>
@@ -22,21 +29,59 @@
     <!-- Fast SEO Injection from URL so bots don't index identical empty states -->
     <script>
         (function () {
-            const path = window.location.pathname;
-            const parts = path.split('/');
+            var path = window.location.pathname;
+            var parts = path.split('/');
             if (parts.length >= 3 && parts[1] === 'movie') {
-                const idSlug = parts[2];
-                const slugMatch = idSlug.match(/^\d+-(.+)$/);
-                if (slugMatch) {
-                    let titleStr = slugMatch[1].replace(/-/g, ' ');
-                    titleStr = titleStr.replace(/\b\w/g, c => c.toUpperCase());
-                    document.title = "Watch " + titleStr + " In HD Free - HD Watchzone";
+                var idSlug = parts[2];
+                var slugMatch = idSlug.match(/^\d+-(.+)$/);
+                var titleStr = slugMatch
+                    ? slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); })
+                    : 'Watch Movie';
+                var fullTitle = 'Watch ' + titleStr + ' In HD Free - HD Watchzone';
+                var desc = 'Watch ' + titleStr + ' online in HD for free on HD Watchzone. No sign-up required. Stream movies instantly.';
+                var canonUrl = 'https://hdwatchzone.com' + path;
+
+                document.title = fullTitle;
+
+                // Canonical
+                var canonical = document.createElement('link');
+                canonical.rel = 'canonical';
+                canonical.href = canonUrl;
+                document.head.appendChild(canonical);
+
+                // OG tags
+                var setMeta = function(prop, val, byName) {
+                    var el = document.querySelector(byName ? 'meta[name="' + prop + '"]' : 'meta[property="' + prop + '"]');
+                    if (el) el.setAttribute('content', val);
+                };
+                setMeta('og:url', canonUrl);
+                setMeta('og:title', fullTitle);
+                setMeta('og:description', desc);
+                setMeta('twitter:title', fullTitle, true);
+                setMeta('twitter:description', desc, true);
+
+                // Seed schema with slug-derived data (JS will overwrite with full TMDB data)
+                var schemaEl = document.getElementById('schema-movie');
+                if (schemaEl) {
+                    schemaEl.textContent = JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Movie',
+                        'name': titleStr,
+                        'description': desc,
+                        'url': canonUrl,
+                        'embedUrl': canonUrl,
+                        'potentialAction': {
+                            '@type': 'WatchAction',
+                            'target': canonUrl
+                        }
+                    });
                 }
             }
         })();
     </script>
-    <meta name="description" content="Watch movies in HD on HD Watchzone. Free streaming, no sign-up required.">
-    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="description" content="Watch movies in HD on HD Watchzone. Free streaming, no sign-up required. Stream the latest blockbusters, action films, comedy, drama, horror and more in full HD quality.">
+    <meta name="keywords" content="watch movies online free, free movie streaming, HD movies online, watch full movie free, stream movies HD, free online movies no signup, watch movies without registration, best free movie sites, movie streaming site, watch movies in HD, full movies free, online cinema, watch new movies, latest movies 2024 2025, watch blockbusters free, fmovies alternative, cineby alternative, netmirror alternative">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="language" content="English">
 
     <!-- Open Graph (updated by JS for social crawlers that run JS) -->
@@ -88,8 +133,8 @@
 
 <body>
     <div id="detail-app">
-        <!-- Static H1 for SEO crawlers (replaced by JS) -->
-        <h1 style="position:absolute;left:-9999px;" id="static-h1">Watch Movie on HD Watchzone</h1>
+        <!-- Static H1 for SEO crawlers (updated by JS with movie title) -->
+        <h1 class="visually-hidden" id="static-h1">Watch Movie on HD Watchzone</h1>
         <div class="detail-loading">
             <div class="loader"></div>
             <p>Loading movie...</p>

@@ -1,0 +1,47 @@
+{
+  "css": {
+    "enabled": true,
+    "lastGenerated": "2026-03-27T18:41:45.656Z",
+    "observationCount": 2,
+    "skillCount": 0,
+    "domain": "css",
+    "triggerGlobs": [
+      "**/*.css",
+      "**/*.scss"
+    ],
+    "description": "Css for streamflix. ."
+  },
+  "html": {
+    "enabled": true,
+    "lastGenerated": "2026-03-27T18:41:45.653Z",
+    "observationCount": 7,
+    "skillCount": 0,
+    "domain": "html",
+    "triggerGlobs": [
+      "**/*.html"
+    ],
+    "description": "Html for streamflix. 2 fixes."
+  },
+  "project": {
+    "enabled": true,
+    "lastGenerated": "2026-03-27T18:41:45.654Z",
+    "observationCount": 58,
+    "skillCount": 0,
+    "domain": "project",
+    "triggerGlobs": [
+      "**/*"
+    ],
+    "description": "Project for streamflix. 23 gotchas, 33 conventions."
+  },
+  "problem-fix": {
+    "enabled": true,
+    "lastGenerated": "2026-03-27T18:41:45.659Z",
+    "observationCount": 0,
+    "skillCount": 1,
+    "domain": "problem-fix",
+    "triggerGlobs": [
+      "**/*"
+    ],
+    "description": "Problem Fix for streamflix. ."
+  }
+}

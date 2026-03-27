@@ -60,6 +60,19 @@
             ]
         },
         {
+            "source": "/(.*\\.html)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "no-cache, no-store, must-revalidate"
+                },
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+                }
+            ]
+        },
+        {
             "source": "/sw.js",
             "headers": [
                 {
