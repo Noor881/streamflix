@@ -14,7 +14,7 @@ Disallow: /movie/928480-monster-summer
 # Sitemap location
 Sitemap: https://hdwatchzone.com/sitemap.xml
 
-# Explicit allow for major search engines
+# Major search engines
 User-agent: Googlebot
 Allow: /
 Disallow: /admin
@@ -22,3 +22,38 @@ Disallow: /admin
 User-agent: Bingbot
 Allow: /
 Disallow: /admin
+
+# AI crawlers - Allow (beneficial for AI Overviews & AI search discovery)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# AI crawlers - Block (data miners, no SEO benefit)
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /

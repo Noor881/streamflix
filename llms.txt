@@ -1,0 +1,29 @@
+# HD Watchzone
+> Free HD streaming platform for movies, TV shows, anime, and animated content — no sign-up required.
+
+HD Watchzone is a free online streaming site offering thousands of movies, TV series, anime, and web series in HD quality. Users can watch instantly without creating an account or any subscription.
+
+## Key Pages
+
+- Homepage: https://hdwatchzone.com/
+- Movies: https://hdwatchzone.com/movies
+- TV Shows: https://hdwatchzone.com/tv
+- Anime: https://hdwatchzone.com/anime
+- New & Popular: https://hdwatchzone.com/new
+- Action Movies: https://hdwatchzone.com/genre/28
+- Comedy Movies: https://hdwatchzone.com/genre/35
+- Drama: https://hdwatchzone.com/genre/18
+- Horror Movies: https://hdwatchzone.com/genre/27
+- Sci-Fi Movies: https://hdwatchzone.com/genre/878
+- Animation: https://hdwatchzone.com/genre/16
+
+## Content
+
+HD Watchzone provides access to thousands of titles across all genres. Content is sourced via third-party embeds and is powered by The Movie Database (TMDB) metadata. The platform is free and ad-supported.
+
+## Contact & Legal
+
+- Privacy Policy: https://hdwatchzone.com/privacy
+- Terms of Use: https://hdwatchzone.com/terms
+- Contact: https://hdwatchzone.com/contact
+- DMCA: https://hdwatchzone.com/legal

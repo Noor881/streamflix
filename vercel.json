@@ -24,6 +24,54 @@
             "destination": "/tv.html?id=:id"
         },
         {
+            "source": "/movies",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/tv",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/anime",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/new",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/my-list",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/genre/:id",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/search",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/faq",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/privacy",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/terms",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/contact",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/legal",
+            "destination": "/index.html"
+        },
+        {
             "source": "/admin",
             "destination": "/admin.html"
         }
@@ -55,6 +103,10 @@
                 {
                     "key": "Strict-Transport-Security",
                     "value": "max-age=31536000; includeSubDomains; preload"
+                },
+                {
+                    "key": "Content-Security-Policy",
+                    "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.cloudfront.net *.googleapis.com *.googletagmanager.com *.ahrefs.com *.analytics.ahrefs.com; img-src * data: blob:; media-src * blob:; frame-src *; connect-src *; font-src * data:"
                 },
                 {
                     "key": "Cross-Origin-Opener-Policy",
@@ -129,6 +181,19 @@
                 {
                     "key": "Cache-Control",
                     "value": "public, max-age=86400"
+                }
+            ]
+        },
+        {
+            "source": "/llms.txt",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=86400"
+                },
+                {
+                    "key": "Content-Type",
+                    "value": "text/plain; charset=utf-8"
                 }
             ]
         }
