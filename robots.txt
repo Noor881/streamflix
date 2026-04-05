@@ -9,6 +9,7 @@ Disallow: /admin.html
 Disallow: /api/
 Disallow: /*.tmp$
 Disallow: /*.bak$
+Disallow: /movie/928480-monster-summer
 
 # Sitemap location
 Sitemap: https://hdwatchzone.com/sitemap.xml

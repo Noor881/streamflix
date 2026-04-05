@@ -3,6 +3,13 @@
     "outputDirectory": ".",
     "framework": null,
     "cleanUrls": false,
+    "redirects": [
+        {
+            "source": "/movie/928480-monster-summer",
+            "destination": "/404.html",
+            "statusCode": 410
+        }
+    ],
     "rewrites": [
         {
             "source": "/movie/:id",
