@@ -3800,3 +3800,284 @@ textarea,
 [role="button"] {
     -webkit-tap-highlight-color: transparent;
 }
+
+/* ========================================
+   HD Watchzone — Premium UI Overrides v2.0
+   Homepage: Hero, Cards, Sections, Footer
+   ======================================== */
+
+/* --- Card Premium Hover --- */
+.card-wrapper {
+    position: relative;
+    border-radius: 8px;
+}
+
+.card {
+    border-radius: 8px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
+}
+
+.card-wrapper:hover .card {
+    transform: scale(1.07) translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 0 1.5px rgba(229,9,20,0.35);
+    z-index: 50;
+}
+
+/* Rating badge on card top-right */
+.card-rating-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #ffc107;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 5px;
+    z-index: 5;
+    pointer-events: none;
+    letter-spacing: 0.2px;
+}
+
+/* Play overlay on card hover */
+.card-play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 8px;
+    z-index: 4;
+}
+
+.card-wrapper:hover .card-play-overlay { opacity: 1; }
+
+.card-play-overlay svg {
+    width: 44px;
+    height: 44px;
+    color: white;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+}
+
+/* --- Section Header Upgrade --- */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 14px;
+    border-left: 3px solid #e50914;
+    margin-bottom: 0;
+    letter-spacing: -0.2px;
+}
+
+.section-see-all {
+    font-size: 13px;
+    color: #e50914;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap 0.2s, opacity 0.2s;
+    opacity: 0.8;
+    text-decoration: none;
+}
+
+.section-see-all:hover { opacity: 1; gap: 8px; }
+
+.section-see-all svg { width: 14px; height: 14px; }
+
+/* --- Hero upgrade: progress bar & dot style --- */
+.hero-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.hero-dot.active {
+    width: 22px;
+    background: #e50914;
+    box-shadow: 0 0 10px rgba(229,9,20,0.6);
+}
+
+/* --- Genre Pill Filter Row --- */
+.genre-filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 var(--container-padding) 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.genre-filter-row::-webkit-scrollbar { display: none; }
+
+.genre-filter-pill {
+    flex-shrink: 0;
+    padding: 7px 18px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    color: #999;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.genre-filter-pill:hover {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border-color: rgba(255,255,255,0.2);
+}
+
+.genre-filter-pill.active {
+    background: #e50914;
+    color: #fff;
+    border-color: #e50914;
+    box-shadow: 0 4px 14px rgba(229,9,20,0.3);
+}
+
+/* --- Trending Number on first 3 cards --- */
+.card-rank {
+    position: absolute;
+    bottom: -12px;
+    left: -6px;
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+    z-index: 3;
+    pointer-events: none;
+    user-select: none;
+    font-style: italic;
+}
+
+/* --- Card Animation Entry --- */
+@keyframes card-enter {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-wrapper {
+    animation: card-enter 0.4s ease both;
+}
+
+.card-wrapper:nth-child(1) { animation-delay: 0.05s; }
+.card-wrapper:nth-child(2) { animation-delay: 0.10s; }
+.card-wrapper:nth-child(3) { animation-delay: 0.15s; }
+.card-wrapper:nth-child(4) { animation-delay: 0.20s; }
+.card-wrapper:nth-child(5) { animation-delay: 0.25s; }
+.card-wrapper:nth-child(6) { animation-delay: 0.30s; }
+
+/* --- Footer Premium Redesign --- */
+.footer {
+    background: #080808 !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    padding-top: 48px !important;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-brand p {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    max-width: 300px;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    margin-top: 32px !important;
+    padding-top: 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.footer-bottom-text {
+    font-size: 12px !important;
+    color: #444 !important;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-bottom-links a {
+    font-size: 12px;
+    color: #444;
+    transition: color 0.2s;
+}
+
+.footer-bottom-links a:hover { color: #e50914; }
+
+/* --- Smooth page transition --- */
+#app {
+    animation: page-fade 0.35s ease;
+}
+
+@keyframes page-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Hero CTA button glow pulse --- */
+.btn-cineby-primary {
+    animation: btn-glow 3s ease-in-out infinite;
+}
+
+@keyframes btn-glow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+    50%       { box-shadow: 0 4px 30px rgba(255,255,255,0.35); }
+}
+
+/* --- Scrollbar style for main content --- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
+
+/* --- Search overlay upgrade --- */
+.search-container:focus-within .search-input,
+.search-input:not(:placeholder-shown) {
+    background: rgba(10,10,10,0.95);
+    border-color: rgba(229,9,20,0.5);
+    box-shadow: 0 0 0 2px rgba(229,9,20,0.15);
+}
+
+/* --- Mobile bottom type area --- */
+@media (max-width: 768px) {
+    .hero-cta { flex-direction: column; }
+    .btn-cineby { width: 100%; justify-content: center; }
+    .section-title { font-size: 1rem; }
+    .card-rank { font-size: 3.5rem; }
+}
