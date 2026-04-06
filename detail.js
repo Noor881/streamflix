@@ -841,17 +841,18 @@ const DetailPage = {
 
             app.innerHTML = `
                 ${renderNav()}
-                ${buildBreadcrumbs(movie, 'movie')}
 
                 <div class="detail-hero">
                     <div class="hero-backdrop">
                         <img src="${backdropUrl(movie.backdrop_path)}" alt="${sanitize(movie.title)}">
                     </div>
                     <div class="hero-content">
-                        <div class="hero-poster">
-                            <img src="${imgUrl(movie.poster_path, 'w500')}" alt="${sanitize(movie.title)}">
-                        </div>
                         <div class="hero-info">
+                            <div class="hero-tags">
+                                ${(movie.genres || []).slice(0,3).map(g => `<span class="hero-tag">${g.name}</span>`).join('')}
+                                ${year ? `<span class="hero-tag year">${year}</span>` : ''}
+                                ${movie.runtime ? `<span class="hero-tag">${formatRuntime(movie.runtime)}</span>` : ''}
+                            </div>
                             <h1 class="hero-title">${sanitize(movie.title)}</h1>
                             ${movie.tagline ? `<p class="hero-tagline">"${sanitize(movie.tagline)}"</p>` : ''}
                             <div class="hero-meta">
@@ -859,51 +860,59 @@ const DetailPage = {
                                 ${year ? `<span class="meta-badge year">${year}</span>` : ''}
                                 ${movie.runtime ? `<span class="meta-badge runtime">${formatRuntime(movie.runtime)}</span>` : ''}
                             </div>
-                            <div class="hero-genres">
-                                ${(movie.genres || []).map(g => `<a href="/#/genre/${g.id}" class="genre-chip">${g.name}</a>`).join('')}
-                            </div>
                             <p class="hero-overview">${sanitize(movie.overview)}</p>
                             <div class="hero-buttons">
                                 <button class="btn-play" onclick="document.getElementById('video-player')?.scrollIntoView({behavior:'smooth'})">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    Watch Now
+                                    Play Now
                                 </button>
-                                <button class="btn-secondary" onclick="document.querySelector('.detail-section')?.scrollIntoView({behavior:'smooth'})">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                                    More Info
+                                <button class="btn-secondary" id="watchlist-btn" onclick="DetailPage.toggleWatchlist(${id}, '${sanitize(movie.title)}', '${imgUrl(movie.poster_path,'w342')}', 'movie')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                                    Watchlist
                                 </button>
                             </div>
+                        </div>
+                        <div class="hero-poster">
+                            <img src="${imgUrl(movie.poster_path, 'w500')}" alt="${sanitize(movie.title)} poster">
                         </div>
                     </div>
                 </div>
 
                 <div class="detail-content">
-                    ${buildPlayer('movie', id)}
-                    
-                    ${movie.overview ? `
-                    <div class="detail-section">
-                        <h2 class="section-title">About This Movie</h2>
-                        <p class="about-text">${sanitize(movie.overview)}</p>
-                        ${movie.tagline ? `<p class="about-tagline"><em>"${sanitize(movie.tagline)}"</em></p>` : ''}
-                    </div>` : ''}
-                    
-                    ${buildCast(movie.credits)}
-                    ${buildTrailer(movie.videos)}
-                    ${buildDetailsGrid(movie, 'movie')}
-                    
-                    <div id="trending-placeholder"></div>
-                    
-                    ${buildRecos(movie.recommendations?.results, 'movie')}
-                    ${buildGenreSection(movie.genres, 'movie')}
-                    ${buildYearSection(movie.release_date, 'movie')}
+                    <div class="detail-main">
+                        <div class="detail-section">
+                            <h2 class="section-title">Player</h2>
+                            ${buildPlayer('movie', id)}
+                        </div>
+                        
+                        ${movie.overview ? `
+                        <div class="detail-section">
+                            <h2 class="section-title">Overview</h2>
+                            <p class="about-text">${sanitize(movie.overview)}</p>
+                            ${movie.tagline ? `<p class="about-tagline"><em>"${sanitize(movie.tagline)}"</em></p>` : ''}
+                        </div>` : ''}
+                        
+                        ${buildCast(movie.credits)}
+                        ${buildTrailer(movie.videos)}
+                        
+                        <div id="trending-placeholder"></div>
+                        
+                        ${buildGenreSection(movie.genres, 'movie')}
+                        ${buildYearSection(movie.release_date, 'movie')}
 
-                    <div class="detail-section">
-                        <h2 class="section-title">Share</h2>
-                        ${buildShareButtons(movie.title, pageUrl)}
+                        <div class="detail-section">
+                            <h2 class="section-title">Share</h2>
+                            ${buildShareButtons(movie.title, pageUrl)}
+                        </div>
                     </div>
-                    
-                    ${buildDetailFooter()}
-                </div>`;
+
+                    <div class="detail-sidebar">
+                        ${buildDetailsGrid(movie, 'movie')}
+                        ${buildRecos(movie.recommendations?.results, 'movie')}
+                    </div>
+                </div>
+                
+                ${buildDetailFooter()}`;
 
             // Load trending content after page renders
             trendingPromise.then(trendingHTML => {
@@ -951,26 +960,25 @@ const DetailPage = {
 
             app.innerHTML = `
                 ${renderNav()}
-                ${buildBreadcrumbs(tv, 'tv')}
 
                 <div class="detail-hero">
                     <div class="hero-backdrop">
                         <img src="${backdropUrl(tv.backdrop_path)}" alt="${sanitize(tv.name)}">
                     </div>
                     <div class="hero-content">
-                        <div class="hero-poster">
-                            <img src="${imgUrl(tv.poster_path, 'w500')}" alt="${sanitize(tv.name)}">
-                        </div>
                         <div class="hero-info">
+                            <div class="hero-tags">
+                                ${(tv.genres || []).slice(0,3).map(g => `<span class="hero-tag">${g.name}</span>`).join('')}
+                                ${yearRange ? `<span class="hero-tag year">${yearRange}</span>` : ''}
+                                <span class="hero-tag status-tag">${tv.status || ''}</span>
+                            </div>
                             <h1 class="hero-title">${sanitize(tv.name)}</h1>
                             ${tv.tagline ? `<p class="hero-tagline">"${sanitize(tv.tagline)}"</p>` : ''}
                             <div class="hero-meta">
                                 <span class="meta-badge rating">★ ${rating}</span>
                                 ${yearRange ? `<span class="meta-badge year">${yearRange}</span>` : ''}
                                 <span class="meta-badge status">${tv.status || 'Unknown'}</span>
-                            </div>
-                            <div class="hero-genres">
-                                ${(tv.genres || []).map(g => `<a href="/#/genre/${g.id}" class="genre-chip">${g.name}</a>`).join('')}
+                                ${tv.number_of_seasons ? `<span class="meta-badge">${tv.number_of_seasons} Seasons</span>` : ''}
                             </div>
                             <p class="hero-overview">${sanitize(tv.overview)}</p>
                             <div class="hero-buttons">
@@ -984,38 +992,49 @@ const DetailPage = {
                                 </button>
                             </div>
                         </div>
+                        <div class="hero-poster">
+                            <img src="${imgUrl(tv.poster_path, 'w500')}" alt="${sanitize(tv.name)} poster">
+                        </div>
                     </div>
                 </div>
 
                 <div class="detail-content">
-                    ${buildPlayer('tv', id, season, episode)}
-                    
-                    ${tv.overview ? `
-                    <div class="detail-section">
-                        <h2 class="section-title">About This Show</h2>
-                        <p class="about-text">${sanitize(tv.overview)}</p>
-                        ${tv.tagline ? `<p class="about-tagline"><em>"${sanitize(tv.tagline)}"</em></p>` : ''}
-                        ${tv.number_of_seasons ? `<p class="about-info">This series has ${tv.number_of_seasons} season${tv.number_of_seasons > 1 ? 's' : ''} with a total of ${tv.number_of_episodes || 'multiple'} episodes.</p>` : ''}
-                    </div>` : ''}
-                    
-                    ${buildEpisodes(tv, season, episode, id)}
-                    ${buildCast(tv.credits)}
-                    ${buildTrailer(tv.videos)}
-                    ${buildDetailsGrid(tv, 'tv')}
-                    
-                    <div id="trending-placeholder"></div>
-                    
-                    ${buildRecos(tv.recommendations?.results, 'tv')}
-                    ${buildGenreSection(tv.genres, 'tv')}
-                    ${buildYearSection(tv.first_air_date, 'tv')}
+                    <div class="detail-main">
+                        <div class="detail-section">
+                            <h2 class="section-title">Player</h2>
+                            ${buildPlayer('tv', id, season, episode)}
+                        </div>
 
-                    <div class="detail-section">
-                        <h2 class="section-title">Share</h2>
-                        ${buildShareButtons(tv.name, pageUrl)}
+                        ${tv.overview ? `
+                        <div class="detail-section">
+                            <h2 class="section-title">Overview</h2>
+                            <p class="about-text">${sanitize(tv.overview)}</p>
+                            ${tv.tagline ? `<p class="about-tagline"><em>"${sanitize(tv.tagline)}"</em></p>` : ''}
+                            ${tv.number_of_seasons ? `<p class="about-info">This series has ${tv.number_of_seasons} season${tv.number_of_seasons > 1 ? 's' : ''} with ${tv.number_of_episodes || 'multiple'} episodes.</p>` : ''}
+                        </div>` : ''}
+
+                        ${buildEpisodes(tv, season, episode, id)}
+                        ${buildCast(tv.credits)}
+                        ${buildTrailer(tv.videos)}
+
+                        <div id="trending-placeholder"></div>
+
+                        ${buildGenreSection(tv.genres, 'tv')}
+                        ${buildYearSection(tv.first_air_date, 'tv')}
+
+                        <div class="detail-section">
+                            <h2 class="section-title">Share</h2>
+                            ${buildShareButtons(tv.name, pageUrl)}
+                        </div>
                     </div>
-                    
-                    ${buildDetailFooter()}
-                </div>`;
+
+                    <div class="detail-sidebar">
+                        ${buildDetailsGrid(tv, 'tv')}
+                        ${buildRecos(tv.recommendations?.results, 'tv')}
+                    </div>
+                </div>
+
+                ${buildDetailFooter()}`;
 
             // Load trending content after page renders
             trendingPromise.then(trendingHTML => {
@@ -1119,5 +1138,22 @@ const DetailPage = {
                 ticking = true;
             }
         }, { passive: true });
+    },
+
+    toggleWatchlist(id, title, poster, type) {
+
+        const key = 'watchlist';
+        let list = JSON.parse(localStorage.getItem(key) || '[]');
+        const exists = list.find(i => i.id === id);
+        if (exists) {
+            list = list.filter(i => i.id !== id);
+            showToast('Removed from Watchlist');
+        } else {
+            list.push({ id, title, poster, type });
+            showToast('Added to Watchlist!');
+        }
+        localStorage.setItem(key, JSON.stringify(list));
+        const btn = document.getElementById('watchlist-btn');
+        if (btn) btn.classList.toggle('active', !exists);
     }
 };
