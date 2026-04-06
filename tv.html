@@ -169,6 +169,12 @@
                 }
             }
 
+            // Strip slug suffix — e.g. "1396-breaking-bad" → "1396"
+            if (id) {
+                const numericId = id.match(/^(\d+)/);
+                if (numericId) id = numericId[1];
+            }
+
             // Default values
             season = season || 1;
             episode = episode || 1;

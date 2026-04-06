@@ -165,6 +165,12 @@
                 }
             }
 
+            // Strip slug suffix — e.g. "550-fight-club" → "550"
+            if (id) {
+                const numericId = id.match(/^(\d+)/);
+                if (numericId) id = numericId[1];
+            }
+
             if (id) {
                 DetailPage.loadMovie(id);
             } else {
