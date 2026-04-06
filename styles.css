@@ -961,8 +961,8 @@ ol {
 .hero-slide .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 600px;
-    padding-top: calc(var(--header-height) + 3rem);
+    width: 100%;
+    padding-top: calc(var(--header-height) + 2rem);
 }
 
 .hero-badge {
@@ -982,9 +982,9 @@ ol {
 }
 
 .hero-slide .hero-title {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    font-weight: 800;
-    line-height: 1.1;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
     margin-bottom: var(--spacing-md);
     text-shadow: 2px 4px 20px rgba(0, 0, 0, 0.8);
 }
