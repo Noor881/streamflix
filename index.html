@@ -97,6 +97,7 @@
 
 
     <!-- Styles (Minified for Performance) -->
+    <link rel="stylesheet" href="/nav.css">
     <link rel="stylesheet" href="/styles.min.css">
     <link rel="stylesheet" href="/responsive.min.css">
 
@@ -245,68 +246,41 @@
         </div>
     </noscript>
 
-    <!-- Header -->
-    <header class="header" role="banner">
-        <div class="header-container">
-            <a href="#/" class="logo" aria-label="HD Watchzone Home">
+    <header class="site-header" id="site-header" role="banner">
+        <div class="dnav-inner">
+            <a href="/" class="dnav-logo" aria-label="HD Watchzone Home">
                 <picture>
                     <source type="image/avif" srcset="/logo.avif">
                     <source type="image/webp" srcset="/logo.webp">
-                    <img src="/logo.png" alt="HD Watchzone Logo" class="logo-img"
-                        width="160" height="40"
-                        style="height: 40px; width: auto; object-fit: contain;" loading="lazy"
-                        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-block';">
+                    <img src="/logo.png" alt="HD Watchzone Logo" class="dnav-logo-img"
+                        width="40" height="40" loading="eager"
+                        onerror="this.style.display='none'">
                 </picture>
-                <span class="logo-text" style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD
-                    <span style="color: var(--color-primary);">Watchzone</span></span>
+                <span class="dnav-logo-text">HD<span class="dnav-red">Watchzone</span></span>
             </a>
 
-            <nav class="nav" role="navigation" aria-label="Main navigation">
-                <a href="#/" class="nav-link active">Home</a>
-                <a href="#/movies" class="nav-link">Movies</a>
-                <a href="#/tv" class="nav-link">TV Shows</a>
-                <a href="#/anime" class="nav-link">Anime</a>
-                <div class="nav-dropdown">
-                    <button class="nav-link nav-dropdown-btn" aria-haspopup="true" aria-expanded="false">Genres <span
-                            class="dropdown-arrow">▼</span></button>
-                    <div class="nav-dropdown-content" id="genre-dropdown" role="menu">
-                        <!-- Genres will be loaded dynamically -->
-                    </div>
-                </div>
-                <a href="#/new" class="nav-link">New & Popular</a>
-                <a href="#/my-list" class="nav-link">My List</a>
+            <nav class="dnav-links" role="navigation" aria-label="Main navigation">
+                <a href="#/" class="dnav-link" id="nav-home">Home</a>
+                <a href="#/movies" class="dnav-link" id="nav-movies">Movies</a>
+                <a href="#/tv" class="dnav-link" id="nav-tv">TV Shows</a>
+                <a href="#/anime" class="dnav-link" id="nav-anime">Anime</a>
+                <a href="#/genre/28" class="dnav-link" id="nav-genres">Genres</a>
+                <a href="#/new" class="dnav-link" id="nav-new">New Releases</a>
             </nav>
 
-            <div class="header-right">
-                <div class="search-container" role="search">
-                    <input type="text" id="search-input" class="search-input"
-                        placeholder="Search movies, TV shows, anime..." aria-label="Search movies, TV shows, anime"
-                        loading="lazy">
-                    <button class="search-btn" id="search-btn" aria-label="Search">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" aria-hidden="true">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="M21 21l-4.35-4.35"></path>
+            <div class="dnav-right">
+                <div class="dnav-search-wrap" id="search-container" role="search">
+                    <button class="dnav-search-btn" id="search-btn" aria-label="Search" aria-expanded="false">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                         </svg>
                     </button>
+                    <input type="text" id="search-input" class="dnav-search-input"
+                        placeholder="Search movies, shows..." aria-label="Search movies and TV shows">
                 </div>
-                <button class="notification-btn" title="Notifications" aria-label="Notifications">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        aria-hidden="true">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="notification-badge" aria-label="3 notifications">3</span>
-                </button>
-                <div class="user-menu">
-                    <div class="user-avatar" role="button" aria-label="User menu" tabindex="0">
-                        <img src="https://i.pravatar.cc/100?img=33" alt="User avatar" width="40" height="40" loading="lazy">
-                    </div>
-                </div>
-                <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                <!-- Mobile hamburger -->
+                <button class="dnav-hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
@@ -522,7 +496,40 @@
     <script src="/app.min.js" defer></script>
     <script src="/mobile-consent.min.js" defer></script>
     <script src="/scripts/combined.min.js" defer></script>
-    <script type="module" src="/scripts/visitor-counter.js" defer></script>
+    <!-- Nav scroll + search toggle -->
+    <script>
+        (function() {
+            const header = document.getElementById('site-header');
+            const searchBtn = document.getElementById('search-btn');
+            const searchInput = document.getElementById('search-input');
+            const hamburger = document.getElementById('hamburger-btn');
+
+            // Scroll: add solid class
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(function() {
+                        if (header) header.classList.toggle('scrolled', window.scrollY > 50);
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            // Search: click icon to expand input
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', function() {
+                    searchInput.focus();
+                });
+            }
+
+            // Mark active nav link
+            const hash = window.location.hash || '#/';
+            document.querySelectorAll('.dnav-link').forEach(function(link) {
+                if (link.getAttribute('href') === hash) link.classList.add('active');
+            });
+        })();
+    </script>
 </body>
 
 </html>

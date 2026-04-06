@@ -601,19 +601,24 @@ function showToast(msg) {
 function renderNav() {
     return `
         <nav class="detail-nav" id="detail-nav">
-            <div class="nav-left">
-                <a href="/" class="nav-logo">
-                    <img src="/logo.png" alt="HD Watchzone" style="height: 50px; vertical-align: middle; margin-right: 10px; mix-blend-mode: screen; filter: invert(1);">
-                    HD Watchzone
+            <div class="dnav-inner">
+                <a href="/" class="dnav-logo" aria-label="HD Watchzone Home">
+                    <img src="/logo.png" alt="HD Watchzone" onerror="this.style.display='none'">
+                    <span class="dnav-logo-text">HD<span class="dnav-red">Watchzone</span></span>
                 </a>
-                <button class="nav-back" onclick="history.back()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Back
-                </button>
-            </div>
-            <div class="nav-actions">
-                <a href="/#/movies" class="nav-btn">Movies</a>
-                <a href="/#/tv" class="nav-btn">TV Shows</a>
+                <div class="dnav-links">
+                    <a href="/#/movies" class="dnav-link">Movies</a>
+                    <a href="/#/tv" class="dnav-link">TV Shows</a>
+                    <a href="/#/genre/28" class="dnav-link">Genres</a>
+                    <a href="/#/new" class="dnav-link">New Releases</a>
+                </div>
+                <div class="dnav-right">
+                    <button class="dnav-search-btn" onclick="window.location.href='/'" aria-label="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </nav>`;
 }

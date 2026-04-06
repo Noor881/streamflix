@@ -1,0 +1,232 @@
+/* ==========================================
+   HD Watchzone — Unified Navigation v1.0
+   Shared between homepage and detail pages
+   ========================================== */
+
+/* ── The outer fixed bar ─────────────────── */
+.site-header,
+.detail-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    background: rgba(10, 10, 10, 0.12);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Solid on scroll */
+.site-header.scrolled,
+.detail-nav.scrolled {
+    background: rgba(10, 10, 10, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Inner layout: 3-column flex ─────────── */
+.dnav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 36px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+/* ── Logo ────────────────────────────────── */
+.dnav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.dnav-logo:hover { opacity: 0.85; }
+
+.dnav-logo-img,
+.dnav-logo img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    mix-blend-mode: screen;
+    filter: invert(1) brightness(1.2);
+}
+
+.dnav-logo-text {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+}
+
+.dnav-red { color: #e50914; }
+
+/* ── Center nav links ────────────────────── */
+.dnav-links {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.dnav-link {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.dnav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.dnav-link.active {
+    color: #fff;
+    background: rgba(229, 9, 20, 0.15);
+}
+
+/* ── Right: search + hamburger ───────────── */
+.dnav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.dnav-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.dnav-search-wrap:focus-within {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dnav-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.dnav-search-btn:hover { color: #fff; }
+
+.dnav-search-input {
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    width: 0;
+    max-width: 220px;
+    padding: 0;
+    transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.dnav-search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+/* Expand search when input focused */
+.dnav-search-input:focus,
+.dnav-search-wrap:focus-within .dnav-search-input {
+    width: 180px;
+    padding: 0 12px 0 0;
+}
+
+/* Mobile hamburger */
+.dnav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.dnav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.25s;
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 900px) {
+    .dnav-inner { padding: 0 20px; height: 58px; gap: 16px; }
+
+    .dnav-links {
+        display: none; /* hidden on mobile, shown in drawer */
+    }
+
+    .dnav-hamburger { display: flex; }
+
+    .dnav-search-wrap {
+        /* Collapse to icon-only on mobile */
+        background: none;
+        border: none;
+    }
+
+    .dnav-search-input {
+        display: none;
+    }
+
+    .dnav-search-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 600px) {
+    .dnav-logo-text { font-size: 17px; }
+    .dnav-logo img { height: 30px; }
+}
+
+/* ── Mobile drawer (reuse .mobile-nav) ───── */
+.mobile-nav .dnav-link {
+    display: block;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #ccc;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.mobile-nav .dnav-link:hover { color: #e50914; }
+
+/* ── Scroll-aware activation (JS adds this) ─ */
+body { padding-top: 66px; }
+
+/* ── Kill old .header / .nav if still in compiled styles ─── */
+.header { display: none !important; }
+
