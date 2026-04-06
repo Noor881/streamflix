@@ -642,6 +642,10 @@ function buildPlayer(type, id, season, episode) {
                 <iframe src="${url}" allowfullscreen allow="autoplay; fullscreen; encrypted-media" id="video-player"></iframe>
             </div>
             <div class="server-selector">${serverBtns}</div>
+            <div class="player-tip">
+                <span class="player-tip-icon">⚡</span>
+                <span><strong>Video not loading or showing "Media Not Available"?</strong> — Click the <strong>Server 1</strong> button 2–3 times. It fixes it instantly. If still broken, try Server 2 or 3.</span>
+            </div>
         </div>`;
 }
 
