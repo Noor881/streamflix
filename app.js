@@ -213,9 +213,15 @@ const tmdbAPI = {
         return this.fetch(`/tv/${tvId}/season/${seasonNumber}`);
     },
 
-    // Search multi
-    async search(query) {
-        return this.fetch('/search/multi', { query });
+    // Search multi - fetch multiple pages for broad results
+    async search(query, pages = 5) {
+        const requests = [];
+        for (let page = 1; page <= pages; page++) {
+            requests.push(this.fetch('/search/multi', { query, page }));
+        }
+        const responses = await Promise.all(requests);
+        const allResults = responses.flatMap(r => r?.results || []);
+        return { results: allResults };
     },
 
     // Get top rated movies (multiple pages)
@@ -916,6 +922,7 @@ window.navigateTV = (category, page) => router.navigate(`#/tv?category=${categor
 window.navigateAnime = (category, page) => router.navigate(`#/anime?category=${category}&page=${page}`);
 window.navigateGenre = (genreId, page) => router.navigate(`#/genre/${genreId}?page=${page}`);
 window.navigateNew = (category, page) => router.navigate(`#/new?category=${category}&page=${page}`);
+window.navigateSearch = (query, page) => router.navigate(`#/search?q=${query}&page=${page}`);
 
 window.switchTrendingTab = async (type, btn) => {
     // Update active state of buttons
@@ -1183,22 +1190,22 @@ const pages = {
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies(5) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(5) },
-            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(5) },
-            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(5) },
-            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, 5) },
-            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, 5) },
-            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, 5) },
-            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, 5) },
-            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, 5) },
-            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, 5) },
-            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, 5) },
-            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, 5) },
-            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, 5) },
-            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, 5) },
-            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, 5) },
-            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, 5) },
+            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies(10) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(10) },
+            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(10) },
+            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(10) },
+            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, 10) },
+            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, 10) },
+            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, 10) },
+            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, 10) },
+            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, 10) },
+            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, 10) },
+            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, 10) },
+            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, 10) },
+            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, 10) },
+            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, 10) },
+            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, 10) },
+            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, 10) },
         ];
 
         try {
@@ -1514,7 +1521,7 @@ const pages = {
     },
 
     // Search results page
-    async search(query) {
+    async search(query, page = 1) {
         const app = document.getElementById('app');
         app.innerHTML = components.loading();
 
@@ -1531,11 +1538,22 @@ const pages = {
             return;
         }
 
+        const ITEMS_PER_PAGE = 24;
+
         try {
-            const results = await tmdbAPI.search(query);
-            const items = results?.results?.filter(item =>
-                item.media_type === 'movie' || item.media_type === 'tv'
+            // Fetch 5 pages of results for a broader library
+            const results = await tmdbAPI.search(query, 5);
+            const allItems = results?.results?.filter(item =>
+                (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path
             ) || [];
+
+            // Deduplicate by id
+            const seen = new Set();
+            const items = allItems.filter(item => {
+                if (seen.has(item.id)) return false;
+                seen.add(item.id);
+                return true;
+            });
 
             if (items.length === 0) {
                 app.innerHTML = `
@@ -1553,15 +1571,23 @@ const pages = {
                 return;
             }
 
+            const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+            const startIdx = (page - 1) * ITEMS_PER_PAGE;
+            const pageItems = items.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
+            // Build search pagination
+            const pagination = components.pagination(page, totalPages, 'search', encodeURIComponent(query));
+
             app.innerHTML = `
                 <div class="search-page">
                     <div class="search-header">
-                        <h1 class="search-query">Results for <span>"${query}"</span></h1>
+                        <h1 class="search-query">Results for <span>"${utils.sanitize(query)}"</span></h1>
                         <p class="search-count">${items.length} results found</p>
                     </div>
                     <div class="content-grid">
-                        ${items.map(item => components.card(item, item.media_type)).join('')}
+                        ${pageItems.map(item => components.card(item, item.media_type)).join('')}
                     </div>
+                    ${pagination}
                 </div>
             `;
         } catch (error) {
@@ -2252,8 +2278,10 @@ const router = {
             app.innerHTML = components.loading();
             pages.tvShow(id, season, episode);
         } else if (path.startsWith('/search')) {
-            const query = new URLSearchParams(path.split('?')[1]).get('q') || '';
-            pages.search(query);
+            const searchParams = new URLSearchParams(path.split('?')[1]);
+            const query = searchParams.get('q') || '';
+            const page = parseInt(searchParams.get('page')) || 1;
+            pages.search(query, page);
         } else if (path.startsWith('/genre/')) {
             const [genrePath, queryString] = path.split('?');
             const genreId = genrePath.split('/')[2];
