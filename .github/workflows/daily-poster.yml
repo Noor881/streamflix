@@ -1,0 +1,57 @@
+name: Daily Movie Poster — Telegram & Reddit
+
+on:
+  schedule:
+    # Runs every day at 9:00 AM UTC (2:00 PM Pakistan time)
+    - cron: '0 9 * * *'
+  
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no actual posting)'
+        required: false
+        default: 'false'
+
+jobs:
+  post-daily-movies:
+    runs-on: ubuntu-latest
+    name: Post 2 Movies to Telegram + Reddit
+    
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Restore posted IDs from cache to avoid duplicate posts
+      - name: 📋 Restore posted IDs cache
+        uses: actions/cache@v4
+        with:
+          path: scripts/posted_ids.json
+          key: posted-ids-${{ github.run_id }}
+          restore-keys: |
+            posted-ids-
+
+      - name: 🎬 Run Daily Poster
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+          REDDIT_SUBREDDIT: ${{ secrets.REDDIT_SUBREDDIT }}
+        run: node scripts/daily-poster.js
+
+      # Save updated posted IDs so we don't repost same movies
+      - name: 💾 Save posted IDs cache
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: scripts/posted_ids.json
+          key: posted-ids-${{ github.run_id }}
