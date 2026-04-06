@@ -4080,4 +4080,106 @@ textarea,
     .btn-cineby { width: 100%; justify-content: center; }
     .section-title { font-size: 1rem; }
     .card-rank { font-size: 3.5rem; }
-}
+}
+
+/* ══════════════════════════════════════════
+   CONTINUE WATCHING ROW
+══════════════════════════════════════════ */
+.continue-row {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding: 4px 0 12px;
+    scrollbar-width: none;
+}
+.continue-row::-webkit-scrollbar { display: none; }
+
+.continue-card {
+    flex: 0 0 160px;
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s;
+}
+.continue-card:hover { transform: scale(1.04); }
+
+.continue-card-thumb {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    background: #1a1a1a;
+}
+.continue-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Play icon overlay */
+.continue-card-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: #fff;
+}
+.continue-card:hover .continue-card-play { opacity: 1; }
+
+/* Red progress bar pinned to bottom of poster */
+.continue-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+}
+.continue-progress-fill {
+    height: 100%;
+    background: #e50914;
+    border-radius: 0 2px 2px 0;
+    transition: width 0.5s ease;
+}
+
+/* Text below poster */
+.continue-card-info { padding: 0 2px; }
+
+.continue-card-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e5e5e5;
+}
+
+.continue-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+    font-size: 11px;
+}
+.continue-ep {
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+.continue-left {
+    color: #e50914;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .continue-card { flex: 0 0 120px; }
+}
+

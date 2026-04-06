@@ -59,6 +59,54 @@ function createSlug(text) {
         .replace(/-+$/, '');
 }
 
+/* ---------- Continue Watching — localStorage ---------- */
+function saveToHistory(data, type, season, episode) {
+    try {
+        const KEY = 'hdwatchzone_continue_watching';
+        const id = data.id;
+        const title = data.title || data.name;
+        const poster = data.poster_path ? `https://image.tmdb.org/t/p/w342${data.poster_path}` : '';
+        const backdrop = data.backdrop_path ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}` : '';
+        const year = type === 'movie' ? (data.release_date || '').slice(0, 4) : (data.first_air_date || '').slice(0, 4);
+        const runtime = data.runtime || (type === 'tv' ? 45 : 120); // minutes
+        const slug = title.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/-{2,}/g, '-').replace(/^-|-$/g, '');
+
+        const item = {
+            id, type, title, poster, backdrop,
+            poster_path: data.poster_path,
+            backdrop_path: data.backdrop_path,
+            year, runtime, slug,
+            season: season || null,
+            episode: episode || null,
+            progress: 0,
+            savedAt: Date.now()
+        };
+
+        let list = JSON.parse(localStorage.getItem(KEY) || '[]');
+        list = list.filter(i => !(i.id === id && i.type === type)); // remove old entry
+        list.unshift(item); // add to top
+        list = list.slice(0, 20); // keep max 20
+        localStorage.setItem(KEY, JSON.stringify(list));
+
+        // Track time-based progress (updates every 30s while user is on page)
+        const startTime = Date.now();
+        const progressInterval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000; // seconds
+            const prog = Math.min(90, Math.round((elapsed / (runtime * 60)) * 100));
+            try {
+                const current = JSON.parse(localStorage.getItem(KEY) || '[]');
+                const idx = current.findIndex(i => i.id === id && i.type === type);
+                if (idx !== -1) {
+                    current[idx].progress = prog;
+                    localStorage.setItem(KEY, JSON.stringify(current));
+                }
+            } catch (e) { /* ignore */ }
+        }, 30000);
+
+        window.addEventListener('beforeunload', () => clearInterval(progressInterval));
+    } catch (e) { /* localStorage not available */ }
+}
+
 function sanitize(text) {
     if (!text) return '';
     const el = document.createElement('div');
@@ -931,6 +979,9 @@ const DetailPage = {
                 }
             });
 
+            // Save to Continue Watching
+            saveToHistory(movie, 'movie', null, null);
+
             this.initNavScroll();
 
         } catch (err) {
@@ -1052,6 +1103,9 @@ const DetailPage = {
                     placeholder.outerHTML = trendingHTML;
                 }
             });
+
+            // Save to Continue Watching
+            saveToHistory(tv, 'tv', season, episode);
 
             this.initNavScroll();
             loadEpisodes(id, season, episode);

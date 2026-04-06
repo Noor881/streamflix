@@ -576,29 +576,36 @@ const components = {
     // Continue watching card
     continueCard(item) {
         const title = item.title || item.name;
-        const backdropUrl = utils.getImageUrl(item.backdrop_path, 'small', 'backdrop');
-        const slug = utils.createSlug(title);
-        const route = item.media_type === 'movie'
+        const posterUrl = item.poster || (item.poster_path ? utils.getImageUrl(item.poster_path, 'medium') : utils.getImageUrl(null));
+        const slug = item.slug || utils.createSlug(title);
+        const route = item.type === 'movie'
             ? `/movie/${item.id}-${slug}`
-            : `/tv/${item.id}-${slug}/${item.season || 1}/${item.episode || 1}`;
-        const progressPercent = item.progress || 0;
+            : `/tv/${item.id}-${slug}${item.season ? `/${item.season}/${item.episode || 1}` : ''}`;
+        const progressPercent = Math.min(100, item.progress || 0);
+        // Estimate time left
+        const runtime = item.runtime || 120;
+        const watchedMin = Math.round((progressPercent / 100) * runtime);
+        const leftMin = Math.max(1, runtime - watchedMin);
+        const leftLabel = progressPercent > 0 ? `${leftMin}m left` : 'Not started';
+        const episodeLabel = item.season ? `S${item.season} E${item.episode || 1}` : '';
 
         return `
-            <a href="${route}" class="card card-continue" data-id="${item.id}">
-                <img 
-                    src="${backdropUrl}" 
-                    alt="${title}" 
-                    class="card-poster"
-                    loading="lazy"
-                >
-                <div class="card-overlay">
-                    <h3 class="card-title">${title}</h3>
-                    <div class="card-meta">
-                        ${item.season ? `<span>S${item.season} E${item.episode}</span>` : ''}
+            <a href="${route}" class="continue-card">
+                <div class="continue-card-thumb">
+                    <img src="${posterUrl}" alt="${utils.sanitize(title)}" loading="lazy" onerror="imgErr(this)">
+                    <div class="continue-card-play">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="continue-progress-bar">
+                        <div class="continue-progress-fill" style="width:${progressPercent}%"></div>
                     </div>
                 </div>
-                <div class="card-progress">
-                    <div class="card-progress-bar" style="width: ${progressPercent}%"></div>
+                <div class="continue-card-info">
+                    <div class="continue-card-title">${utils.sanitize(title)}</div>
+                    <div class="continue-card-meta">
+                        ${episodeLabel ? `<span class="continue-ep">${episodeLabel}</span>` : ''}
+                        <span class="continue-left">${leftLabel}</span>
+                    </div>
                 </div>
             </a>
         `;
@@ -1092,17 +1099,16 @@ const pages = {
                     })
             ]);
 
-            // Continue watching section
             let continueWatchingHtml = '';
             if (state.continueWatching.length > 0) {
-                continueWatchingHtml = components.section(
-                    'Continue Watching',
-                    `<div class="content-row">
-                        ${state.continueWatching.slice(0, 5).map(item =>
-                        components.continueCard(item)
-                    ).join('')}
-                    </div>`
-                );
+                const cwCards = state.continueWatching.slice(0, 8).map(item => components.continueCard(item)).join('');
+                continueWatchingHtml = `
+                    <section class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">⏯ Continue Watching</h2>
+                        </div>
+                        <div class="continue-row">${cwCards}</div>
+                    </section>`;
             }
 
             // Tab definitions - matching competitor design
