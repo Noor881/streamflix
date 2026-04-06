@@ -16,7 +16,7 @@ const SERVERS = [
     { id: 'vidsrc2', name: 'VidSrc Pro', description: 'Premium Quality • Stable', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` }
 ];
 
-let activeServer = 0;
+let activeServer = 2; // vidsrc.to — default (vidsrc.cc currently down)
 
 /* ---------- TMDB API ---------- */
 async function tmdbFetch(endpoint, params = {}) {
