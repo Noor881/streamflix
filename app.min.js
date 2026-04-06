@@ -653,43 +653,48 @@ const components = {
 
         const slides = carouselItems.map((item, index) => {
             const title = item.title || item.name;
-            const overview = utils.truncate(item.overview, 200);
+            const overview = utils.truncate(item.overview, 180);
             const backdropUrl = utils.getImageUrl(item.backdrop_path, 'large', 'backdrop');
+            const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
             const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
             const date = item.release_date || item.first_air_date;
             const mediaType = item.media_type || 'movie';
             const slug = utils.createSlug(title);
             const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
             const year = date ? new Date(date).getFullYear() : '';
+            // Genre pills — use genre_ids mapped to names (top 3)
+            const genreMap = { 28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Sci-Fi',10770:'TV Movie',53:'Thriller',10752:'War',37:'Western',10759:'Action & Adv',10762:'Kids',10763:'News',10764:'Reality',10765:'Sci-Fi & Fantasy',10766:'Soap',10767:'Talk',10768:'War & Politics' };
+            const genrePills = (item.genre_ids || []).slice(0, 3).map(id => genreMap[id] || '').filter(Boolean).map(g => `<span class="hero-genre-pill">${g}</span>`).join('');
 
             return `
                 <div class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="background-image: url('${backdropUrl}')">
                     <div class="hero-gradient-overlay"></div>
-                    <div class="hero-content">
-                        <span class="hero-badge">
-                            <span>★</span> #${index + 1} Trending
-                        </span>
-                        <h1 class="hero-title">${title}</h1>
-                        <div class="hero-meta">
-                            <span class="hero-meta-item hero-rating">★ ${rating}</span>
-                            <span class="hero-meta-item">${year}</span>
-                            <span class="hero-meta-item">${mediaType === 'movie' ? '🎬 Movie' : '📺 TV Series'}</span>
+                    <div class="hero-content hero-content-split">
+                        <div class="hero-text-col">
+                            <span class="hero-badge">
+                                <span>★</span> #${index + 1} Trending
+                            </span>
+                            ${genrePills ? `<div class="hero-genre-pills">${genrePills}</div>` : ''}
+                            <h1 class="hero-title">${title}</h1>
+                            <div class="hero-meta">
+                                <span class="hero-meta-item hero-rating">★ ${rating}</span>
+                                ${year ? `<span class="hero-meta-item">${year}</span>` : ''}
+                                <span class="hero-meta-item">${mediaType === 'movie' ? '🎬 Movie' : '📺 TV'}</span>
+                            </div>
+                            <p class="hero-description">${overview}</p>
+                            <div class="hero-buttons">
+                                <a href="${route}" class="btn-cineby btn-cineby-primary">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                    Watch Now
+                                </a>
+                                <a href="${route}" class="btn-cineby btn-cineby-glass">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                                    View Info
+                                </a>
+                            </div>
                         </div>
-                        <p class="hero-description">${overview}</p>
-                        <div class="hero-buttons">
-                            <a href="${route}" class="btn-cineby btn-cineby-primary">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                                Watch Now
-                            </a>
-                            <a href="${route}" class="btn-cineby btn-cineby-glass">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M12 16v-4M12 8h.01"/>
-                                </svg>
-                                View Info
-                            </a>
+                        <div class="hero-poster-col">
+                            <img src="${posterUrl}" alt="${utils.sanitize(title)}" class="hero-poster-img" loading="lazy">
                         </div>
                     </div>
                 </div>
