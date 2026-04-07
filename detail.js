@@ -687,7 +687,7 @@ function buildPlayer(type, id, season, episode) {
     return `
         <div class="player-section">
             <div class="player-wrapper">
-                <iframe src="${url}" allowfullscreen allow="autoplay; fullscreen; encrypted-media" id="video-player"></iframe>
+                <iframe src="${url}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" id="video-player"></iframe>
             </div>
             <div class="server-selector">${serverBtns}</div>
             <div class="player-tip">
@@ -732,7 +732,7 @@ function buildTrailer(videos) {
         <div class="detail-section">
             <h2 class="section-title">Trailer</h2>
             <div class="trailer-wrapper">
-                <iframe src="https://www.youtube.com/embed/${trailer.key}?rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                <iframe src="https://www.youtube.com/embed/${trailer.key}?rel=0" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; encrypted-media; fullscreen"></iframe>
             </div>
         </div>`;
 }

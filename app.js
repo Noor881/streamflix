@@ -408,8 +408,10 @@ const videoPlayer = {
                     <iframe 
                         id="video-player"
                         src="${currentUrl}" 
-                        allowfullscreen 
-                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen="true"
+                        webkitallowfullscreen="true"
+                        mozallowfullscreen="true"
+                        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                         loading="lazy"
                     ></iframe>
                 </div>
@@ -447,8 +449,10 @@ const vidkingPlayer = {
         <div class="player-wrapper">
             <iframe 
                 src="${url}" 
-                allowfullscreen 
-                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                mozallowfullscreen="true"
+                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 loading="lazy"
             ></iframe>
         </div>
