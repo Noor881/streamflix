@@ -349,8 +349,8 @@ const videoServers = [
         id: 'vidsrc',
         name: 'VidSrc',
         description: 'Fastest • HD Quality',
-        getMovieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`
+        getMovieUrl: (id) => `https://vsembed.su/embed/movie/${id}`,
+        getTVUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}`
     },
     {
         id: 'vidsrcto',
