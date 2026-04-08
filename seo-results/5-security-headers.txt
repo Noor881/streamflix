@@ -1,0 +1,21 @@
+﻿Security Headers ΓÇö https://hdwatchzone.com
+==================================================
+Γ£à HTTPS: Yes
+Security Score: 85/100
+
+Γ£à Present (5):
+  HSTS (Strict-Transport-Security): max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+Γ¥î Missing (1):
+  Content-Security-Policy (CSP)
+    ΓåÆ Prevents XSS, clickjacking, and code injection.
+
+Issues:
+  ΓÜá∩╕Å 1 security header(s) missing
+
+Recommendations:
+  ≡ƒÆí Content-Security-Policy (CSP): Add a Content-Security-Policy header restricting script/style sources.

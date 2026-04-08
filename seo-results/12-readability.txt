@@ -1,0 +1,24 @@
+﻿{
+  "word_count": 125,
+  "sentence_count": 6,
+  "paragraph_count": 1,
+  "syllable_count": 207,
+  "avg_sentence_length": 20.8,
+  "avg_paragraph_length": 6.0,
+  "avg_syllables_per_word": 1.66,
+  "flesch_reading_ease": 45.6,
+  "flesch_kincaid_grade": 12.1,
+  "reading_level": "Difficult (9th-12th grade)",
+  "estimated_reading_time_min": 0.6,
+  "complex_words": 20,
+  "complex_word_pct": 16.0,
+  "issues": [
+    "\u2139\ufe0f Content readability is moderate (Flesch: 45.6) \u2014 suitable for educated audience",
+    "\u26a0\ufe0f Average paragraph length (6.0 sentences) \u2014 aim for 2-4",
+    "\u26a0\ufe0f Thin content (125 words) \u2014 may rank poorly"
+  ],
+  "recommendations": [
+    "Break long paragraphs into smaller ones"
+  ],
+  "sentence_rewrites": []
+}

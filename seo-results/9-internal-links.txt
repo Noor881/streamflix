@@ -1,0 +1,17 @@
+﻿Internal Link Analysis ΓÇö hdwatchzone.com
+==================================================
+Pages crawled: 2
+Unique pages found: 1
+Total internal links: 2
+Max depth reached: 1
+
+Links per page: min=1, max=1, avg=1.0
+
+Top Anchor Texts:
+  [2x] "Free Movies"
+
+Issues:
+  ΓÜá∩╕Å 2 page(s) have fewer than 3 internal links
+
+Recommendations:
+  ≡ƒÆí Increase internal linking ΓÇö aim for 3-5 relevant links per 1000 words

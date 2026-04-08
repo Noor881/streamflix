@@ -1,0 +1,6 @@
+﻿Redirect Chain ΓÇö https://hdwatchzone.com
+==================================================
+  Γ£à [200] https://hdwatchzone.com (738ms) ΓÇö FINAL
+
+Total hops: 0 | Total time: 738ms
+

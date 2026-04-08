@@ -1,0 +1,11 @@
+﻿llms.txt Check ΓÇö https://hdwatchzone.com/llms.txt
+==================================================
+Status: ≡ƒö┤ Not found (HTTP 404)
+
+llms-full.txt: Γ¥î Not found
+
+Issues:
+  ≡ƒö┤ No llms.txt found
+
+Suggestions:
+  ≡ƒÆí Create /llms.txt with site name, description, and key page links

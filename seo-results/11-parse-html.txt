@@ -1,0 +1,325 @@
+﻿{
+  "title": "HD Watchzone - Watch Free Movies, TV Shows, & Anime in HD",
+  "meta_description": "Watch thousands of movies, TV shows, anime, and web series in HD quality for free. Stream latest releases and trending shows like Spartacus: House of Ashur online with no sign-up required.",
+  "meta_robots": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+  "canonical": "https://hdwatchzone.com/",
+  "h1": [
+    "HD Watchzone \u2014 Free HD Movie & TV Show Streaming"
+  ],
+  "h2": [
+    "Browse by Category",
+    "Popular Genres"
+  ],
+  "h3": [],
+  "images": [
+    {
+      "src": "https://hdwatchzone.com/logo.png",
+      "alt": "HD Watchzone Logo",
+      "width": null,
+      "height": null,
+      "loading": "lazy"
+    },
+    {
+      "src": "https://i.pravatar.cc/100?img=33",
+      "alt": "User avatar",
+      "width": null,
+      "height": null,
+      "loading": "lazy"
+    },
+    {
+      "src": "https://hdwatchzone.com/logo.png",
+      "alt": "HD Watchzone",
+      "width": null,
+      "height": null,
+      "loading": "lazy"
+    }
+  ],
+  "links": {
+    "internal": [
+      {
+        "href": "https://hdwatchzone.com/#/movies",
+        "text": "Free Movies",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/tv",
+        "text": "Free TV Shows",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/anime",
+        "text": "Free Anime Streaming",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/new",
+        "text": "New & Popular",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/28",
+        "text": "Action Movies",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/35",
+        "text": "Comedy Movies",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/18",
+        "text": "Drama",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/27",
+        "text": "Horror",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/878",
+        "text": "Sci-Fi",
+        "rel": []
+      },
+      {
+        "href": "https://hdwatchzone.com/#/genre/16",
+        "text": "Animation",
+        "rel": []
+      }
+    ],
+    "external": []
+  },
+  "schema": [
+    {
+      "@type": "WebSite",
+      "@context": "https://schema.org",
+      "status": "active",
+      "note": "",
+      "has_context": true,
+      "has_type": true,
+      "raw": {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "HD Watchzone",
+        "description": "Watch free movies, TV shows, anime, and animation online in HD quality",
+        "url": "https://hdwatchzone.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://hdwatchzone.com/#/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "HD Watchzone",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://hdwatchzone.com/logo.png"
+          }
+        }
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@context": "https://schema.org",
+      "status": "active",
+      "note": "",
+      "has_context": true,
+      "has_type": true,
+      "raw": {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "HD Watchzone",
+        "applicationCategory": "EntertainmentApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "25000",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@context": "https://schema.org",
+      "status": "active",
+      "note": "",
+      "has_context": true,
+      "has_type": true,
+      "raw": {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://hdwatchzone.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Movies",
+            "item": "https://hdwatchzone.com/#/movies"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "TV Shows",
+            "item": "https://hdwatchzone.com/#/tv"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Anime",
+            "item": "https://hdwatchzone.com/#/anime"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@context": "https://schema.org",
+      "status": "restricted",
+      "note": "FAQPage is restricted to government/healthcare authority sites only.",
+      "has_context": true,
+      "has_type": true,
+      "raw": {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is HD Watchzone free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, HD Watchzone is completely free. You can watch movies, TV shows, and anime in HD quality without any subscription or sign-up required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need to create an account to watch movies on HD Watchzone?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No account or registration is required. Simply visit HD Watchzone and start streaming movies, TV series, and anime instantly for free."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What types of content are available on HD Watchzone?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HD Watchzone offers thousands of movies, TV shows, anime series, web series, and animated content across genres like Action, Comedy, Drama, Horror, Sci-Fi, Romance, and more \u2014 all in HD quality."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I watch HD Watchzone on mobile?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, HD Watchzone is fully optimized for mobile devices. You can stream on any smartphone, tablet, laptop, or desktop browser without installing any app."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are alternatives to Fmovies or Netmirror for free streaming?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HD Watchzone is a top alternative to Fmovies, Netmirror, and Cineby. It offers the same free, no-login HD streaming experience with a wider library of movies, TV shows, and anime."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "ItemList",
+      "@context": "https://schema.org",
+      "status": "active",
+      "note": "",
+      "has_context": true,
+      "has_type": true,
+      "raw": {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Browse Free Movies & Shows by Genre",
+        "description": "Explore thousands of free HD movies, TV shows, and anime by genre on HD Watchzone.",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Action Movies",
+            "url": "https://hdwatchzone.com/#/genre/28"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Comedy Movies",
+            "url": "https://hdwatchzone.com/#/genre/35"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Drama",
+            "url": "https://hdwatchzone.com/#/genre/18"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "Horror Movies",
+            "url": "https://hdwatchzone.com/#/genre/27"
+          },
+          {
+            "@type": "ListItem",
+            "position": 5,
+            "name": "Sci-Fi Movies",
+            "url": "https://hdwatchzone.com/#/genre/878"
+          },
+          {
+            "@type": "ListItem",
+            "position": 6,
+            "name": "Animation",
+            "url": "https://hdwatchzone.com/#/genre/16"
+          },
+          {
+            "@type": "ListItem",
+            "position": 7,
+            "name": "Anime",
+            "url": "https://hdwatchzone.com/#/anime"
+          },
+          {
+            "@type": "ListItem",
+            "position": 8,
+            "name": "TV Shows",
+            "url": "https://hdwatchzone.com/#/tv"
+          }
+        ]
+      }
+    }
+  ],
+  "open_graph": {
+    "og:type": "website",
+    "og:url": "https://hdwatchzone.com/",
+    "og:title": "HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online",
+    "og:description": "Watch thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.",
+    "og:image": "https://hdwatchzone.com/logo.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:site_name": "HD Watchzone",
+    "og:locale": "en_US"
+  },
+  "twitter_card": {
+    "twitter:site": "@hdwatchzone",
+    "twitter:creator": "@hdwatchzone"
+  },
+  "word_count": 125,
+  "hreflang": []
+}

@@ -1,0 +1,2 @@
+﻿ΓÜá∩╕Å  Schema validation warnings:
+  - Block 4: @type 'FAQPage' is restricted to government and healthcare sites only (Aug 2023) ΓÇö verify site qualifies

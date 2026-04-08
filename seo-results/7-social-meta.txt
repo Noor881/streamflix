@@ -1,0 +1,28 @@
+﻿Social Meta Tags ΓÇö https://hdwatchzone.com
+==================================================
+Score: 100/100
+
+Open Graph (7/7):
+  Γ£à og:title: HD Watchzone - Watch Free Movies, TV Shows, Anime & Animatio...
+  Γ£à og:description: Watch thousands of movies, TV shows, anime, and animated con...
+  Γ£à og:image: https://hdwatchzone.com/logo.png
+  Γ£à og:url: https://hdwatchzone.com/
+  Γ£à og:type: website
+  Γ£à og:site_name: HD Watchzone
+  Γ£à og:locale: en_US
+
+Twitter Card (6/6):
+  Γ£à twitter:card: summary_large_image
+  Γ£à twitter:title: HD Watchzone - Watch Free Movies, TV Shows, Anime & Animatio
+  Γ£à twitter:description: Watch thousands of movies, TV shows, anime in HD. Free strea
+  Γ£à twitter:image: https://hdwatchzone.com/logo.png
+  Γ£à twitter:site: @hdwatchzone
+  Γ£à twitter:creator: @hdwatchzone
+
+Social Preview:
+  Title: HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online
+  Description: Watch thousands of movies, TV shows, anime, and animated content in HD quality. 
+  Image: https://hdwatchzone.com/logo.png
+
+Issues:
+  ΓÜá∩╕Å og:title is too long (68 chars, max 60)

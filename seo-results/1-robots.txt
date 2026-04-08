@@ -1,0 +1,27 @@
+﻿robots.txt Analysis ΓÇö https://hdwatchzone.com/robots.txt
+==================================================
+Status: 200
+
+Sitemaps (1):
+  ΓÇó https://hdwatchzone.com/sitemap.xml
+
+User-Agents (3):
+  *: 6 disallow, 1 allow
+  Googlebot: 1 disallow, 1 allow
+  Bingbot: 1 disallow, 1 allow
+
+AI Crawler Management:
+  ΓÜá∩╕Å GPTBot: not managed (inherits * rules)
+  ΓÜá∩╕Å ChatGPT-User: not managed (inherits * rules)
+  ΓÜá∩╕Å ClaudeBot: not managed (inherits * rules)
+  ΓÜá∩╕Å PerplexityBot: not managed (inherits * rules)
+  ΓÜá∩╕Å Google-Extended: not managed (inherits * rules)
+  ΓÜá∩╕Å Applebot-Extended: not managed (inherits * rules)
+  ΓÜá∩╕Å Bytespider: not managed (inherits * rules)
+  ΓÜá∩╕Å CCBot: not managed (inherits * rules)
+  ΓÜá∩╕Å anthropic-ai: not managed (inherits * rules)
+  ΓÜá∩╕Å FacebookBot: not managed (inherits * rules)
+  ΓÜá∩╕Å Amazonbot: not managed (inherits * rules)
+
+Issues (1):
+  ΓÜá∩╕Å 11 AI crawlers not explicitly managed: GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended
