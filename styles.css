@@ -4254,4 +4254,145 @@ textarea,
     .hero-poster-col { display: none; }
     .hero-text-col { max-width: 100%; }
 }
+
+/* ========================================
+   Genre Page & Auto-Play Enhancements
+   ======================================== */
+
+.genre-page-layout {
+    display: flex;
+    gap: 40px;
+    padding: 100px 4% 60px;
+}
+
+.genre-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    background: rgba(20, 20, 20, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.genre-sidebar h3 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.genre-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.genre-sidebar-link {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s;
+}
+
+.genre-sidebar-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.genre-sidebar-link.active {
+    color: #fff;
+    background: var(--color-primary);
+    font-weight: 600;
+}
+
+.genre-main-content {
+    flex: 1;
+}
+
+@media (max-width: 1100px) {
+    .genre-page-layout { flex-direction: column; gap: 20px; }
+    .genre-sidebar { width: 100%; position: static; }
+    .genre-sidebar-list { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* Auto-play UI */
+.autoplay-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.autoplay-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.autoplay-toggle input {
+    width: 40px;
+    height: 20px;
+    appearance: none;
+    background: #333;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.autoplay-toggle input:checked { background: var(--color-primary); }
+
+.autoplay-toggle input::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+.autoplay-toggle input:checked::before { transform: translateX(20px); }
+
+.btn-next-ep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-next-ep:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+}
+
+/* Pulse animation for the next button when episode should end */
+.pulse-next {
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+}
 

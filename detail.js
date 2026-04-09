@@ -680,7 +680,37 @@ function renderNav() {
                 <div class="dnav-links">
                     <a href="/#/movies" class="dnav-link">Movies</a>
                     <a href="/#/tv" class="dnav-link">TV Shows</a>
-                    <a href="/#/genre/28" class="dnav-link">Genres</a>
+                    <a href="/#/anime" class="dnav-link">Anime</a>
+                    
+                    <div class="dnav-dropdown">
+                        <a href="#/genre/28" class="dnav-link dropdown-toggle" id="nav-genres">
+                            Genres
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                        </a>
+                        <div class="dnav-dropdown-content">
+                            <div class="dropdown-grid">
+                                <a href="#/genre/28">Action</a>
+                                <a href="#/genre/12">Adventure</a>
+                                <a href="#/genre/16">Animation</a>
+                                <a href="#/genre/35">Comedy</a>
+                                <a href="#/genre/80">Crime</a>
+                                <a href="#/genre/99">Documentary</a>
+                                <a href="#/genre/18">Drama</a>
+                                <a href="#/genre/10751">Family</a>
+                                <a href="#/genre/14">Fantasy</a>
+                                <a href="#/genre/36">History</a>
+                                <a href="#/genre/27">Horror</a>
+                                <a href="#/genre/10402">Music</a>
+                                <a href="#/genre/9648">Mystery</a>
+                                <a href="#/genre/10749">Romance</a>
+                                <a href="#/genre/878">Sci-Fi</a>
+                                <a href="#/genre/53">Thriller</a>
+                                <a href="#/genre/10752">War</a>
+                                <a href="#/genre/37">Western</a>
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="/#/new" class="dnav-link">New Releases</a>
                 </div>
                 <div class="dnav-right">
@@ -694,7 +724,6 @@ function renderNav() {
         </nav>`;
 }
 
-/* ---------- Player ---------- */
 function buildPlayer(type, id, season, episode) {
     const url = type === 'movie'
         ? SERVERS[activeServer].movieUrl(id)
@@ -707,11 +736,27 @@ function buildPlayer(type, id, season, episode) {
             <span class="server-desc">${s.description}</span>
         </button>`).join('');
 
+    const isTV = type === 'tv';
+    const nextEpVisible = isTV ? 'flex' : 'none';
+
     return `
         <div class="player-section">
             <div class="player-wrapper">
                 <iframe src="${url}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" id="video-player"></iframe>
             </div>
+            
+            <div class="autoplay-controls" style="display: ${nextEpVisible}">
+                <label class="autoplay-toggle">
+                    <input type="checkbox" id="autoplay-next-toggle" ${localStorage.getItem('autoplay_next') === 'true' ? 'checked' : ''} onchange="DetailPage.toggleAutoplay(this.checked)">
+                    <span>Autoplay Next</span>
+                </label>
+                <div style="flex: 1"></div>
+                <button class="btn-next-ep" onclick="DetailPage.playNextEpisode(${id})">
+                    <span>Next Episode</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>
+                </button>
+            </div>
+
             <div class="server-selector">${serverBtns}</div>
             <div class="player-tip">
                 <span class="player-tip-icon">⚡</span>
@@ -1280,5 +1325,34 @@ const DetailPage = {
         localStorage.setItem(key, JSON.stringify(list));
         const btn = document.getElementById('watchlist-btn');
         if (btn) btn.classList.toggle('active', !exists);
+    },
+
+    toggleAutoplay(enabled) {
+        localStorage.setItem('autoplay_next', enabled);
+        if (enabled) showToast('Autoplay Next is ON');
+    },
+
+    playNextEpisode(tvId) {
+        if (!this.currentData || this.currentType !== 'tv') return;
+
+        const currentS = this.currentSeason;
+        const currentE = this.currentEpisode;
+
+        // Find current season in data to find its episode count
+        const sInfo = this.currentData.seasons.find(s => s.season_number === currentS);
+        const maxE = sInfo ? sInfo.episode_count : 20; // fallback
+
+        if (currentE < maxE) {
+            // Next ep in same season
+            this.playEpisode(tvId, currentS, currentE + 1);
+        } else {
+            // Check if there is a next season
+            const nextS = this.currentData.seasons.find(s => s.season_number === currentS + 1);
+            if (nextS) {
+                this.changeSeason(tvId, currentS + 1);
+            } else {
+                showToast('You have reached the end of this series.');
+            }
+        }
     }
 };

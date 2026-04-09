@@ -1621,11 +1621,16 @@ const pages = {
 
         const genreName = genreNames[genreId] || 'Genre';
 
+        // Genre List for sidebar
+        const genreList = Object.entries(genreNames).map(([id, name]) => 
+            `<a href="#/genre/${id}" class="genre-sidebar-link ${id === genreId ? 'active' : ''}">${name}</a>`
+        ).join('');
+
         try {
-            // Fetch both movies and TV shows for this genre
+            // Fetch both movies and TV shows for this genre — 50 pages for massive catalog
             const [movies, tvShows] = await Promise.all([
-                tmdbAPI.getMoviesByGenre(genreId, 5),
-                tmdbAPI.getTVByGenre(genreId, 5)
+                tmdbAPI.getMoviesByGenre(genreId, 50),
+                tmdbAPI.getTVByGenre(genreId, 50)
             ]);
 
             const allItems = [
@@ -1640,19 +1645,27 @@ const pages = {
             const pagination = components.pagination(page, totalPages, 'genre', genreId);
 
             app.innerHTML = `
-                <div class="browse-page">
-                    <div class="browse-header">
-                        <h1>${genreName}</h1>
-                        <p class="browse-subtitle">Explore movies and TV shows in ${genreName}</p>
-                    </div>
-                    <div class="browse-results">
-                        <div class="results-info">
-                            <span>Showing ${pageItems.length} of ${allItems.length} titles</span>
+                <div class="browse-page genre-page-layout">
+                    <aside class="genre-sidebar">
+                        <h3>📁 All Genres</h3>
+                        <div class="genre-sidebar-list">
+                            ${genreList}
                         </div>
-                        <div class="content-grid">
-                            ${pageItems.map(item => components.card(item, item.media_type)).join('')}
+                    </aside>
+                    <div class="genre-main-content">
+                        <div class="browse-header">
+                            <h1>${genreName}</h1>
+                            <p class="browse-subtitle">Explore movies and TV shows in ${genreName}</p>
                         </div>
-                        ${pagination}
+                        <div class="browse-results">
+                            <div class="results-info">
+                                <span>Showing ${pageItems.length} of ${allItems.length} titles in ${genreName}</span>
+                            </div>
+                            <div class="content-grid">
+                                ${pageItems.map(item => components.card(item, item.media_type)).join('')}
+                            </div>
+                            ${pagination}
+                        </div>
                     </div>
                 </div>
             `;
