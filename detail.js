@@ -18,6 +18,28 @@ const SERVERS = [
 
 let activeServer = 0; // vsembed.su — default as it works well and is fast.
 
+const TV_OVERRIDES = {
+    '65942': { // Re:Zero - Starting Life in Another World
+        seasons: [
+            { season_number: 1, name: 'Season 1', range: [1, 25] },
+            { season_number: 2, name: 'Season 2', range: [26, 50] },
+            { season_number: 3, name: 'Season 3', range: [51, 66] },
+            { season_number: 4, name: 'Season 4', range: [67, 200] }
+        ]
+    }
+};
+
+function getRemappedTV(id, s, e) {
+    const ovr = TV_OVERRIDES[String(id)];
+    if (ovr) {
+        const sInfo = ovr.seasons.find(x => x.season_number === s);
+        if (sInfo) {
+            return { s: 1, e: sInfo.range[0] + (e - 1) };
+        }
+    }
+    return { s, e };
+}
+
 /* ---------- TMDB API ---------- */
 async function tmdbFetch(endpoint, params = {}) {
     const url = new URL(`${TMDB.BASE}${endpoint}`);
@@ -815,7 +837,18 @@ function buildDetailsGrid(data, type) {
 function buildEpisodes(tvData, currentSeason, currentEpisode, tvId) {
     if (!tvData.seasons || tvData.seasons.length === 0) return '';
 
-    const realSeasons = tvData.seasons.filter(s => s.season_number > 0);
+    let realSeasons = tvData.seasons.filter(s => s.season_number > 0);
+    
+    // Override logic
+    const ovr = TV_OVERRIDES[String(tvId)];
+    if (ovr) {
+        realSeasons = ovr.seasons.map(s => ({
+            season_number: s.season_number,
+            name: s.name,
+            episode_count: s.range[1] - s.range[0] + 1
+        }));
+    }
+
     if (realSeasons.length === 0) return '';
 
     const seasonBtns = realSeasons.map(s => `
@@ -839,23 +872,37 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
     if (!grid) return;
 
     try {
-        const season = await fetchWithRetry(`/tv/${tvId}/season/${seasonNum}`);
-        const episodes = season.episodes || [];
+        const ovr = TV_OVERRIDES[String(tvId)];
+        let episodes = [];
+        
+        if (ovr) {
+            const seasonInfo = ovr.seasons.find(s => s.season_number === seasonNum);
+            const rawSeason = await fetchWithRetry(`/tv/${tvId}/season/1`);
+            const allEps = rawSeason.episodes || [];
+            if (seasonInfo) {
+                episodes = allEps.filter(ep => ep.episode_number >= seasonInfo.range[0] && ep.episode_number <= seasonInfo.range[1]);
+                // Re-index episode numbers for UI
+                episodes = episodes.map((ep, idx) => ({ ...ep, virtual_number: idx + 1, real_number: ep.episode_number }));
+            }
+        } else {
+            const season = await fetchWithRetry(`/tv/${tvId}/season/${seasonNum}`);
+            episodes = (season.episodes || []).map(ep => ({ ...ep, virtual_number: ep.episode_number, real_number: ep.episode_number }));
+        }
 
         grid.innerHTML = episodes.map(ep => {
             const still = ep.still_path
                 ? imgUrl(ep.still_path, 'w300')
                 : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="170"><rect width="300" height="170" fill="%231a1a1a"/></svg>';
-            const isActive = ep.episode_number === currentEpisode;
+            const isActive = ep.virtual_number === currentEpisode;
 
             return `
                 <div class="episode-card ${isActive ? 'active' : ''}"
-                     onclick="DetailPage.playEpisode(${tvId}, ${seasonNum}, ${ep.episode_number})">
+                     onclick="DetailPage.playEpisode(${tvId}, ${seasonNum}, ${ep.virtual_number})">
                     <div class="episode-still">
-                        <img src="${still}" alt="Episode ${ep.episode_number}" loading="lazy">
+                        <img src="${still}" alt="Episode ${ep.virtual_number}" loading="lazy">
                     </div>
                     <div class="episode-info">
-                        <div class="episode-number">Episode ${ep.episode_number}</div>
+                        <div class="episode-number">Episode ${ep.virtual_number}</div>
                         <div class="episode-name">${sanitize(ep.name)}</div>
                         <div class="episode-overview">${sanitize(ep.overview)}</div>
                     </div>
@@ -1038,7 +1085,7 @@ const DetailPage = {
                                 <span class="meta-badge rating">★ ${rating}</span>
                                 ${yearRange ? `<span class="meta-badge year">${yearRange}</span>` : ''}
                                 <span class="meta-badge status">${tv.status || 'Unknown'}</span>
-                                ${tv.number_of_seasons ? `<span class="meta-badge">${tv.number_of_seasons} Seasons</span>` : ''}
+                                ${TV_OVERRIDES[String(id)] ? `<span class="meta-badge">${TV_OVERRIDES[String(id)].seasons.length} Seasons</span>` : (tv.number_of_seasons ? `<span class="meta-badge">${tv.number_of_seasons} Seasons</span>` : '')}
                             </div>
                             <p class="hero-overview">${sanitize(tv.overview)}</p>
                             <div class="hero-buttons">
@@ -1062,7 +1109,10 @@ const DetailPage = {
                     <div class="detail-main">
                         <div class="detail-section">
                             <h2 class="section-title">Player</h2>
-                            ${buildPlayer('tv', id, season, episode)}
+                            ${(() => {
+                                const remap = getRemappedTV(id, season, episode);
+                                return buildPlayer('tv', id, remap.s, remap.e);
+                            })()}
                         </div>
 
                         ${tv.overview ? `
@@ -1125,9 +1175,13 @@ const DetailPage = {
         const player = document.getElementById('video-player');
         if (!player) return;
 
-        const url = type === 'movie'
-            ? SERVERS[index].movieUrl(id)
-            : SERVERS[index].tvUrl(id, season, episode);
+        let url;
+        if (type === 'movie') {
+            url = SERVERS[index].movieUrl(id);
+        } else {
+            const remap = getRemappedTV(id, season, episode);
+            url = SERVERS[index].tvUrl(id, remap.s, remap.e);
+        }
         player.src = url;
 
         document.querySelectorAll('.server-btn').forEach((btn, i) => {
@@ -1142,7 +1196,8 @@ const DetailPage = {
         // Update player
         const player = document.getElementById('video-player');
         if (player) {
-            player.src = SERVERS[activeServer].tvUrl(tvId, seasonNum, 1);
+            const remap = getRemappedTV(tvId, seasonNum, 1);
+            player.src = SERVERS[activeServer].tvUrl(tvId, remap.s, remap.e);
         }
 
         // Update season buttons
@@ -1161,7 +1216,8 @@ const DetailPage = {
 
         const player = document.getElementById('video-player');
         if (player) {
-            player.src = SERVERS[activeServer].tvUrl(tvId, season, episode);
+            const remap = getRemappedTV(tvId, season, episode);
+            player.src = SERVERS[activeServer].tvUrl(tvId, remap.s, remap.e);
             player.scrollIntoView({ behavior: 'smooth' });
         }
 

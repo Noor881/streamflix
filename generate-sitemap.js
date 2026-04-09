@@ -101,11 +101,24 @@ async function generateSitemap() {
         movieCount++;
     }
 
-    xml += `\n    <!-- TV Show Detail Pages (${tvShows.size} shows) -->\n`;
-
     let tvCount = 0;
+    const TV_OVERRIDES_IDS = ['65942']; // Re:Zero
+
     for (const [id, slug] of tvShows) {
+        // Base Show URL (Priority 0.9)
+        xml += `    <url><loc>${SITE}/tv/${id}-${slug}</loc><lastmod>${TODAY}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
+        
+        // Season 1 URL
         xml += `    <url><loc>${SITE}/tv/${id}-${slug}/1/1</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`;
+        
+        // Handle Overrides (like Re:Zero split seasons)
+        if (String(id) === '65942') {
+            xml += `    <!-- Re:Zero Split Seasons -->\n`;
+            xml += `    <url><loc>${SITE}/tv/${id}-${slug}/2/1</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`;
+            xml += `    <url><loc>${SITE}/tv/${id}-${slug}/3/1</loc><lastmod>${TODAY}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`;
+            xml += `    <url><loc>${SITE}/tv/${id}-${slug}/4/1</loc><lastmod>${TODAY}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n`; // S4 is new!
+        }
+        
         tvCount++;
     }
 
