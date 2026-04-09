@@ -1195,22 +1195,22 @@ const pages = {
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies(50) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(50) },
-            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(50) },
-            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(50) },
-            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, 50) },
-            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, 50) },
-            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, 50) },
-            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, 50) },
-            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, 50) },
-            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, 50) },
-            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, 50) },
-            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, 50) },
-            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, 50) },
-            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, 50) },
-            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, 50) },
-            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, 50) },
+            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies(125) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(125) },
+            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(125) },
+            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(125) },
+            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, 125) },
+            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, 125) },
+            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, 125) },
+            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, 125) },
+            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, 125) },
+            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, 125) },
+            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, 125) },
+            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, 125) },
+            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, 125) },
+            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, 125) },
+            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, 125) },
+            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, 125) },
         ];
 
         try {
@@ -1260,20 +1260,20 @@ const pages = {
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularTV(50) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(50) },
-            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV(50) },
-            { id: '10759', name: '💥 Action & Adventure', fetch: () => tmdbAPI.getTVByGenre(10759, 50) },
-            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getTVByGenre(35, 50) },
-            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getTVByGenre(80, 50) },
-            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getTVByGenre(18, 50) },
-            { id: '10765', name: '🚀 Sci-Fi & Fantasy', fetch: () => tmdbAPI.getTVByGenre(10765, 50) },
-            { id: '9648', name: '🔍 Mystery', fetch: () => tmdbAPI.getTVByGenre(9648, 50) },
-            { id: '10768', name: '⚔️ War & Politics', fetch: () => tmdbAPI.getTVByGenre(10768, 50) },
-            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getTVByGenre(16, 50) },
-            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getTVByGenre(99, 50) },
-            { id: '10751', name: '👨‍👩‍👧 Family', fetch: () => tmdbAPI.getTVByGenre(10751, 50) },
-            { id: '10764', name: '🎤 Reality', fetch: () => tmdbAPI.getTVByGenre(10764, 50) },
+            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularTV(125) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(125) },
+            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV(125) },
+            { id: '10759', name: '💥 Action & Adventure', fetch: () => tmdbAPI.getTVByGenre(10759, 125) },
+            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getTVByGenre(35, 125) },
+            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getTVByGenre(80, 125) },
+            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getTVByGenre(18, 125) },
+            { id: '10765', name: '🚀 Sci-Fi & Fantasy', fetch: () => tmdbAPI.getTVByGenre(10765, 125) },
+            { id: '9648', name: '🔍 Mystery', fetch: () => tmdbAPI.getTVByGenre(9648, 125) },
+            { id: '10768', name: '⚔️ War & Politics', fetch: () => tmdbAPI.getTVByGenre(10768, 125) },
+            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getTVByGenre(16, 125) },
+            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getTVByGenre(99, 125) },
+            { id: '10751', name: '👨‍👩‍👧 Family', fetch: () => tmdbAPI.getTVByGenre(10751, 125) },
+            { id: '10764', name: '🎤 Reality', fetch: () => tmdbAPI.getTVByGenre(10764, 125) },
         ];
 
         try {
@@ -1323,21 +1323,21 @@ const pages = {
 
         const ITEMS_PER_PAGE = 24;
 
-        // Anime-specific categories — fetching 50 pages to get 1000+ titles
+        // Anime-specific categories — fetching 125 pages to get 2500+ titles
         const categories = [
-            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(50) },
-            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(50) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(20) },
+            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(125) },
+            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(125) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(50) },
         ];
 
         try {
             // Default to Anime TV Shows
             let data;
             if (category === 'movies') {
-                data = await tmdbAPI.getAnimationMovies(30);
+                data = await tmdbAPI.getAnimationMovies(125);
             } else if (category === 'top_rated') {
                 const requests = [];
-                for (let i = 1; i <= 10; i++) {
+                for (let i = 1; i <= 50; i++) {
                     requests.push(tmdbAPI.fetch('/discover/tv', {
                         with_genres: 16,
                         with_origin_country: 'JP',
@@ -1350,7 +1350,7 @@ const pages = {
                 const results = responses.flatMap(r => r?.results || []);
                 data = { results };
             } else {
-                data = await tmdbAPI.getAnimeTVShows(30);
+                data = await tmdbAPI.getAnimeTVShows(125);
             }
 
             // Standardize data structure if needed
