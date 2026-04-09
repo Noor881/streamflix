@@ -1334,21 +1334,23 @@ const pages = {
             // Default to Anime TV Shows
             let data;
             if (category === 'movies') {
-                data = await tmdbAPI.getAnimationMovies(5);
+                data = await tmdbAPI.getAnimationMovies(30);
             } else if (category === 'top_rated') {
-                // For Top Rated, we'll just use general top rated TV for now as TMDB doesn't have easy "Top Rated Anime" endpoint without complex discovery
-                // actually, let's use discover with genre 16 and JP
-                const response = await tmdbAPI.fetch('/discover/tv', {
-                    with_genres: 16,
-                    with_origin_country: 'JP',
-                    page: 1,
-                    sort_by: 'vote_average.desc',
-                    'vote_count.gte': 100
-                });
-                data = { results: response.results };
-                // Fetch more pages if needed to match structure, but for now 1 page is enough for demo or handle 5 pages loop here
+                const requests = [];
+                for (let i = 1; i <= 10; i++) {
+                    requests.push(tmdbAPI.fetch('/discover/tv', {
+                        with_genres: 16,
+                        with_origin_country: 'JP',
+                        page: i,
+                        sort_by: 'vote_average.desc',
+                        'vote_count.gte': 50
+                    }));
+                }
+                const responses = await Promise.all(requests);
+                const results = responses.flatMap(r => r?.results || []);
+                data = { results };
             } else {
-                data = await tmdbAPI.getAnimeTVShows(5);
+                data = await tmdbAPI.getAnimeTVShows(30);
             }
 
             // Standardize data structure if needed
