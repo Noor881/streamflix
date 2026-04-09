@@ -246,11 +246,12 @@ const tmdbAPI = {
         return { results: allResults };
     },
 
-    // Get Animation movies (genre id: 16)
+    // Get Anime/Animation movies (genre id: 16)
     async getAnimationMovies(pages = 50) {
         const requests = [];
         for (let page = 1; page <= pages; page++) {
-            requests.push(this.fetch('/discover/movie', { with_genres: 16, page, sort_by: 'popularity.desc' }));
+            // Added JP origin to focus on Anime
+            requests.push(this.fetch('/discover/movie', { with_genres: 16, with_origin_country: 'JP', page, sort_by: 'popularity.desc' }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
@@ -1099,10 +1100,10 @@ const pages = {
                 tmdbAPI.getTrending('all', 'day', 2),
                 tmdbAPI.getPopularMovies(2),
                 tmdbAPI.getPopularTV(2),
-                tmdbAPI.getTopRatedMovies(2),
-                tmdbAPI.getTopRatedTV(2),
-                tmdbAPI.getAnimationMovies(2),
-                tmdbAPI.getAnimeTVShows(2),
+                tmdbAPI.getTopRatedMovies(5),
+                tmdbAPI.getTopRatedTV(5),
+                tmdbAPI.getAnimationMovies(5),
+                tmdbAPI.getAnimeTVShows(5),
                 // Fetch Netflix TV SHOWS for series platform section
                 tmdbAPI.fetch('/discover/tv', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' })
                     .then(tv => (tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))),
@@ -1154,7 +1155,7 @@ const pages = {
                 <button class="section-tab" onclick="switchGenreTab('10749', 'Romance', this)">Romance</button>
                 <button class="section-tab" onclick="switchGenreTab('878', 'Sci-fi', this)">Sci-fi</button>
                 <button class="section-tab" onclick="switchGenreTab('18', 'Drama', this)">Drama</button>
-                <button class="section-tab" onclick="switchGenreTab('16', 'Animation', this)">Animation</button>
+                <button class="section-tab" onclick="switchGenreTab('16', 'Anime', this)">Anime</button>
             `;
 
             app.innerHTML = `
@@ -1167,7 +1168,7 @@ const pages = {
                 ${components.sectionWithRightTabs('Genres', components.contentRow(actionContent, 'all', 'row-genres'), 'row-genres', genreTabs)}
                 ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
                 ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
-                ${components.section('🎨 Animation Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
+                ${components.section('🎬 Anime Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
                 ${components.section('⚔️ Anime Series', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
             `;
 
@@ -1322,11 +1323,11 @@ const pages = {
 
         const ITEMS_PER_PAGE = 24;
 
-        // Anime-specific categories
+        // Anime-specific categories — fetching 30 pages to get 600+ titles
         const categories = [
-            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(5) },
-            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(5) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(5) }, // General top rated for now, ideally filtered
+            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(30) },
+            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(30) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(10) },
         ];
 
         try {
