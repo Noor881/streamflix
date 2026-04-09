@@ -30,7 +30,8 @@ const TV_OVERRIDES = {
 };
 
 function getRemappedTV(id, s, e) {
-    const ovr = TV_OVERRIDES[String(id)];
+    const tid = String(id).trim();
+    const ovr = TV_OVERRIDES[tid];
     if (ovr) {
         const sInfo = ovr.seasons.find(x => x.season_number === s);
         if (sInfo) {
@@ -840,7 +841,8 @@ function buildEpisodes(tvData, currentSeason, currentEpisode, tvId) {
     let realSeasons = tvData.seasons.filter(s => s.season_number > 0);
     
     // Override logic
-    const ovr = TV_OVERRIDES[String(tvId)];
+    const tid = String(tvId).trim();
+    const ovr = TV_OVERRIDES[tid];
     if (ovr) {
         realSeasons = ovr.seasons.map(s => ({
             season_number: s.season_number,
@@ -872,7 +874,8 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
     if (!grid) return;
 
     try {
-        const ovr = TV_OVERRIDES[String(tvId)];
+        const tid = String(tvId).trim();
+        const ovr = TV_OVERRIDES[tid];
         let episodes = [];
         
         if (ovr) {
@@ -1085,7 +1088,10 @@ const DetailPage = {
                                 <span class="meta-badge rating">★ ${rating}</span>
                                 ${yearRange ? `<span class="meta-badge year">${yearRange}</span>` : ''}
                                 <span class="meta-badge status">${tv.status || 'Unknown'}</span>
-                                ${TV_OVERRIDES[String(id)] ? `<span class="meta-badge">${TV_OVERRIDES[String(id)].seasons.length} Seasons</span>` : (tv.number_of_seasons ? `<span class="meta-badge">${tv.number_of_seasons} Seasons</span>` : '')}
+                                ${(() => {
+                                    const tid = String(id).trim();
+                                    return TV_OVERRIDES[tid] ? `<span class="meta-badge">${TV_OVERRIDES[tid].seasons.length} Seasons</span>` : (tv.number_of_seasons ? `<span class="meta-badge">${tv.number_of_seasons} Seasons</span>` : '');
+                                })()}
                             </div>
                             <p class="hero-overview">${sanitize(tv.overview)}</p>
                             <div class="hero-buttons">
