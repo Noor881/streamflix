@@ -759,8 +759,14 @@ function buildPlayer(type, id, season, episode) {
 
             <div class="server-selector">${serverBtns}</div>
             <div class="player-tip">
-                <span class="player-tip-icon">⚡</span>
-                <span><strong>Video not loading or showing "Media Not Available"?</strong> — Click the <strong>Server 1</strong> button 2–3 times. It fixes it instantly. If still broken, try Server 2 or 3.</span>
+                <div class="tip-item">
+                    <span class="player-tip-icon">🔊</span>
+                    <span><strong>Multi-Language / Dual Audio:</strong> Click the <strong>Settings (Gear ⚙️)</strong> icon in the player to switch to <strong>Hindi, Urdu,</strong> or other languages.</span>
+                </div>
+                <div class="tip-item">
+                    <span class="player-tip-icon">⚡</span>
+                    <span><strong>Not loading?</strong> Click <strong>Server 1</strong> button 2–3 times or try other servers.</span>
+                </div>
             </div>
         </div>`;
 }

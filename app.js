@@ -573,6 +573,10 @@ const components = {
                             <span class="card-rating">★ ${rating}</span>
                             <span>${utils.formatDate(date)}</span>
                         </div>
+                        <div class="dual-audio-badge">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm0 20a9 9 0 1 1 9-9 9.01 9.01 0 0 1-9 9zm7-9h-2a5 5 0 0 0-10 0H5a7 7 0 0 1 14 0z"/></svg>
+                            <span>Dual Audio</span>
+                        </div>
                     </div>
                     <div class="card-play"></div>
                 </div>

@@ -4395,4 +4395,29 @@ textarea,
     70% { box-shadow: 0 0 0 10px rgba(229, 9, 20, 0); }
     100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
 }
+
+/* Dual Audio Badge */
+.dual-audio-badge {
+    position: absolute;
+    bottom: 30px;
+    left: 8px;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    z-index: 5;
+}
+
+.dual-audio-badge svg {
+    margin-bottom: -1px;
+}
 
