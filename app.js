@@ -340,18 +340,18 @@ const tmdbAPI = {
 // ==========================================
 const videoServers = [
     {
-        id: 'vidsrccc',
-        name: 'VidSrc.cc',
-        description: 'Fast Loading • 4K Support',
-        getMovieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
-    },
-    {
         id: 'vidsrc',
         name: 'VidSrc',
         description: 'Fastest • HD Quality',
         getMovieUrl: (id) => `https://vsembed.su/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}`
+    },
+    {
+        id: 'multiembed',
+        name: 'Dual Audio HD',
+        description: 'Best for Hindi/Urdu Dubs',
+        getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+        getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
     },
     {
         id: 'vidsrcto',
@@ -366,6 +366,13 @@ const videoServers = [
         description: 'Premium Quality • Stable',
         getMovieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`
+    },
+    {
+        id: 'vidsrccc',
+        name: 'VidSrc.cc',
+        description: 'Fast Loading • 4K Support',
+        getMovieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
+        getTVUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
     }
 ];
 
