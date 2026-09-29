@@ -106,7 +106,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.cloudfront.net *.googleapis.com *.googletagmanager.com *.ahrefs.com *.analytics.ahrefs.com; img-src * data: blob:; media-src * blob:; frame-src *; connect-src *; font-src * data:"
+                    "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.googletagmanager.com *.ahrefs.com *.analytics.ahrefs.com; img-src * data: blob:; media-src * blob:; frame-src *; connect-src *; font-src * data:"
                 },
                 {
                     "key": "Cross-Origin-Opener-Policy",

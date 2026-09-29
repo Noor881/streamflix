@@ -1,7 +1,9 @@
-const CACHE_NAME = 'streamflix-v6';
+const CACHE_NAME = 'streamflix-v7';
 const STATIC_ASSETS = [
     '/styles.css',
     '/app.js',
+    '/detail.css',
+    '/detail.js',
     '/favicon.svg',
     '/manifest.json',
     '/offline.html',
@@ -49,7 +51,6 @@ function swOpenDB() {
         req.onerror = () => reject(req.error);
     });
 }
-
 async function swGetAll(storeName) {
     const db = await swOpenDB();
     return new Promise((res, rej) => {
@@ -180,33 +181,6 @@ async function cacheFirst(request, cacheName) {
         }
         return response;
     } catch {
-        return new Response('Offline', { status: 503 });
-    }
-}
-
-async function networkFirst(request, cacheName, timeout) {
-    const cache = await caches.open(cacheName);
-
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-        const response = await fetch(request, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-            cache.put(request, response.clone());
-        }
-        return response;
-    } catch {
-        const cached = await cache.match(request);
-        if (cached) return cached;
-
-        if (request.mode === 'navigate') {
-            const fallback = await cache.match('/offline.html');
-            if (fallback) return fallback;
-        }
-
         return new Response('Offline', { status: 503 });
     }
 }

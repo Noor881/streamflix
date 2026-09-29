@@ -340,39 +340,32 @@ const tmdbAPI = {
 // ==========================================
 const videoServers = [
     {
-        id: 'vidsrc',
+        id: 'vsembed',
         name: 'Server 1',
-        description: 'Fastest • HD Quality',
+        description: 'Fast • HD Quality',
         getMovieUrl: (id) => `https://vsembed.su/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}`
     },
     {
         id: 'multiembed',
         name: 'Server 2 (Dual Audio)',
-        description: 'Best for Hindi/Urdu Dubs',
+        description: 'Hindi/Urdu options',
         getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
         getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
     },
     {
         id: 'vidsrcto',
         name: 'Server 3',
-        description: 'No Ads • Reliable',
+        description: 'Alternative source',
         getMovieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`,
         getTVUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`
     },
     {
-        id: 'vidsrc2',
+        id: 'vidlink',
         name: 'Server 4',
-        description: 'Premium Quality • Stable',
-        getMovieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'vidsrccc',
-        name: 'Server 5',
-        description: 'Fast Loading • 4K Support',
-        getMovieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`
+        description: 'Fast backup',
+        getMovieUrl: (id) => `https://vidlink.pro/movie/${id}`,
+        getTVUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}`
     }
 ];
 
@@ -412,14 +405,17 @@ const videoPlayer = {
                         ${serverButtons}
                     </div>
                 </div>
-                <div class="player-wrapper">
+                <div class="player-wrapper" id="player-wrapper">
                     <iframe 
                         id="video-player"
                         src="${currentUrl}" 
-                        allowfullscreen="true"
+                        title="Video player"
+                        allowfullscreen
                         webkitallowfullscreen="true"
                         mozallowfullscreen="true"
                         allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                        referrerpolicy="origin"
                         loading="lazy"
                     ></iframe>
                 </div>

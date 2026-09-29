@@ -10,11 +10,10 @@ const TMDB = {
 };
 
 const SERVERS = [
-    { id: 'vidsrc', name: 'Server 1', description: 'Fastest • HD Quality', movieUrl: (id) => `https://vsembed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}` },
-    { id: 'multiembed', name: 'Server 2 (Dual Audio)', description: 'Best for Hindi/Urdu Dubs', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-    { id: 'vidsrcto', name: 'Server 3', description: 'No Ads • Reliable', movieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrc2', name: 'Server 4', description: 'Premium Quality • Stable', movieUrl: (id) => `https://vidsrc.pro/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
-    { id: 'vidsrccc', name: 'Server 5', description: 'Fast Loading • 4K Support', movieUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}` }
+    { id: 'vsembed', name: 'Server 1', description: 'Fast • HD Quality', movieUrl: (id) => `https://vsembed.su/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}` },
+    { id: 'multiembed', name: 'Server 2 (Dual Audio)', description: 'Hindi/Urdu options', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+    { id: 'vidsrcto', name: 'Server 3', description: 'Alternative source', movieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+    { id: 'vidlink', name: 'Server 4', description: 'Fast backup', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` }
 ];
 
 let activeServer = 0; // vsembed.su — default as it works well and is fast.
@@ -742,8 +741,12 @@ function buildPlayer(type, id, season, episode) {
 
     return `
         <div class="player-section">
-            <div class="player-wrapper">
-                <iframe src="${url}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" id="video-player"></iframe>
+            <div class="player-wrapper" id="player-wrapper">
+                <iframe src="${url}" title="Video player" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" referrerpolicy="origin" id="video-player"></iframe>
+                <button class="player-fullscreen-btn" type="button" onclick="DetailPage.toggleFullscreen()" aria-label="Open full screen" title="Full screen">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H3v4h2V5h2V3zm12 0h-4v2h2v2h2V3zM5 17H3v4h4v-2H5v-2zm14 0h-2v2h-2v2h4v-4z"/></svg>
+                    <span>Full screen</span>
+                </button>
             </div>
             
             <div class="autoplay-controls" style="display: ${nextEpVisible}">
@@ -1245,6 +1248,23 @@ const DetailPage = {
         document.querySelectorAll('.server-btn').forEach((btn, i) => {
             btn.classList.toggle('active', i === index);
         });
+    },
+
+    async toggleFullscreen() {
+        const wrapper = document.getElementById('player-wrapper');
+        if (!wrapper) return;
+
+        try {
+            if (document.fullscreenElement) {
+                await document.exitFullscreen();
+            } else if (wrapper.requestFullscreen) {
+                await wrapper.requestFullscreen();
+            } else if (wrapper.webkitRequestFullscreen) {
+                wrapper.webkitRequestFullscreen();
+            }
+        } catch (error) {
+            console.warn('Fullscreen could not be opened:', error);
+        }
     },
 
     changeSeason(tvId, seasonNum) {
