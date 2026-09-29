@@ -742,7 +742,7 @@ function buildPlayer(type, id, season, episode) {
     return `
         <div class="player-section">
             <div class="player-wrapper" id="player-wrapper">
-                <iframe src="${url}" title="Video player" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" referrerpolicy="origin" id="video-player"></iframe>
+                <iframe src="${url}" title="Video player" allowfullscreen webkitallowfullscreen mozallowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="origin" id="video-player"></iframe>
                 <button class="player-fullscreen-btn" type="button" onclick="DetailPage.toggleFullscreen()" aria-label="Open full screen" title="Full screen">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H3v4h2V5h2V3zm12 0h-4v2h2v2h2V3zM5 17H3v4h4v-2H5v-2zm14 0h-2v2h-2v2h4v-4z"/></svg>
                     <span>Full screen</span>

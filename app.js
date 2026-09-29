@@ -414,7 +414,6 @@ const videoPlayer = {
                         webkitallowfullscreen="true"
                         mozallowfullscreen="true"
                         allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                         referrerpolicy="origin"
                         loading="lazy"
                     ></iframe>
