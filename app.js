@@ -558,7 +558,7 @@ const components = {
         const posterUrl = utils.getImageUrl(item.poster_path, 'medium');
         const slug = utils.createSlug(title);
         const route = mediaType === 'movie' ? `/movie/${item.id}-${slug}` : `/tv/${item.id}-${slug}`;
-        const overview = utils.truncate(item.overview, 80);
+        const year = date ? new Date(date).getFullYear() : '';
 
         return `
             <a href="${route}" class="card-wrapper" data-id="${item.id}" data-type="${mediaType}">
@@ -573,18 +573,14 @@ const components = {
                     <div class="card-overlay">
                         <div class="card-meta">
                             <span class="card-rating">★ ${rating}</span>
-                            <span>${utils.formatDate(date)}</span>
-                        </div>
-                        <div class="dual-audio-badge">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a11 11 0 1 0 11 11A11.013 11.013 0 0 0 12 1zm0 20a9 9 0 1 1 9-9 9.01 9.01 0 0 1-9 9zm7-9h-2a5 5 0 0 0-10 0H5a7 7 0 0 1 14 0z"/></svg>
-                            <span>Dual Audio</span>
+                            <span class="card-type">${mediaType === 'movie' ? 'Movie' : 'TV'}</span>
                         </div>
                     </div>
                     <div class="card-play"></div>
                 </div>
                 <div class="card-info">
                     <h3 class="card-info-title">${title}</h3>
-                    <p class="card-info-desc">${overview || 'No description available.'}</p>
+                    <p class="card-info-desc">${year || 'Recently added'} <span>•</span> ${mediaType === 'movie' ? 'Movie' : 'TV Series'} <span>•</span> HD</p>
                 </div>
             </a>
         `;
@@ -702,11 +698,11 @@ const components = {
                             <div class="hero-buttons">
                                 <a href="${route}" class="btn-cineby btn-cineby-primary">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    Watch Now
+                                    Play Now
                                 </a>
                                 <a href="${route}" class="btn-cineby btn-cineby-glass">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                                    View Info
+                                    More Info
                                 </a>
                             </div>
                         </div>
@@ -1166,16 +1162,11 @@ const pages = {
 
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
-                ${components.top10Section(trending?.results, 'TOP 10 CONTENT TODAY')}
                 ${continueWatchingHtml}
-                ${components.sectionWithRightTabs('Trending Today', components.contentRow(trending?.results?.slice(10), 'all', 'row-trending'), 'row-trending', trendingTabs)}
-                ${components.sectionWithRightTabs('Series on Netflix', components.contentRow(netflixSeries, 'tv', 'row-series-platform'), 'row-series-platform', seriesPlatformTabs)}
-                ${components.sectionWithRightTabs('Top rated', components.contentRow(topRatedMovies?.results, 'movie', 'row-toprated'), 'row-toprated', topRatedTabs)}
-                ${components.sectionWithRightTabs('Genres', components.contentRow(actionContent, 'all', 'row-genres'), 'row-genres', genreTabs)}
-                ${components.section('🎬 Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
-                ${components.section('📺 Popular TV Shows', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
-                ${components.section('🎬 Anime Movies', components.contentRow(animationMovies?.results, 'movie', 'row-animation'))}
-                ${components.section('⚔️ Anime Series', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
+                ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5), 'all', 'row-trending'), 'row-trending', trendingTabs)}
+                ${components.section('Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
+                ${components.section('Popular TV', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
+                ${components.section('Anime Spotlight', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
             `;
 
             // Start hero carousel auto-rotation
@@ -2308,6 +2299,14 @@ const router = {
         document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
             const href = link.getAttribute('href');
             link.classList.toggle('active', href === hash || (href === '#/' && path === '/'));
+        });
+
+        document.querySelectorAll('.mobile-bottom-link').forEach(link => {
+            const href = link.getAttribute('href');
+            const active = href === '#/' ? path === '/' : path.startsWith(href.slice(1));
+            link.classList.toggle('active', active);
+            if (active) link.setAttribute('aria-current', 'page');
+            else link.removeAttribute('aria-current');
         });
 
         // Parse route

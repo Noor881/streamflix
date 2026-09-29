@@ -93,6 +93,7 @@
     <link rel="stylesheet" href="/nav.css?v=5.2">
     <link rel="stylesheet" href="/styles.css?v=5.2">
     <link rel="stylesheet" href="/responsive.css?v=5.2">
+    <link rel="stylesheet" href="/design-v2.css?v=1.0">
 
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">
@@ -169,7 +170,7 @@
     </script>
 </head>
 
-<body>
+<body class="app-shell">
     <!-- Noscript SEO fallback: visible to crawlers & users with JS disabled -->
     <noscript>
         <div style="max-width:900px;margin:40px auto;padding:20px;font-family:sans-serif;color:#fff;background:#141414;">
@@ -276,6 +277,18 @@
         <a href="#/anime" class="mobile-nav-link">Anime</a>
         <a href="#/new" class="mobile-nav-link">New & Popular</a>
         <a href="#/my-list" class="mobile-nav-link">My List</a>
+    </nav>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+        <a href="#/" class="mobile-bottom-link active" aria-label="Home">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8V21h-6v-6H9v6H3z"/></svg><span>Home</span>
+        </a>
+        <a href="#/new" class="mobile-bottom-link" aria-label="Explore">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.1 4.9-4.9 2.1 2.1-4.9z"/></svg><span>Explore</span>
+        </a>
+        <a href="#/my-list" class="mobile-bottom-link" aria-label="My List">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-3.8L6 21z"/></svg><span>My List</span>
+        </a>
     </nav>
 
     <!-- Main Content -->
