@@ -72,6 +72,18 @@
             "destination": "/index.html"
         },
         {
+            "source": "/help",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/cookies",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/account",
+            "destination": "/index.html"
+        },
+        {
             "source": "/admin",
             "destination": "/admin.html"
         }

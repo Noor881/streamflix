@@ -14,8 +14,8 @@ const CONFIG = {
 
     // Local Storage Keys
     STORAGE_KEYS: {
-        WATCH_HISTORY: 'hdwatchzone_watch_history',
-        CONTINUE_WATCHING: 'hdwatchzone_continue_watching'
+        WATCH_HISTORY: 'streamflix_watch_history',
+        CONTINUE_WATCHING: 'streamflix_continue_watching'
     }
 };
 
@@ -1777,15 +1777,16 @@ const pages = {
     faq() {
         const app = document.getElementById('app');
         const faqItems = [
-            { q: 'What is Streamflix?', a: 'Streamflix is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
-            { q: 'Is Streamflix free to use?', a: 'Yes, Streamflix is completely free. We aggregate content from various third-party providers so you can find and stream entertainment without any subscription or sign-up.' },
+            { q: 'What is HD Watchzone?', a: 'HD Watchzone is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
+            { q: 'Is HD Watchzone free to use?', a: 'Yes, HD Watchzone is completely free. We aggregate content from various third-party providers so you can find and stream entertainment without any subscription or sign-up.' },
             { q: 'Do I need to create an account?', a: 'No account is required. You can browse and watch content immediately. However, features like My List use your browser\'s local storage to save your preferences.' },
-            { q: 'What devices are supported?', a: 'Streamflix works on any device with a modern web browser including desktop computers, laptops, tablets, and smartphones. We recommend Chrome, Firefox, Safari, or Edge for the best experience.' },
+            { q: 'What devices are supported?', a: 'HD Watchzone works on any device with a modern web browser including desktop computers, laptops, tablets, and smartphones. We recommend Chrome, Firefox, Safari, or Edge for the best experience.' },
             { q: 'Why is a video not playing?', a: 'If a video is not playing, try switching to a different server using the server selector above the player. Different servers may have different availability for certain titles.' },
-            { q: 'Where does the content come from?', a: 'All content metadata (titles, descriptions, posters, ratings) is provided by The Movie Database (TMDB). Video streams are provided by third-party embed services. Streamflix does not host, store, or own any media content.' },
+            { q: 'Where does the content come from?', a: 'All content metadata (titles, descriptions, posters, ratings) is provided by The Movie Database (TMDB). Video streams are provided by third-party embed services. HD Watchzone does not host, store, or own any media content.' },
             { q: 'How do I report a broken link?', a: 'You can report issues through our Contact Us page. Please include the title of the content and which server you were using so we can investigate.' },
-            { q: 'Can I download content for offline viewing?', a: 'No, Streamflix is a streaming-only platform. We do not offer downloads as we do not host any content directly.' },
+            { q: 'Can I download content for offline viewing?', a: 'No, HD Watchzone is a streaming-only platform. We do not offer downloads as we do not host any content directly.' },
             { q: 'How often is new content added?', a: 'Our catalog updates automatically as new titles become available on TMDB and our third-party providers. Trending and popular sections refresh daily.' },
+            { q: 'Is HD Watchzone an alternative to Cineby or Net77?', a: 'People comparing Cineby, Net77.cc, Net77 and similar discovery sites can use HD Watchzone to search movies, TV shows and anime in a responsive interface. HD Watchzone is independent and is not affiliated with those services.' },
             { q: 'Is my data safe?', a: 'We take privacy seriously. We only store your preferences (like your watchlist) locally in your browser. We do not collect personal information or require registration. See our Privacy Policy for full details.' }
         ];
 
@@ -1793,7 +1794,7 @@ const pages = {
             <div class="static-page">
                 <div class="static-page-header">
                     <h1>Frequently Asked Questions</h1>
-                    <p>Find answers to common questions about Streamflix</p>
+                    <p>Find answers to common questions about HD Watchzone</p>
                 </div>
                 <div class="faq-list">
                     ${faqItems.map((item, i) => `
@@ -1820,7 +1821,7 @@ const pages = {
     help() {
         const app = document.getElementById('app');
         const helpCategories = [
-            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on Streamflix.', links: [{ text: 'How to search for content', href: '#/faq' }, { text: 'Understanding the interface', href: '#/faq' }] },
+            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '#/faq' }, { text: 'Understanding the interface', href: '#/faq' }] },
             { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '#/faq' }, { text: 'Switch streaming servers', href: '#/faq' }] },
             { icon: '\ud83d\udccb', title: 'My List & Preferences', desc: 'Manage your watchlist and personalize your experience.', links: [{ text: 'Adding to My List', href: '#/my-list' }, { text: 'Managing saved content', href: '#/my-list' }] },
             { icon: '\ud83d\udd12', title: 'Privacy & Security', desc: 'Understand how your data is handled and protected.', links: [{ text: 'Privacy Policy', href: '#/privacy' }, { text: 'Cookie Preferences', href: '#/cookies' }] },
@@ -1890,7 +1891,7 @@ const pages = {
                     </div>
                 </div>
                 <div class="disclaimer-banner">
-                    <p><strong>Note:</strong> Streamflix does not require an account. All your data (watchlist, history) is stored locally in your browser and never sent to any server.</p>
+                    <p><strong>Note:</strong> HD Watchzone does not require an account. All your data (watchlist, history) is stored locally in your browser and never sent to any server.</p>
                 </div>
             </div>
         `;
@@ -1935,7 +1936,7 @@ const pages = {
                     <div class="contact-info">
                         <div class="contact-info-card">
                             <h3>\ud83d\udce7 Email</h3>
-                            <p>support@streamflix.com</p>
+                            <p>support@hdwatchzone.com</p>
                         </div>
                         <div class="contact-info-card">
                             <h3>\u23f1\ufe0f Response Time</h3>
@@ -1962,47 +1963,47 @@ const pages = {
                 </div>
                 <div class="legal-content">
                     <div class="disclaimer-banner">
-                        <p><strong>Third-Party Content Disclaimer:</strong> Streamflix does not host, store, or own any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. All trademarks, service marks, trade names, and content belong to their respective owners.</p>
+                        <p><strong>Third-Party Content Disclaimer:</strong> HD Watchzone does not host, store, or own any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. All trademarks, service marks, trade names, and content belong to their respective owners.</p>
                     </div>
 
                     <section class="legal-section">
                         <h2>1. Acceptance of Terms</h2>
-                        <p>By accessing and using Streamflix, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you must not use this website.</p>
+                        <p>By accessing and using HD Watchzone, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you must not use this website.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>2. Description of Service</h2>
-                        <p>Streamflix is a content discovery and aggregation platform. We provide an interface to browse movie and TV show metadata sourced from The Movie Database (TMDB) API. Video playback is facilitated through third-party embed services. We do not upload, host, or store any video content on our servers.</p>
+                        <p>HD Watchzone is a content discovery and aggregation platform. We provide an interface to browse movie and TV show metadata sourced from The Movie Database (TMDB) API. Video playback is facilitated through third-party embed services. We do not upload, host, or store any video content on our servers.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>3. Third-Party Content</h2>
-                        <p>All video streams accessible through Streamflix are hosted by independent third-party providers. We have no control over the content, availability, or quality of these streams. We are not responsible for any content provided by third parties.</p>
+                        <p>All video streams accessible through HD Watchzone are hosted by independent third-party providers. We have no control over the content, availability, or quality of these streams. We are not responsible for any content provided by third parties.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>4. Intellectual Property</h2>
-                        <p>All movie and TV show metadata, including titles, descriptions, posters, and ratings, is provided by TMDB under their API terms of use. All trademarks and copyrights for the media content belong to their respective owners. Streamflix claims no ownership over any third-party content.</p>
+                        <p>All movie and TV show metadata, including titles, descriptions, posters, and ratings, is provided by TMDB under their API terms of use. All trademarks and copyrights for the media content belong to their respective owners. HD Watchzone claims no ownership over any third-party content.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>5. User Conduct</h2>
-                        <p>You agree to use Streamflix only for lawful purposes. You must not attempt to disrupt, overload, or interfere with the proper functioning of the website. Automated scraping, crawling, or data extraction is prohibited without express permission.</p>
+                        <p>You agree to use HD Watchzone only for lawful purposes. You must not attempt to disrupt, overload, or interfere with the proper functioning of the website. Automated scraping, crawling, or data extraction is prohibited without express permission.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>6. Disclaimer of Warranties</h2>
-                        <p>Streamflix is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or that any content will always be available. Use the service at your own risk.</p>
+                        <p>HD Watchzone is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or that any content will always be available. Use the service at your own risk.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>7. Limitation of Liability</h2>
-                        <p>Streamflix shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the service, including any issues with third-party content or streams.</p>
+                        <p>HD Watchzone shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the service, including any issues with third-party content or streams.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>8. Changes to Terms</h2>
-                        <p>We reserve the right to modify these Terms of Use at any time. Changes will be effective immediately upon posting. Your continued use of Streamflix after changes constitutes acceptance of the updated terms.</p>
+                        <p>We reserve the right to modify these Terms of Use at any time. Changes will be effective immediately upon posting. Your continued use of HD Watchzone after changes constitutes acceptance of the updated terms.</p>
                     </section>
 
                     <section class="legal-section">
@@ -2026,12 +2027,12 @@ const pages = {
                 <div class="legal-content">
                     <section class="legal-section">
                         <h2>1. Overview</h2>
-                        <p>Streamflix is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and your choices regarding your data.</p>
+                        <p>HD Watchzone is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and your choices regarding your data.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>2. Information We Collect</h2>
-                        <p><strong>We do not collect personal information.</strong> Streamflix does not require registration, login, or any personal data to use the service. The following data is stored locally in your browser only:</p>
+                        <p><strong>We do not collect personal information.</strong> HD Watchzone does not require registration, login, or any personal data to use the service. The following data is stored locally in your browser only:</p>
                         <ul>
                             <li><strong>Watchlist:</strong> Titles you add to "My List" are saved in your browser's localStorage.</li>
                             <li><strong>Watch Progress:</strong> Your viewing progress is tracked locally so you can resume where you left off.</li>
@@ -2042,7 +2043,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>3. Third-Party Services</h2>
-                        <p>Streamflix uses the following third-party services:</p>
+                        <p>HD Watchzone uses the following third-party services:</p>
                         <ul>
                             <li><strong>TMDB API:</strong> We fetch movie and TV show metadata (titles, descriptions, images, ratings) from The Movie Database. TMDB's privacy policy applies to their data handling.</li>
                             <li><strong>Video Embed Providers:</strong> Video streams are loaded via third-party embed services. These providers may set their own cookies and collect data according to their own privacy policies.</li>
@@ -2052,7 +2053,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>4. Cookies</h2>
-                        <p>Streamflix uses minimal cookies. Essential cookies are required for basic site functionality. Analytics cookies are only enabled with your explicit consent. You can manage your cookie preferences on our <a href="#/cookies">Cookie Preferences</a> page.</p>
+                        <p>HD Watchzone uses minimal cookies. Essential cookies are required for basic site functionality. Analytics cookies are only enabled with your explicit consent. You can manage your cookie preferences on our <a href="#/cookies">Cookie Preferences</a> page.</p>
                     </section>
 
                     <section class="legal-section">
@@ -2062,7 +2063,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>6. Children's Privacy</h2>
-                        <p>Streamflix is not directed at children under 13. We do not knowingly collect any information from children.</p>
+                        <p>HD Watchzone is not directed at children under 13. We do not knowingly collect any information from children.</p>
                     </section>
 
                     <section class="legal-section">
@@ -2088,7 +2089,7 @@ const pages = {
             <div class="static-page">
                 <div class="static-page-header">
                     <h1>Cookie Preferences</h1>
-                    <p>Manage how cookies are used on Streamflix</p>
+                    <p>Manage how cookies are used on HD Watchzone</p>
                 </div>
                 <div class="legal-content">
                     <section class="legal-section">
@@ -2152,32 +2153,32 @@ const pages = {
             <div class="static-page">
                 <div class="static-page-header">
                     <h1>Legal Notices</h1>
-                    <p>Important legal information about Streamflix</p>
+                    <p>Important legal information about HD Watchzone</p>
                 </div>
                 <div class="legal-content">
                     <div class="disclaimer-banner disclaimer-banner--prominent">
                         <h2>\u26a0\ufe0f Third-Party Content Disclaimer</h2>
-                        <p>Streamflix <strong>does not host, store, or own</strong> any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. Streamflix acts solely as a content discovery and aggregation interface.</p>
-                        <p>All trademarks, service marks, trade names, logos, and content belong to their respective owners. If you believe that any content accessible through Streamflix infringes your copyright, please contact us immediately through our <a href="#/contact">Contact page</a>.</p>
+                        <p>HD Watchzone <strong>does not host, store, or own</strong> any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. HD Watchzone acts solely as a content discovery and aggregation interface.</p>
+                        <p>All trademarks, service marks, trade names, logos, and content belong to their respective owners. If you believe that any content accessible through HD Watchzone infringes your copyright, please contact us immediately through our <a href="#/contact">Contact page</a>.</p>
                     </div>
 
                     <section class="legal-section">
                         <h2>Content Attribution</h2>
-                        <p>Movie and TV show metadata \u2014 including titles, descriptions, posters, ratings, and cast information \u2014 is provided by <strong>The Movie Database (TMDB)</strong> under their API terms of service. Streamflix is not endorsed or certified by TMDB.</p>
+                        <p>Movie and TV show metadata \u2014 including titles, descriptions, posters, ratings, and cast information \u2014 is provided by <strong>The Movie Database (TMDB)</strong> under their API terms of service. HD Watchzone is not endorsed or certified by TMDB.</p>
                         <p>This product uses the TMDB API but is not endorsed or certified by TMDB. All movie and show data is courtesy of TMDB contributors.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>Video Streaming</h2>
-                        <p>All video streams are provided by independent third-party embed services. Streamflix does not host, upload, or transcode any video files. We have no control over the availability, quality, or legality of content provided by these services.</p>
+                        <p>All video streams are provided by independent third-party embed services. HD Watchzone does not host, upload, or transcode any video files. We have no control over the availability, quality, or legality of content provided by these services.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>DMCA / Copyright Claims</h2>
-                        <p>If you are a copyright owner and believe that content accessible through Streamflix infringes your rights, please <a href="#/contact">contact us</a> with the following information:</p>
+                        <p>If you are a copyright owner and believe that content accessible through HD Watchzone infringes your rights, please <a href="#/contact">contact us</a> with the following information:</p>
                         <ul>
                             <li>A description of the copyrighted work you claim has been infringed</li>
-                            <li>The URL on Streamflix where the infringing content is accessible</li>
+                            <li>The URL on HD Watchzone where the infringing content is accessible</li>
                             <li>Your contact information (name, email, phone)</li>
                             <li>A statement that you have a good faith belief that the use is not authorized</li>
                             <li>A statement under penalty of perjury that the information is accurate and you are authorized to act on behalf of the copyright owner</li>
@@ -2186,7 +2187,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>Open Source</h2>
-                        <p>Streamflix is built with open web technologies. We use the following open-source and free resources:</p>
+                        <p>HD Watchzone is built with open web technologies. We use the following open-source and free resources:</p>
                         <ul>
                             <li><strong>Inter Font:</strong> Licensed under the SIL Open Font License</li>
                             <li><strong>TMDB API:</strong> Used under TMDB API terms of service</li>
@@ -2195,7 +2196,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>Governing Law</h2>
-                        <p>These legal notices and any disputes related to Streamflix shall be governed by applicable international laws. By using Streamflix, you agree to resolve any disputes through appropriate legal channels.</p>
+                        <p>These legal notices and any disputes related to HD Watchzone shall be governed by applicable international laws. By using HD Watchzone, you agree to resolve any disputes through appropriate legal channels.</p>
                     </section>
 
                     <section class="legal-section">
@@ -2216,6 +2217,48 @@ const pages = {
 // ==========================================
 // Router
 // ==========================================
+function updateRouteMetadata(path) {
+    const route = path.split('?')[0];
+    const entries = {
+        '/': ['HD Watchzone — Movies, TV Shows & Anime in HD', 'Browse movies, TV shows and anime on HD Watchzone. Search thousands of titles, explore genres and discover new releases.'],
+        '/movies': ['Browse Movies in HD | HD Watchzone', 'Explore popular, top-rated and newly released movies by genre on HD Watchzone.'],
+        '/tv': ['Browse TV Shows in HD | HD Watchzone', 'Discover popular and top-rated TV series, seasons and episodes on HD Watchzone.'],
+        '/anime': ['Browse Anime Series & Movies | HD Watchzone', 'Discover popular anime series, animated movies and new releases on HD Watchzone.'],
+        '/new': ['New & Popular Releases | HD Watchzone', 'Find trending movies and TV shows plus newly released entertainment on HD Watchzone.'],
+        '/my-list': ['My List | HD Watchzone', 'View the movies and TV shows saved to your personal HD Watchzone list.'],
+        '/faq': ['Frequently Asked Questions | HD Watchzone', 'Answers about playback, supported devices, privacy and using HD Watchzone.'],
+        '/help': ['Help Center | HD Watchzone', 'Get help with search, playback, servers, privacy and account-free viewing on HD Watchzone.'],
+        '/contact': ['Contact HD Watchzone', 'Contact HD Watchzone to report playback issues, broken links or share feedback.'],
+        '/terms': ['Terms of Use | HD Watchzone', 'Read the terms that apply when accessing and using HD Watchzone.'],
+        '/privacy': ['Privacy Policy | HD Watchzone', 'Learn how HD Watchzone handles local preferences, analytics and third-party services.'],
+        '/cookies': ['Cookie Policy | HD Watchzone', 'Learn about cookies, local storage and third-party services used by HD Watchzone.'],
+        '/legal': ['Legal Notices | HD Watchzone', 'Review copyright, third-party content and legal information for HD Watchzone.']
+    };
+    let key = entries[route] ? route : route.startsWith('/genre/') ? '/genre' : route.startsWith('/search') ? '/search' : '/';
+    const genreName = route.startsWith('/genre/') ? 'Browse Movies & TV Shows by Genre | HD Watchzone' : null;
+    const searchQuery = new URLSearchParams(path.split('?')[1] || '').get('q');
+    const meta = entries[key] || (key === '/genre'
+        ? [genreName, 'Browse movies and TV shows by genre on HD Watchzone.']
+        : [`Search${searchQuery ? ` for ${searchQuery}` : ''} | HD Watchzone`, 'Search movies, TV shows and anime on HD Watchzone.']);
+    document.title = meta[0];
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.content = meta[1];
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.content = ['/my-list', '/account'].includes(route) || route.startsWith('/search')
+        ? 'noindex, follow'
+        : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = `https://hdwatchzone.com${route === '/' ? '/' : route}`;
+    ['og:title', 'twitter:title'].forEach(name => {
+        const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
+        if (element) element.content = meta[0];
+    });
+    ['og:description', 'twitter:description'].forEach(name => {
+        const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
+        if (element) element.content = meta[1];
+    });
+}
+
 const router = {
     routes: {
         '/': pages.home,
@@ -2247,6 +2290,8 @@ const router = {
         // Remove trailing slash and handle empty path
         if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
         if (!path || path === '') path = '/';
+
+        updateRouteMetadata(path);
 
         // Scroll to top on navigation
         window.scrollTo(0, 0);

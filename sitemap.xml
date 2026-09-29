@@ -10,6 +10,16 @@
         <priority>1.0</priority>
     </url>
 
+    <!-- Crawlable category and information pages -->
+    <url><loc>https://hdwatchzone.com/movies</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hdwatchzone.com/tv</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+    <url><loc>https://hdwatchzone.com/anime</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hdwatchzone.com/new</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+    <url><loc>https://hdwatchzone.com/faq</loc><lastmod>2026-09-30</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+    <url><loc>https://hdwatchzone.com/privacy</loc><lastmod>2026-09-30</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+    <url><loc>https://hdwatchzone.com/terms</loc><lastmod>2026-09-30</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+    <url><loc>https://hdwatchzone.com/contact</loc><lastmod>2026-09-30</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+
     <!-- Movie Detail Pages (716 movies) -->
     <url><loc>https://hdwatchzone.com/movie/1523145-your-heart-will-be-broken</loc><lastmod>2026-04-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://hdwatchzone.com/movie/83533-avatar-fire-and-ash</loc><lastmod>2026-04-09</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>

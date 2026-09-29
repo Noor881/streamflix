@@ -49,12 +49,10 @@
 
 .dnav-logo-img,
 .dnav-logo img {
-    height: 38px;
+    height: 42px;
     width: auto;
     object-fit: contain;
-    border-radius: 6px;
-    mix-blend-mode: screen;
-    filter: invert(1) brightness(1.2);
+    border-radius: 0;
 }
 
 .dnav-logo-text {

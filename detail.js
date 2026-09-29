@@ -85,7 +85,7 @@ function createSlug(text) {
 /* ---------- Continue Watching — localStorage ---------- */
 function saveToHistory(data, type, season, episode) {
     try {
-        const KEY = 'hdwatchzone_continue_watching';
+        const KEY = 'streamflix_continue_watching';
         const id = data.id;
         const title = data.title || data.name;
         const poster = data.poster_path ? `https://image.tmdb.org/t/p/w342${data.poster_path}` : '';

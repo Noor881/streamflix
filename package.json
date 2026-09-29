@@ -1,7 +1,7 @@
 {
   "name": "streamflix",
   "version": "1.0.0",
-  "description": "Streamflix — Free HD movie and TV show streaming site",
+  "description": "HD Watchzone — Free HD movie and TV show streaming site",
   "scripts": {
     "sitemap": "node generate-sitemap.js"
   },
