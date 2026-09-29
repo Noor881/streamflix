@@ -2352,19 +2352,55 @@ function initEventListeners() {
     // Search functionality
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
+    const searchContainer = document.getElementById('search-container');
+    const searchCloseBtn = document.getElementById('search-close-btn');
 
-    const performSearch = () => {
-        const query = searchInput.value.trim();
-        if (query) {
-            router.navigate(`#/search?q=${encodeURIComponent(query)}`);
-            searchInput.value = '';
+    const isCompactSearch = () => window.matchMedia('(max-width: 900px)').matches;
+
+    const setSearchOpen = (open) => {
+        if (!searchContainer || !searchBtn) return;
+        searchContainer.classList.toggle('search-open', open);
+        searchBtn.setAttribute('aria-expanded', String(open));
+        searchBtn.setAttribute('aria-label', open ? 'Search' : 'Open search');
+        if (open) {
+            requestAnimationFrame(() => searchInput?.focus());
+        } else {
+            searchInput?.blur();
         }
     };
 
-    searchBtn?.addEventListener('click', performSearch);
-    searchInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performSearch();
+    const performSearch = () => {
+        const query = searchInput?.value.trim();
+        if (query) {
+            router.navigate(`#/search?q=${encodeURIComponent(query)}`);
+            setSearchOpen(false);
+        }
+    };
+
+    searchBtn?.addEventListener('click', () => {
+        const isOpen = searchContainer?.classList.contains('search-open');
+        if (isCompactSearch() && !isOpen) {
+            setSearchOpen(true);
+            return;
+        }
+        if (searchInput?.value.trim()) performSearch();
+        else searchInput?.focus();
     });
+
+    searchCloseBtn?.addEventListener('click', () => setSearchOpen(false));
+
+    searchInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            performSearch();
+        } else if (e.key === 'Escape') {
+            setSearchOpen(false);
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (!isCompactSearch()) setSearchOpen(false);
+    }, { passive: true });
 
     // Mobile hamburger menu
     const hamburgerBtn = document.getElementById('hamburger-btn');

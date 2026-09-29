@@ -94,9 +94,9 @@
 
 
     <!-- Styles (Minified for Performance) -->
-    <link rel="stylesheet" href="/nav.css">
-    <link rel="stylesheet" href="/styles.min.css">
-    <link rel="stylesheet" href="/responsive.min.css">
+    <link rel="stylesheet" href="/nav.css?v=5.2">
+    <link rel="stylesheet" href="/styles.css?v=5.2">
+    <link rel="stylesheet" href="/responsive.css?v=5.2">
 
     <!-- Structured Data - Organization -->
     <script type="application/ld+json">
@@ -296,13 +296,14 @@
 
             <div class="dnav-right">
                 <div class="dnav-search-wrap" id="search-container" role="search">
-                    <button class="dnav-search-btn" id="search-btn" aria-label="Search" aria-expanded="false">
+                    <button class="dnav-search-btn" id="search-btn" type="button" aria-label="Open search" aria-expanded="false" aria-controls="search-input">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                         </svg>
                     </button>
                     <input type="text" id="search-input" class="dnav-search-input"
-                        placeholder="Search movies, shows..." aria-label="Search movies and TV shows">
+                        placeholder="Search movies and TV shows" aria-label="Search movies and TV shows" autocomplete="off" enterkeyhint="search">
+                    <button class="dnav-search-close" id="search-close-btn" type="button" aria-label="Close search">&times;</button>
                 </div>
                 <!-- Mobile hamburger -->
                 <button class="dnav-hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
@@ -519,15 +520,13 @@
     </script>
 
     <!-- Scripts (Minified for Performance) -->
-    <script src="/app.js?v=5.0" defer></script>
+    <script src="/app.js?v=5.2" defer></script>
     <script src="/mobile-consent.min.js" defer></script>
     <script src="/scripts/combined.min.js" defer></script>
     <!-- Nav scroll + search toggle -->
     <script>
         (function() {
             const header = document.getElementById('site-header');
-            const searchBtn = document.getElementById('search-btn');
-            const searchInput = document.getElementById('search-input');
             const hamburger = document.getElementById('hamburger-btn');
 
             // Scroll: add solid class
@@ -541,13 +540,6 @@
                     ticking = true;
                 }
             }, { passive: true });
-
-            // Search: click icon to expand input
-            if (searchBtn && searchInput) {
-                searchBtn.addEventListener('click', function() {
-                    searchInput.focus();
-                });
-            }
 
             // Mark active nav link
             const hash = window.location.hash || '#/';

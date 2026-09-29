@@ -191,12 +191,14 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     overflow: hidden;
-    transition: background 0.2s, border-color 0.2s;
+    min-width: 280px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .dnav-search-wrap:focus-within {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.14);
 }
 
 .dnav-search-btn {
@@ -222,19 +224,26 @@
     color: #fff;
     font-size: 14px;
     font-family: 'Inter', sans-serif;
-    width: 0;
-    max-width: 220px;
-    padding: 0;
-    transition: width 0.3s ease, padding 0.3s ease;
+    width: 100%;
+    min-width: 0;
+    padding: 0 8px 0 0;
 }
 
 .dnav-search-input::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-/* Expand search when input focused */
-.dnav-search-input:focus,
-.dnav-search-wrap:focus-within .dnav-search-input {
-    width: 180px;
-    padding: 0 12px 0 0;
+.dnav-search-close {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.75);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 /* Mobile hamburger */
@@ -268,9 +277,10 @@
     .dnav-hamburger { display: flex; }
 
     .dnav-search-wrap {
-        /* Collapse to icon-only on mobile */
+        min-width: 0;
         background: none;
         border: none;
+        overflow: visible;
     }
 
     .dnav-search-input {
@@ -278,14 +288,59 @@
     }
 
     .dnav-search-btn {
-        width: 36px;
-        height: 36px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .dnav-hamburger {
+        width: 44px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dnav-search-wrap.search-open {
+        position: fixed;
+        top: 8px;
+        left: 12px;
+        right: 12px;
+        z-index: 1100;
+        display: flex;
+        min-width: 0;
+        height: 48px;
+        background: #171717;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.65);
+        overflow: hidden;
+    }
+
+    .dnav-search-wrap.search-open .dnav-search-btn {
+        width: 46px;
+        height: 46px;
+    }
+
+    .dnav-search-wrap.search-open .dnav-search-input {
+        display: block;
+        flex: 1;
+        width: auto;
+        padding: 0 6px;
+        font-size: 16px;
+    }
+
+    .dnav-search-wrap.search-open .dnav-search-close {
+        display: flex;
     }
 }
 
 @media (max-width: 600px) {
     .dnav-logo-text { font-size: 17px; }
     .dnav-logo img { height: 30px; }
+
+    .dnav-search-wrap.search-open {
+        left: 8px;
+        right: 8px;
+    }
 }
 
 /* ── Mobile drawer (reuse .mobile-nav) ───── */

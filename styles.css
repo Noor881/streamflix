@@ -2141,7 +2141,7 @@ ol {
    ======================================== */
 
 .search-page {
-    padding: calc(var(--header-height) + var(--spacing-xl)) var(--container-padding) var(--spacing-2xl);
+    padding: var(--spacing-xl) var(--container-padding) var(--spacing-2xl);
     min-height: 100vh;
 }
 
@@ -2917,8 +2917,34 @@ ol {
 
 @media (max-width: 480px) {
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: var(--spacing-sm);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 12px;
+        padding-inline: 16px;
+    }
+
+    .search-page {
+        padding: 24px 0 48px;
+    }
+
+    .search-header {
+        padding: 0 16px;
+        margin-bottom: 24px;
+    }
+
+    .search-query {
+        font-size: clamp(1.65rem, 8vw, 2rem);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .content-grid .card-info-title {
+        font-size: 0.9rem;
+    }
+
+    .content-grid .card-info-desc {
+        font-size: 0.75rem;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
     }
 }
 
@@ -4420,4 +4446,4 @@ textarea,
 .dual-audio-badge svg {
     margin-bottom: -1px;
 }
-
+
