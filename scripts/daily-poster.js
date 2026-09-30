@@ -285,8 +285,19 @@ async function postToReddit(movie, details, token) {
 }
 
 // ─── Main ─────────────────────────────────────────────────
-async function main() {
+function readDryRun(value) {
+    if (value === undefined || value === '') return false;
+    if (String(value).trim().toLowerCase() === 'true') return true;
+    if (String(value).trim().toLowerCase() === 'false') return false;
+    throw new Error('DRY_RUN must be true or false; no publishing was attempted.');
+}
+
+async function main(options = {}) {
+    const environmentDryRun = readDryRun(process.env.DRY_RUN);
+    const dryRun = options.dryRun ?? (process.argv.includes('--dry-run') || environmentDryRun);
+    if (typeof dryRun !== 'boolean') throw new Error('dryRun must be a boolean; no publishing was attempted.');
     console.log('🚀 HD Watchzone Daily Poster — Starting...\n');
+    if (dryRun) console.log('🧪 DRY RUN — metadata reads only; no social authentication, publishing or history writes.\n');
 
     // 1. Load posted IDs to avoid duplicates
     const postedIds = loadPostedIds();
@@ -302,8 +313,8 @@ async function main() {
     // 3. Pick 2 unposted movies
     const toPost = pickMovies(trending, postedIds);
     if (!toPost.length) {
-        console.log('ℹ️  All trending movies already posted. Clearing history...');
-        savePostedIds([]);
+        console.log(dryRun ? 'ℹ️  All trending movies already posted. Dry run preserves history.' : 'ℹ️  All trending movies already posted. Clearing history...');
+        if (!dryRun) savePostedIds([]);
         return;
     }
 
@@ -312,7 +323,7 @@ async function main() {
     console.log('');
 
     // 4. Get Reddit token once
-    const redditToken = await getRedditToken();
+    const redditToken = dryRun ? null : await getRedditToken();
 
     // 5. Post each movie
     for (const movie of toPost) {
@@ -321,6 +332,11 @@ async function main() {
 
         try {
             const details = await fetchMovieDetails(movie.id);
+
+            if (dryRun) {
+                console.log(`🧪 Would prepare a title-information post for Telegram and Reddit: ${SITE_URL}/movie/${movie.id}-${createSlug(movie.title)}. No message sent.`);
+                continue;
+            }
 
             // Post to Telegram
             await postToTelegram(movie, details);
@@ -338,12 +354,13 @@ async function main() {
     }
 
     // 6. Save updated posted IDs
-    savePostedIds(postedIds);
+    if (!dryRun) savePostedIds(postedIds);
 
-    console.log('\n✅ All done! See you tomorrow. 🎬');
+    console.log(dryRun ? '\n✅ Dry run complete. No social messages or history changes.' : '\n✅ All done! See you tomorrow. 🎬');
 }
 
-main().catch(err => {
+if (require.main === module) main().catch(err => {
     console.error('💥 Fatal error:', err);
     process.exit(1);
 });
+module.exports = { main, readDryRun };

@@ -117,18 +117,15 @@ git push
 | 🎬 Genre | Sci-Fi, Adventure |
 | 🎥 Director | Denis Villeneuve |
 
-### ▶️ Watch Dune: Part Two Free on HD Watchzone
+### Explore Dune: Part Two on HD Watchzone
 
-> Free streaming • No sign-up required • HD quality
+> Title metadata and community scores are supplied by TMDB. External playback availability depends on the provider and region; a catalog listing is not a playback or quality guarantee.
 ```
 
 ---
 
-## Growth Plan
+## Responsible promotion and dry runs
 
-| Week | Action |
-|------|--------|
-| Week 1 | Telegram + Reddit auto-running |
-| Week 2 | Share subreddit link on r/MovieSuggestions, r/freestreaming |
-| Week 3 | Cross-promote Telegram in Reddit posts |
-| Month 2 | 500+ Telegram subscribers goal |
+Use the manual workflow's **Dry run** option to preview selected title-information links without social authentication, posting or history writes. A dry run still reads TMDB metadata. The equivalent CLI is `node scripts/daily-poster.js --dry-run`; `DRY_RUN=true` is also supported. Invalid environment values stop execution before network activity.
+
+The existing daily schedule and default live behavior are unchanged. A live run sends messages to configured services; do not trigger it as a test. Before enabling promotion, confirm permission for each destination, check community/platform rules, review accurate source-attributed copy, and verify any applicable media rights. Do not mass-post backlinks, fabricate independent reviews or promise subscriber counts, indexing or ranking gains.
