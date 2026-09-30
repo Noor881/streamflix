@@ -41,6 +41,11 @@ async function catalog(meta, input) {
     else if (route==='new') await pages.newPopular(meta.category,meta.page);
     else if (meta.genreId) await pages.genre(meta.genreId,meta.page);
     else if (route==='search') await pages.search(new URL(input,SEO.SITE).searchParams.get('q') || '',meta.page);
+    else if (route==='my-list') {
+        // The server cannot read a visitor's browser-private watchlist. Do not render a
+        // fabricated empty list or private title schema; client hydration owns the list.
+        c.app.innerHTML = `<div class="browse-page"><div class="browse-header"><h1>📋 My List</h1><p class="browse-subtitle">Movies and TV shows saved on this device</p></div><div class="no-results"><p>Saved titles are kept in this browser. This page loads them after JavaScript starts.</p><noscript><p>Enable JavaScript to view or change this browser's saved titles.</p></noscript><a href="/movies" class="btn btn-primary">Browse Movies</a></div></div>`;
+    }
     else pages[route]?.();
     if (failures.length) { const error = new Error('Catalog metadata unavailable'); error.status=503; throw error; }
     const pageLimit = Math.max(1,...responses.map(entry=>entry.data.total_pages || 1));
