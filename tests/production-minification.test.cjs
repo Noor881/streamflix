@@ -113,6 +113,12 @@ test('minified detail scripts preserve inline-handler object methods and title r
 });
 
 test('production CSS retains portrait sizing, responsive overrides and blocking stylesheet order',()=>{
+    const styles=read(outputDirectory,'styles.css');
+    assert.match(styles,/\.static-page-header p\{[^}]*color:var\(--color-text-secondary\)/);
+    assert.match(styles,/\.contact-info-card p\{[^}]*color:var\(--color-text-secondary\)[^}]*overflow-wrap:anywhere/);
+    for(const selector of ['\\.contact-info-card a','\\.legal-section a','\\.disclaimer-banner--prominent a']) {
+        assert.match(styles,new RegExp(selector+'\\{[^}]*color:var\\(--color-text-primary\\)[^}]*text-decoration:underline[^}]*overflow-wrap:anywhere'));
+    }
     const cards=read(outputDirectory,'cards.css');
     assert.match(cards,/\.card-wrapper>\.card\{[^}]*aspect-ratio:2\s*\/\s*3/);
     assert.match(cards,/\.card-wrapper>\.card-info\{[^}]*height:84px/);

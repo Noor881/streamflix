@@ -22,4 +22,6 @@ An editor must verify every draft's claims, sources, links, HTML, media rights a
 
 Already published posts were not changed or deleted. Their current publication state, indexing, backlinks and Search Console history were not verified. The owner should inventory those posts, review unsupported claims and repetitive links, and decide whether to improve or remove them. Do not bulk-delete or submit a backlink disavow file without site-specific evidence.
 
-The site's actual operating entity, jurisdiction, video rights and support inbox deliverability must be confirmed by the owner. No invented author biographies, addresses, awards, social identities or legal guarantees should be added to metadata or visible content.
+The owner confirmed **Noor** as the public site operator and **noor2304f@gmail.com** as the support email, and authorized publishing these details on the Contact and Legal pages on October 1, 2026. The contact form prepares a message in the visitor's email app; the website does not send it. Inbox ownership, delivery and response times have not been independently tested.
+
+The formal operating entity, jurisdiction and video rights remain unverified owner-review items. No invented author biographies, addresses, awards, social identities or legal guarantees should be added to metadata or visible content.

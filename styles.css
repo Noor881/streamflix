@@ -3260,7 +3260,7 @@ ol {
 
 .static-page-header p {
     font-size: var(--font-size-lg);
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
 }
 
 /* FAQ Accordion */
@@ -3448,6 +3448,7 @@ ol {
 
 .contact-form {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: var(--spacing-lg);
 }
@@ -3497,6 +3498,7 @@ ol {
 
 .contact-info {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: var(--spacing-md);
 }
@@ -3517,13 +3519,16 @@ ol {
 
 .contact-info-card p {
     font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .contact-info-card a {
-    color: var(--color-primary);
-    text-decoration: none;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    overflow-wrap: anywhere;
 }
 
 .contact-info-card a:hover {
@@ -3602,8 +3607,10 @@ ol {
 }
 
 .legal-section a {
-    color: var(--color-primary);
-    text-decoration: none;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    overflow-wrap: anywhere;
 }
 
 .legal-section a:hover {
@@ -3649,8 +3656,10 @@ ol {
 }
 
 .disclaimer-banner--prominent a {
-    color: var(--color-primary);
-    text-decoration: none;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    overflow-wrap: anywhere;
 }
 
 .disclaimer-banner--prominent a:hover {

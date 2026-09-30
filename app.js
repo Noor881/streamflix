@@ -915,6 +915,9 @@ window.switchGenreTab = async (genreId, genreName, btn) => {
 // ==========================================
 // Page Renderers
 // ==========================================
+const PUBLIC_CONTACT = Object.freeze({ operator: 'Noor', email: 'noor2304f@gmail.com' });
+const SUPPORT_MAILTO = 'mailto:' + encodeURIComponent(PUBLIC_CONTACT.email).replace(/%40/g, '@');
+
 const pages = {
     // Home page
     async home() {
@@ -1593,8 +1596,12 @@ const pages = {
                     </form>
                     <div class="contact-info">
                         <div class="contact-info-card">
+                            <h3>Site Operator</h3>
+                            <p>${utils.sanitize(PUBLIC_CONTACT.operator)}</p>
+                        </div>
+                        <div class="contact-info-card">
                             <h3>\ud83d\udce7 Email</h3>
-                            <p>support@hdwatchzone.com</p>
+                            <p><a href="${SUPPORT_MAILTO}">${utils.sanitize(PUBLIC_CONTACT.email)}</a></p>
                         </div>
                         <div class="contact-info-card">
                             <h3>\u23f1\ufe0f Response Time</h3>
@@ -1815,6 +1822,12 @@ const pages = {
                     <p>Important legal information about HD Watchzone</p>
                 </div>
                 <div class="legal-content">
+                    <section class="legal-section">
+                        <h2>Website Operator and Contact</h2>
+                        <p>HD Watchzone is operated by <strong>${utils.sanitize(PUBLIC_CONTACT.operator)}</strong>.</p>
+                        <p>For website feedback, content concerns or copyright reports, email <a href="${SUPPORT_MAILTO}">${utils.sanitize(PUBLIC_CONTACT.email)}</a>.</p>
+                    </section>
+
                     <div class="disclaimer-banner disclaimer-banner--prominent">
                         <h2>\u26a0\ufe0f Third-Party Content Disclaimer</h2>
                         <p>HD Watchzone <strong>does not host, store, or own</strong> any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. HD Watchzone acts solely as a content discovery and aggregation interface.</p>
@@ -2516,7 +2529,7 @@ function handleContactSubmit(e) {
     const form = e.target;
     const subject = document.getElementById('contact-subject')?.value || 'Website feedback';
     const message = 'From: ' + document.getElementById('contact-name').value + '\nReply email: ' + document.getElementById('contact-email').value + '\n\n' + document.getElementById('contact-message').value;
-    window.location.href = 'mailto:support@hdwatchzone.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(message);
+    window.location.href = SUPPORT_MAILTO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(message);
     let notice = form.querySelector('.contact-status');
     if (!notice) { notice = document.createElement('p'); notice.className = 'contact-status'; notice.setAttribute('role', 'status'); form.appendChild(notice); }
     notice.textContent = 'Your email app should open with this message. Nothing has been sent by this website; send it from your email app.';

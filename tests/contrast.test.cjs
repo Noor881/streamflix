@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const css = fs.readFileSync('design-v2.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+const stylesCss = fs.readFileSync('styles.css', 'utf8');
+const pageCss = ['nav.css', 'styles.css', 'responsive.css', 'design-v2.css', 'cards.css'].map(file => fs.readFileSync(file, 'utf8')).join('\n');
 const detailCss = fs.readFileSync('detail.css', 'utf8');
 const html = fs.readFileSync('server/templates/index.html', 'utf8');
 
@@ -16,7 +18,7 @@ function declarations(selector, source = css) {
     }
     return result;
 }
-const variables = declarations(':root');
+const variables = declarations(':root', pageCss);
 function resolved(value) {
     return value.replace(/var\((--[\w-]+)\)/g, (_, name) => resolved(variables[name]));
 }
@@ -37,6 +39,47 @@ function minimum(foreground, background, label) {
     const ratio = contrast(foreground, background);
     assert.ok(ratio >= 4.5, `${label}: ${ratio.toFixed(3)}:1 is below WCAG 1.4.3's 4.5:1 minimum`);
 }
+
+function compositedBackground(overlay, background) {
+    const rgba = resolved(overlay).match(/^rgba\(\s*([\d.]+),\s*([\d.]+),\s*([\d.]+),\s*([\d.]+)\s*\)$/);
+    assert.ok(rgba, 'the prominent disclaimer background remains a simple rgba overlay');
+    const base = resolved(background).replace('#', '');
+    assert.match(base, /^[\da-f]{6}$/i);
+    const alpha = Number(rgba[4]);
+    return '#' + [0, 1, 2].map(index => Math.round(Number(rgba[index + 1]) * alpha + parseInt(base.slice(index * 2, index * 2 + 2), 16) * (1 - alpha)).toString(16).padStart(2, '0')).join('');
+}
+
+test('Contact and Legal normal text and permanently underlined links meet 4.5:1 in the actual page stylesheet cascade', () => {
+    const body = declarations('body', pageCss);
+    const pageBackground = body.background || body['background-color'];
+    const cardBackground = declarations('.contact-info-card', pageCss).background;
+    const bannerBackground = compositedBackground(declarations('.disclaimer-banner--prominent', pageCss).background, pageBackground);
+    minimum(declarations('.static-page-header p', pageCss).color, pageBackground, 'Contact/Legal subtitles');
+    minimum(declarations('.contact-info-card p', pageCss).color, cardBackground, 'Contact operator and card text');
+    for (const selector of ['.legal-section p', '.legal-section li']) minimum(declarations(selector, pageCss).color, pageBackground, selector);
+    minimum(declarations('.disclaimer-banner p', pageCss).color, bannerBackground, 'Legal disclaimer text');
+    for (const [selector, background] of [['.contact-info-card a', cardBackground], ['.legal-section a', pageBackground], ['.disclaimer-banner--prominent a', bannerBackground]]) {
+        const style = declarations(selector, pageCss);
+        minimum(style.color, background, selector);
+        minimum(({ ...style, ...declarations(selector + ':hover', pageCss) }).color, background, selector + ':hover');
+        assert.equal(style['text-decoration'], 'underline', selector + ' identifies body-text links without hover or color alone');
+        assert.ok(style.opacity === undefined || style.opacity === '1');
+    }
+});
+
+test('Contact grid and email links can shrink and wrap at 320px and 390px mobile widths', () => {
+    for (const selector of ['.contact-form', '.contact-info']) assert.equal(declarations(selector, pageCss)['min-width'], '0', selector);
+    for (const selector of ['.contact-info-card p', '.contact-info-card a', '.legal-section a', '.disclaimer-banner--prominent a']) {
+        const style = declarations(selector, pageCss);
+        assert.equal(style['overflow-wrap'], 'anywhere', selector);
+        assert.notEqual(style['white-space'], 'nowrap', selector);
+    }
+    const mobile = stylesCss.slice(stylesCss.indexOf('@media (max-width: 768px)'));
+    for (const width of [320, 390]) {
+        assert.ok(width <= 768);
+        assert.equal(declarations('.contact-container', mobile)['grid-template-columns'], '1fr', width + 'px uses the existing single-column contact layout');
+    }
+});
 
 test('filled primary and selected-tab text meet 4.5:1 in normal and hover states', () => {
     for (const selector of ['.btn-cineby-primary', '.btn-cineby-primary:hover', '.section-tab.active', '.section-tab.active:hover']) {
