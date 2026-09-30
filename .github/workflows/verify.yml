@@ -1,0 +1,23 @@
+name: Website regression checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      - name: Check browser and server JavaScript
+        run: |
+          node --check app.js
+          node --check detail.js
+          node --check site-core.js
+          node --check sw.js
+          node --check admin.js
+          node --check api/render.js

@@ -11,71 +11,11 @@
 
     <!-- Facebook Domain Verification -->
     <meta name="facebook-domain-verification" content="8bgdrm3l1z17cy9ahrb2aesr3htirg" />
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHQKVYP1WN"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-ZHQKVYP1WN');
-    </script>
+    <script src="/site-core.js" defer></script>
 
     <!-- Primary Meta (updated by JS) -->
     <title>Watch Movie - HD Watchzone</title>
-    <!-- Fast SEO Injection from URL so bots don't index identical empty states -->
-    <script>
-        (function () {
-            var path = window.location.pathname;
-            var parts = path.split('/');
-            if (parts.length >= 3 && parts[1] === 'movie') {
-                var idSlug = parts[2];
-                var slugMatch = idSlug.match(/^\d+-(.+)$/);
-                var titleStr = slugMatch
-                    ? slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); })
-                    : 'Watch Movie';
-                var fullTitle = 'Watch ' + titleStr + ' In HD Free - HD Watchzone';
-                var desc = 'Watch ' + titleStr + ' online in HD for free on HD Watchzone. No sign-up required. Stream movies instantly.';
-                var canonUrl = 'https://hdwatchzone.com' + path;
-
-                document.title = fullTitle;
-
-                // Canonical
-                var canonical = document.createElement('link');
-                canonical.rel = 'canonical';
-                canonical.href = canonUrl;
-                document.head.appendChild(canonical);
-
-                // OG tags
-                var setMeta = function(prop, val, byName) {
-                    var el = document.querySelector(byName ? 'meta[name="' + prop + '"]' : 'meta[property="' + prop + '"]');
-                    if (el) el.setAttribute('content', val);
-                };
-                setMeta('og:url', canonUrl);
-                setMeta('og:title', fullTitle);
-                setMeta('og:description', desc);
-                setMeta('twitter:title', fullTitle, true);
-                setMeta('twitter:description', desc, true);
-
-                // Seed schema with slug-derived data (JS will overwrite with full TMDB data)
-                var schemaEl = document.getElementById('schema-movie');
-                if (schemaEl) {
-                    schemaEl.textContent = JSON.stringify({
-                        '@context': 'https://schema.org',
-                        '@type': 'Movie',
-                        'name': titleStr,
-                        'description': desc,
-                        'url': canonUrl,
-                        'embedUrl': canonUrl,
-                        'potentialAction': {
-                            '@type': 'WatchAction',
-                            'target': canonUrl
-                        }
-                    });
-                }
-            }
-        })();
-    </script>
+    <link rel="canonical" href="https://hdwatchzone.com/">
     <meta name="description" content="Watch movies in HD on HD Watchzone. Free streaming, no sign-up required. Stream the latest blockbusters, action films, comedy, drama, horror and more in full HD quality.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="language" content="English">
@@ -117,11 +57,12 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/nav.css">
-    <link rel="stylesheet" href="/detail.css?v=4.3">
-    <link rel="stylesheet" href="/seo-enhancements.css">
-    <link rel="stylesheet" href="/responsive.css">
-    <link rel="stylesheet" href="/design-v2.css?v=1.0">
+    <link rel="stylesheet" href="/nav.css?v=audit13">
+    <link rel="stylesheet" href="/detail.css?v=audit13">
+    <link rel="stylesheet" href="/seo-enhancements.css?v=audit13">
+    <link rel="stylesheet" href="/responsive.css?v=audit13">
+    <link rel="stylesheet" href="/design-v2.css?v=audit13">
+    <link rel="stylesheet" href="/cards.css?v=audit14">
 
     <!-- Schema.org (injected by JS) -->
     <script id="schema-movie" type="application/ld+json">{}</script>
@@ -142,11 +83,11 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => { });
+                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(() => { });
             });
         }
     </script>
-    <script src="/detail.js?v=4.3"></script>
+    <script src="/detail.js?v=audit13"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
@@ -178,7 +119,6 @@
             }
         });
     </script>
-    <script type="module" src="/scripts/visitor-counter.js" defer></script>
 </body>
 
 </html>

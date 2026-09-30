@@ -1,0 +1,25 @@
+/* Single owner for all movie/TV poster sizing. Titles must never size a flex item. */
+:root { --poster-card-width: clamp(154px, 12vw, 190px); }
+::-webkit-scrollbar { width: 10px; }
+.content-row { align-items: flex-start; }
+.content-row > .card-wrapper { width: var(--poster-card-width); min-width: 0; max-width: var(--poster-card-width); flex: 0 0 var(--poster-card-width); }
+.card-wrapper { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.card-wrapper > .card { position: relative; display: block; width: 100%; height: auto; min-width: 0; max-width: 100%; flex: none; aspect-ratio: 2 / 3; overflow: hidden; border: 0; box-shadow: inset 0 0 0 1px #303747; }
+.card-wrapper .card-poster { position: absolute; inset: 0; display: block; width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+.card-wrapper:hover .card { transform: none; }
+.card-wrapper > .card-info { width: 100%; height: 84px; padding: 10px 2px 0; overflow: hidden; }
+.card-info-title, .trending-card-title, .reco-card-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; overflow: hidden; overflow-wrap: anywhere; font-size: 13px; line-height: 18px; height: 36px; margin: 0 0 4px; }
+.card-info-desc { display: block; color: #b1bac9; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.content-grid { grid-template-columns: repeat(auto-fill, var(--poster-card-width)); }
+.content-grid > .card-wrapper { width: 100%; min-width: 0; max-width: 100%; }
+.trending-grid, .reco-grid { display: grid; grid-template-columns: repeat(auto-fill, var(--poster-card-width)); align-items: start; gap: 16px; }
+.trending-grid > .trending-card, .reco-grid > .reco-card { display: block; width: 100%; min-width: 0; max-width: 100%; padding: 0; overflow: hidden; background: #111722; border: 0; }
+.trending-grid .trending-card > img, .reco-grid .reco-card > img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; flex: none; }
+.trending-card-info, .reco-card-info { display: block; height: 84px; min-width: 0; width: 100%; padding: 10px; overflow: hidden; }
+.trending-card-meta, .reco-card-meta { color: #b1bac9; font-size: 12px; line-height: 18px; white-space: nowrap; }
+@media(max-width:560px) {
+ .content-row { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px !important; }
+ .content-row > .card-wrapper { width: 100%; min-width: 0; max-width: 100%; flex: none; }
+ .trending-grid, .reco-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px; }
+ .content-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

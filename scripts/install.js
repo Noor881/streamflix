@@ -7,14 +7,18 @@
     e.preventDefault();
     deferredPrompt = e;
     btn.style.display = 'inline-block';
+    btn.removeAttribute('aria-hidden');
   });
   btn.addEventListener('click', async ()=>{
-    btn.disabled = true;
     if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    btn.style.display = 'none';
-    btn.disabled = false;
+    btn.disabled = true;
+    try {
+      await deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btn.style.display = 'none';
+      btn.setAttribute('aria-hidden', 'true');
+    } finally { btn.disabled = false; }
   });
+  window.addEventListener('appinstalled', () => { deferredPrompt = null; btn.style.display = 'none'; btn.setAttribute('aria-hidden', 'true'); });
 })();

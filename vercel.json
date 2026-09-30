@@ -13,79 +13,101 @@
     "rewrites": [
         {
             "source": "/movie/:id",
-            "destination": "/movie.html?id=:id"
+            "destination": "/api/render?route=movie&id=:id"
         },
         {
             "source": "/tv/:id/:season/:episode",
-            "destination": "/tv.html?id=:id&s=:season&e=:episode"
+            "destination": "/api/render?route=show&id=:id&s=:season&e=:episode"
         },
         {
             "source": "/tv/:id",
-            "destination": "/tv.html?id=:id"
+            "destination": "/api/render?route=show&id=:id"
         },
         {
             "source": "/movies",
-            "destination": "/index.html"
+            "destination": "/api/render?route=movies"
         },
         {
             "source": "/tv",
-            "destination": "/index.html"
+            "destination": "/api/render?route=tv"
         },
         {
             "source": "/anime",
-            "destination": "/index.html"
+            "destination": "/api/render?route=anime"
         },
         {
             "source": "/new",
-            "destination": "/index.html"
+            "destination": "/api/render?route=new"
         },
         {
             "source": "/my-list",
-            "destination": "/index.html"
+            "destination": "/api/render?route=my-list"
         },
         {
             "source": "/genre/:id",
-            "destination": "/index.html"
+            "destination": "/api/render?route=genre&id=:id"
         },
         {
             "source": "/search",
-            "destination": "/index.html"
+            "destination": "/api/render?route=search"
         },
         {
             "source": "/faq",
-            "destination": "/index.html"
+            "destination": "/api/render?route=faq"
         },
         {
             "source": "/privacy",
-            "destination": "/index.html"
+            "destination": "/api/render?route=privacy"
         },
         {
             "source": "/terms",
-            "destination": "/index.html"
+            "destination": "/api/render?route=terms"
         },
         {
             "source": "/contact",
-            "destination": "/index.html"
+            "destination": "/api/render?route=contact"
         },
         {
             "source": "/legal",
-            "destination": "/index.html"
+            "destination": "/api/render?route=legal"
         },
         {
             "source": "/help",
-            "destination": "/index.html"
+            "destination": "/api/render?route=help"
         },
         {
             "source": "/cookies",
-            "destination": "/index.html"
+            "destination": "/api/render?route=cookies"
         },
         {
             "source": "/account",
-            "destination": "/index.html"
+            "destination": "/api/render?route=account"
         },
         {
             "source": "/admin",
             "destination": "/admin.html"
+        },
+        {
+            "source": "/movie.html",
+            "has": [
+                {
+                    "type": "query",
+                    "key": "id",
+                    "value": "(?<id>.*)"
+                }
+            ],
+            "destination": "/api/render?route=movie&id=:id"
+        },
+        {
+            "source": "/tv.html",
+            "has": [
+                {
+                    "type": "query",
+                    "key": "id",
+                    "value": "(?<id>.*)"
+                }
+            ],
+            "destination": "/api/render?route=show&id=:id"
         }
     ],
     "headers": [
@@ -161,7 +183,7 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=31536000, immutable"
+                    "value": "public, max-age=0, must-revalidate"
                 }
             ]
         },
@@ -208,6 +230,21 @@
                     "value": "text/plain; charset=utf-8"
                 }
             ]
+        },
+        {
+            "source": "/admin(.*)",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
+            ]
         }
-    ]
+    ],
+    "functions": {
+        "api/render.js": {
+            "includeFiles": "{index,movie,tv}.html",
+            "maxDuration": 30
+        }
+    }
 }

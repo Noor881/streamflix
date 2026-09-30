@@ -112,11 +112,11 @@ body { background: var(--surface-0); color: var(--text-main); }
 .detail-hero .hero-title { letter-spacing: -.04em; }
 .hero-tag { border-radius: 999px; border: 1px solid var(--line-soft); background: rgba(18,22,29,.72); }
 .detail-content { max-width: 1460px; }
-.player-container, .overview-section, .share-section, .cast-section, .recommendations-section, .details-section, .episodes-section { border-color: var(--line-soft); border-radius: 14px; background: var(--surface-1); }
+.player-container, .detail-section { border-color: var(--line-soft); border-radius: 14px; background: var(--surface-1); }
 .player-wrapper { border-radius: 10px; overflow: hidden; background: #000; }
 .server-btn { border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line-soft); }
 .server-btn.active { background: rgba(245,34,61,.13); border-color: var(--brand-red); color: #fff; }
-.fullscreen-action { border-radius: 9px; }
+.player-fullscreen-btn { border-radius: 9px; }
 
 @media (max-width: 900px) {
     body.app-shell { padding-bottom: 68px; }
@@ -167,15 +167,67 @@ body { background: var(--surface-0); color: var(--text-main); }
     .card-wrapper { min-width: 0; width: 100%; }
     .card { flex: none !important; min-width: 0 !important; width: 100%; }
     .card-info-title { font-size: 13px; }
-    .content-row .card-wrapper:nth-child(n+9) { display: none; }
+    /* Rows remain complete: mobile users can reach every title. */
     .continue-row { margin-inline: -12px; padding-inline: 12px; }
     .footer { margin-bottom: 0; }
     .detail-hero { min-height: 58vh; }
     .detail-content { padding-inline: 12px; }
-    .server-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .server-selector { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .server-btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* Authoritative responsive watch layout, using actual detail-engine classes. */
+.detail-footer { width: 100%; margin: 32px 0 0 !important; box-sizing: border-box; }
+.watch-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr); gap: 28px; padding: 96px 32px 24px; max-width: 1440px; margin: auto; }
+.watch-layout > *, .watch-title-panel, .detail-main, .detail-sidebar { min-width: 0; }
+.watch-layout > .detail-section { padding: 0; margin: 0; }
+body:has(.watch-layout) { padding-top: 0 !important; }
+.watch-title-panel { padding-top: 0; }
+.dnav-logo:has(img) > span { display: none; }
+.watch-layout .hero-info { width: 100%; max-width: none; padding: 0; }
+.watch-layout .hero-title { font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1.15; overflow-wrap: anywhere; }
+.watch-layout .hero-overview { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; color: #bec5d1; }
+.watch-layout .hero-buttons { display: flex; flex-wrap: wrap; }
+.server-selector { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.server-selector .server-btn { width: 100%; min-width: 0; padding: 12px 8px; }
+.server-desc, .card-info-meta, .player-tip, .cast-character { color: #adb5c2; font-size: 12px; }
+.server-desc { white-space: normal; overflow-wrap: anywhere; }
+.server-selector .server-btn .server-desc { color: #bec6d2; font-size: 12px; }
+.hero-buttons .btn-cineby { width: auto; flex: 0 1 auto; }
+.hero-buttons { flex-direction: row; flex-wrap: wrap; }
+.detail-label, .cast-character { color: #adb7c7; font-size: 12px; }
+#install-btn { position: fixed; bottom: 20px; right: 20px; z-index: 480; min-height: 44px; }
+@media(max-width:900px) { #install-btn { bottom: calc(82px + env(safe-area-inset-bottom)) !important; right: 12px !important; } }
+.player-tip { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.player-actions { position: static; display: flex; justify-content: flex-end; padding: 10px 0; }
+.player-fullscreen-btn { position: static; min-height: 44px; }
+.player-exit-fullscreen { display: none; position: absolute; top: 12px; right: 12px; z-index: 5; min-height: 44px; padding: 8px 12px; background: #111722; color: #fff; border: 1px solid #7e8a9e; border-radius: 8px; }
+.player-wrapper:fullscreen .player-exit-fullscreen, .player-wrapper:-webkit-full-screen .player-exit-fullscreen, .player-wrapper.is-expanded .player-exit-fullscreen { display: block; }
+.player-wrapper.is-expanded { position: fixed; inset: 0; width: 100vw; height: 100dvh; padding: 0; z-index: 10000; border-radius: 0; }
+.player-wrapper.is-expanded iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-badge { width: fit-content; flex: none; }
+.hero-dot { width: 32px !important; height: 44px !important; border-radius: 0 !important; background: transparent !important; position: relative; }
+.hero-dot::after { content: ''; display: block; width: 8px; height: 8px; margin: auto; border-radius: 50%; background: #a3abb8; }
+.hero-dot.active::after { background: #f5223d; width: 20px; border-radius: 4px; }
+.hero-pause { position: absolute; z-index: 5; right: 24px; bottom: 24px; min-height: 44px; padding: 8px 14px; border: 1px solid #596171; border-radius: 8px; background: #111722; color: #fff; }
+.detail-mobile-nav { display: none; }
+:focus-visible { outline: 2px solid #ff6478; outline-offset: 4px; }
+@media(max-width: 900px) {
+ .watch-layout { grid-template-columns: minmax(0, 1fr); padding: 78px 16px 20px; gap: 20px; }
+ .watch-layout .hero-title { font-size: 2rem; }
+ .detail-mobile-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 490; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); background: #090c12; border-top: 1px solid #303747; }
+ .detail-mobile-nav a { display: grid; place-items: center; min-height: 44px; color: #d3dae4; font-size: 13px; }
+ body:has(.watch-layout) { padding-bottom: 74px; }
+ .hero-pause { right: 14px; bottom: 12px; font-size: 12px; }
+}
+@media(max-width:560px) {
+ .watch-layout { padding-inline: 12px; }
+ .server-selector { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+ .detail-footer { padding-inline: 12px; }
+ .hero-carousel { height: auto !important; min-height: 540px !important; }
+ .hero-dots { bottom: 55px; }
 }

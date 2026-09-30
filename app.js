@@ -155,7 +155,7 @@ const tmdbAPI = {
         }
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
             if (!response.ok) throw new Error('API request failed');
             const data = await response.json();
             apiCache.set(cacheKey, { data, timestamp: Date.now() });
@@ -166,36 +166,36 @@ const tmdbAPI = {
     },
 
     // Get trending content (multiple pages)
-    async getTrending(mediaType = 'all', timeWindow = 'week', pages = 50) {
+    async getTrending(mediaType = 'all', timeWindow = 'week', pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch(`/trending/${mediaType}/${timeWindow}`, { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get popular movies (multiple pages)
-    async getPopularMovies(pages = 50) {
+    async getPopularMovies(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/movie/popular', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get popular TV shows (multiple pages)
-    async getPopularTV(pages = 50) {
+    async getPopularTV(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/tv/popular', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get movie details
@@ -216,79 +216,79 @@ const tmdbAPI = {
     // Search multi - fetch multiple pages for broad results
     async search(query, pages = 5) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/search/multi', { query, page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get top rated movies (multiple pages)
-    async getTopRatedMovies(pages = 50) {
+    async getTopRatedMovies(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/movie/top_rated', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get top rated TV (multiple pages)
-    async getTopRatedTV(pages = 50) {
+    async getTopRatedTV(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/tv/top_rated', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get Anime/Animation movies (genre id: 16)
-    async getAnimationMovies(pages = 50) {
+    async getAnimationMovies(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             // Added JP origin to focus on Anime
             requests.push(this.fetch('/discover/movie', { with_genres: 16, with_origin_country: 'JP', page, sort_by: 'popularity.desc' }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get Anime TV shows (genre id: 16 Animation for TV)
-    async getAnimeTVShows(pages = 50) {
+    async getAnimeTVShows(pages = 1) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/discover/tv', { with_genres: 16, with_origin_country: 'JP', page, sort_by: 'popularity.desc' }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get movies by genre
     async getMoviesByGenre(genreId, pages = 3) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/discover/movie', { with_genres: genreId, page, sort_by: 'popularity.desc' }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get TV shows by genre
     async getTVByGenre(genreId, pages = 3) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/discover/tv', { with_genres: genreId, page, sort_by: 'popularity.desc' }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get movie genres list
@@ -304,228 +304,39 @@ const tmdbAPI = {
     // Get now playing movies
     async getNowPlayingMovies(pages = 3) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/movie/now_playing', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get upcoming movies
     async getUpcomingMovies(pages = 3) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/movie/upcoming', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
     // Get on the air TV shows
     async getOnTheAirTV(pages = 3) {
         const requests = [];
-        for (let page = 1; page <= pages; page++) {
+        for (let page = typeof pages === "object" ? pages.page : 1; page <= (typeof pages === "object" ? pages.page : Math.min(pages, 5)); page++) {
             requests.push(this.fetch('/tv/on_the_air', { page }));
         }
         const responses = await Promise.all(requests);
         const allResults = responses.flatMap(r => r?.results || []);
-        return { results: allResults };
+        return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     }
 };
 
 // ==========================================
 // Multi-Server Video Player Integration
-// ==========================================
-const videoServers = [
-    {
-        id: 'vsembed',
-        name: 'Server 1',
-        description: 'Fast • HD Quality',
-        getMovieUrl: (id) => `https://vsembed.su/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vsembed.su/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'multiembed',
-        name: 'Server 2 (Dual Audio)',
-        description: 'Hindi/Urdu options',
-        getMovieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-        getTVUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
-    },
-    {
-        id: 'vidsrcto',
-        name: 'Server 3',
-        description: 'Alternative source',
-        getMovieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`
-    },
-    {
-        id: 'vidlink',
-        name: 'Server 4',
-        description: 'Fast backup',
-        getMovieUrl: (id) => `https://vidlink.pro/movie/${id}`,
-        getTVUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}`
-    }
-];
-
-// Track current server (stored in memory, not localStorage)
-let currentServerIndex = 0;
-
-const videoPlayer = {
-    // Get movie embed URL with current server
-    getMovieUrl(tmdbId) {
-        return videoServers[currentServerIndex].getMovieUrl(tmdbId);
-    },
-
-    // Get TV episode embed URL with current server
-    getTVUrl(tmdbId, season, episode) {
-        return videoServers[currentServerIndex].getTVUrl(tmdbId, season, episode);
-    },
-
-    // Create player with server selector
-    createPlayer(mediaType, tmdbId, season = null, episode = null) {
-        const serverButtons = videoServers.map((server, index) => `
-            <button class="server-btn ${index === currentServerIndex ? 'active' : ''}" 
-                    onclick="switchServer(${index}, '${mediaType}', '${tmdbId}', ${season}, ${episode})">
-                <span class="server-name">${server.name}</span>
-                <span class="server-desc">${server.description}</span>
-            </button>
-        `).join('');
-
-        const currentUrl = mediaType === 'movie'
-            ? this.getMovieUrl(tmdbId)
-            : this.getTVUrl(tmdbId, season, episode);
-
-        return `
-            <div class="player-section">
-                <div class="server-selector">
-                    <span class="server-label">🎬 Select Server:</span>
-                    <div class="server-buttons">
-                        ${serverButtons}
-                    </div>
-                </div>
-                <div class="player-wrapper" id="player-wrapper">
-                    <iframe 
-                        id="video-player"
-                        src="${currentUrl}" 
-                        title="Video player"
-                        allowfullscreen
-                        webkitallowfullscreen="true"
-                        mozallowfullscreen="true"
-                        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                        referrerpolicy="origin"
-                        loading="lazy"
-                    ></iframe>
-                </div>
-                <p class="server-hint">💡 If video doesn't load, try a different server above</p>
-            </div>
-        `;
-    }
-};
-
-// Global function to switch servers
-window.switchServer = function (serverIndex, mediaType, tmdbId, season, episode) {
-    currentServerIndex = serverIndex;
-    const server = videoServers[serverIndex];
-    const newUrl = mediaType === 'movie'
-        ? server.getMovieUrl(tmdbId)
-        : server.getTVUrl(tmdbId, season, episode);
-
-    // Update iframe source
-    const iframe = document.getElementById('video-player');
-    if (iframe) {
-        iframe.src = newUrl;
-    }
-
-    // Update active button
-    document.querySelectorAll('.server-btn').forEach((btn, index) => {
-        btn.classList.toggle('active', index === serverIndex);
-    });
-};
-
-// Keep vidkingPlayer as alias for backward compatibility
-const vidkingPlayer = {
-    getMovieUrl: (id) => videoPlayer.getMovieUrl(id),
-    getTVUrl: (id, s, e) => videoPlayer.getTVUrl(id, s, e),
-    createPlayer: (url) => `
-        <div class="player-wrapper">
-            <iframe 
-                src="${url}" 
-                allowfullscreen="true"
-                webkitallowfullscreen="true"
-                mozallowfullscreen="true"
-                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                loading="lazy"
-            ></iframe>
-        </div>
-    `
-};
-
-// ==========================================
-// Watch Progress Tracking
-// ==========================================
-const watchProgress = {
-    init() {
-        // Load continue watching from storage
-        state.continueWatching = utils.loadFromStorage(CONFIG.STORAGE_KEYS.CONTINUE_WATCHING) || [];
-
-        // Listen for messages from Vidking player
-        window.addEventListener('message', this.handlePlayerMessage.bind(this));
-    },
-
-    handlePlayerMessage(event) {
-        // Accept messages from embedded players (origin check removed to support multiple providers)
-        if (!event.data) return;
-
-        try {
-            const data = event.data;
-            if (data && data.id && data.progress !== undefined) {
-                this.updateProgress(data);
-            }
-        } catch (e) {
-            console.error('Error handling player message:', e);
-        }
-    },
-
-    updateProgress(data) {
-        const { id, type, progress, timestamp, duration, season, episode } = data;
-
-        const existingIndex = state.continueWatching.findIndex(item =>
-            item.id === id && item.type === type
-        );
-
-        const watchItem = {
-            id,
-            type,
-            progress,
-            timestamp,
-            duration,
-            season,
-            episode,
-            updatedAt: Date.now()
-        };
-
-        if (existingIndex !== -1) {
-            state.continueWatching[existingIndex] = watchItem;
-        } else {
-            state.continueWatching.unshift(watchItem);
-        }
-
-        // Keep only last 20 items
-        state.continueWatching = state.continueWatching.slice(0, 20);
-
-        // Save to storage
-        utils.saveToStorage(CONFIG.STORAGE_KEYS.CONTINUE_WATCHING, state.continueWatching);
-    },
-
-    getProgress(id, type) {
-        return state.continueWatching.find(item => item.id === id && item.type === type);
-    }
-};
-
-// ==========================================
-// Component Renderers
 // ==========================================
 const components = {
     // Loading spinner
@@ -579,8 +390,8 @@ const components = {
                     <div class="card-play"></div>
                 </div>
                 <div class="card-info">
-                    <h3 class="card-info-title">${title}</h3>
-                    <p class="card-info-desc">${year || 'Recently added'} <span>•</span> ${mediaType === 'movie' ? 'Movie' : 'TV Series'} <span>•</span> HD</p>
+                    <h3 class="card-info-title">${utils.sanitize(title)}</h3>
+                    <p class="card-info-desc">${year || 'Recently added'} <span>•</span> ${mediaType === 'movie' ? 'Movie' : 'TV Series'} </p>
                 </div>
             </a>
         `;
@@ -594,12 +405,12 @@ const components = {
         const route = item.type === 'movie'
             ? `/movie/${item.id}-${slug}`
             : `/tv/${item.id}-${slug}${item.season ? `/${item.season}/${item.episode || 1}` : ''}`;
-        const progressPercent = Math.min(100, item.progress || 0);
+        const progressPercent = item.progressVerified ? Math.min(100, item.progress || 0) : 0;
         // Estimate time left
         const runtime = item.runtime || 120;
         const watchedMin = Math.round((progressPercent / 100) * runtime);
         const leftMin = Math.max(1, runtime - watchedMin);
-        const leftLabel = progressPercent > 0 ? `${leftMin}m left` : 'Not started';
+        const leftLabel = progressPercent > 0 ? `${leftMin}m left` : 'Recently opened';
         const episodeLabel = item.season ? `S${item.season} E${item.episode || 1}` : '';
 
         return `
@@ -680,7 +491,7 @@ const components = {
             const genrePills = (item.genre_ids || []).slice(0, 3).map(id => genreMap[id] || '').filter(Boolean).map(g => `<span class="hero-genre-pill">${g}</span>`).join('');
 
             return `
-                <div class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="background-image: url('${backdropUrl}')">
+                <div ${index === 0 ? '' : 'inert aria-hidden="true"'} class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="background-image: url('${backdropUrl}')">
                     <div class="hero-gradient-overlay"></div>
                     <div class="hero-content hero-content-split">
                         <div class="hero-text-col">
@@ -688,13 +499,13 @@ const components = {
                                 <span>★</span> #${index + 1} Trending
                             </span>
                             ${genrePills ? `<div class="hero-genre-pills">${genrePills}</div>` : ''}
-                            <h1 class="hero-title">${title}</h1>
+                            <h1 class="hero-title">${utils.sanitize(title)}</h1>
                             <div class="hero-meta">
                                 <span class="hero-meta-item hero-rating">★ ${rating}</span>
                                 ${year ? `<span class="hero-meta-item">${year}</span>` : ''}
                                 <span class="hero-meta-item">${mediaType === 'movie' ? '🎬 Movie' : '📺 TV'}</span>
                             </div>
-                            <p class="hero-description">${overview}</p>
+                            <p class="hero-description">${utils.sanitize(overview)}</p>
                             <div class="hero-buttons">
                                 <a href="${route}" class="btn-cineby btn-cineby-primary">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -723,8 +534,8 @@ const components = {
                 <div class="hero-slides">
                     ${slides}
                 </div>
-                <button class="hero-arrow hero-arrow--left" onclick="prevSlide()">‹</button>
-                <button class="hero-arrow hero-arrow--right" onclick="nextSlide()">›</button>
+                <button class="hero-arrow hero-arrow--left" onclick="prevSlide()" aria-label="Previous featured title">‹</button>
+                <button class="hero-arrow hero-arrow--right" onclick="nextSlide()" aria-label="Next featured title">›</button>
                 <div class="hero-floating-cards">
                     <div class="hero-floating-header">Next Up</div>
                     ${carouselItems.slice(1, 4).map(item => {
@@ -735,7 +546,7 @@ const components = {
                         </div>`;
         }).join('')}
                 </div>
-                <div class="hero-dots">
+                <button class="hero-pause" type="button" onclick="toggleHeroRotation(this)" aria-pressed="false">Pause slideshow</button><div class="hero-dots">
                     ${dots}
                 </div>
                 <div class="hero-progress">
@@ -755,13 +566,8 @@ const components = {
                     <h2 class="section-title">${title}</h2>
                     ${tabsHtml}
                 </div>
-                <div class="row-wrapper">
-                    <button class="scroll-arrow scroll-arrow--left" onclick="scrollRow('${rowId}', -1)" aria-label="Scroll left">‹</button>
-                    <div class="content-row" id="${rowId}">
-                        ${content}
-                    </div>
-                    <button class="scroll-arrow scroll-arrow--right" onclick="scrollRow('${rowId}', 1)" aria-label="Scroll right">›</button>
-                </div>
+                ${content}
+                <a class="section-link" href="#/new">See all trending titles →</a>
             </section>
         `;
     },
@@ -946,7 +752,8 @@ window.switchTrendingTab = async (type, btn) => {
         // If 'all', we usually slice from 10 if we used first 10 for Top 10, but let's be consistent
         // For simplicity, let's just show top trending for that type
         const items = trending?.results || [];
-        row.innerHTML = components.contentRow(items, type, 'row-trending');
+        if (!row.isConnected || !btn.classList.contains('active')) return;
+        row.innerHTML = items.slice(0, 8).map(item => components.card(item, type)).join('');
         row.style.opacity = '1';
     } catch (error) {
         console.error('Error switching trending tab:', error);
@@ -1093,29 +900,14 @@ window.switchGenreTab = async (genreId, genreName, btn) => {
 const pages = {
     // Home page
     async home() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         try {
             // Fetch all data in parallel
-            const [trending, popularMovies, popularTV, topRatedMovies, topRatedTV, animationMovies, animeTVShows, netflixSeries, actionContent] = await Promise.all([
-                tmdbAPI.getTrending('all', 'day', 2),
-                tmdbAPI.getPopularMovies(2),
-                tmdbAPI.getPopularTV(2),
-                tmdbAPI.getTopRatedMovies(5),
-                tmdbAPI.getTopRatedTV(5),
-                tmdbAPI.getAnimationMovies(5),
-                tmdbAPI.getAnimeTVShows(5),
-                // Fetch Netflix TV SHOWS for series platform section
-                tmdbAPI.fetch('/discover/tv', { with_watch_providers: 8, watch_region: 'US', sort_by: 'popularity.desc' })
-                    .then(tv => (tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))),
-                // Fetch Action content for genre section
-                tmdbAPI.fetch('/discover/movie', { with_genres: 28, sort_by: 'popularity.desc' })
-                    .then(async movies => {
-                        const tv = await tmdbAPI.fetch('/discover/tv', { with_genres: 10759, sort_by: 'popularity.desc' });
-                        return [...(movies?.results || []).map(m => ({ ...m, media_type: 'movie' })),
-                        ...(tv?.results || []).map(t => ({ ...t, media_type: 'tv' }))].sort(() => Math.random() - 0.5).slice(0, 20);
-                    })
+            const [trending, popularMovies, popularTV, animeTVShows] = await Promise.all([
+                tmdbAPI.getTrending('all', 'day', 1), tmdbAPI.getPopularMovies(1),
+                tmdbAPI.getPopularTV(1), tmdbAPI.getAnimeTVShows(1)
             ]);
 
             let continueWatchingHtml = '';
@@ -1124,7 +916,7 @@ const pages = {
                 continueWatchingHtml = `
                     <section class="section">
                         <div class="section-header">
-                            <h2 class="section-title">⏯ Continue Watching</h2>
+                            <h2 class="section-title">Recently Viewed</h2>
                         </div>
                         <div class="continue-row">${cwCards}</div>
                     </section>`;
@@ -1132,7 +924,7 @@ const pages = {
 
             // Tab definitions - matching competitor design
             const trendingTabs = `
-                <button class="section-tab active" onclick="switchTrendingTab('all', this)">Movies</button>
+                <button class="section-tab active" onclick="switchTrendingTab('all', this)">All Titles</button>
                 <button class="section-tab" onclick="switchTrendingTab('tv', this)">Series</button>
             `;
 
@@ -1163,10 +955,10 @@ const pages = {
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
                 ${continueWatchingHtml}
-                ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5), 'all', 'row-trending'), 'row-trending', trendingTabs)}
-                ${components.section('Popular Movies', components.contentRow(popularMovies?.results, 'movie', 'row-movies'), '#/movies')}
-                ${components.section('Popular TV', components.contentRow(popularTV?.results, 'tv', 'row-tv'), '#/tv')}
-                ${components.section('Anime Spotlight', components.contentRow(animeTVShows?.results, 'tv', 'row-anime'), '#/anime')}
+                ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5, 13), 'all', 'row-trending'), 'row-trending', trendingTabs)}
+                ${components.section('Popular Movies', components.contentRow(popularMovies?.results?.slice(0, 8), 'movie', 'row-movies'), '#/movies')}
+                ${components.section('Popular TV', components.contentRow(popularTV?.results?.slice(0, 8), 'tv', 'row-tv'), '#/tv')}
+                ${components.section('Anime Spotlight', components.contentRow(animeTVShows?.results?.slice(0, 8), 'tv', 'row-anime'), '#/anime')}
             `;
 
             // Start hero carousel auto-rotation
@@ -1187,36 +979,35 @@ const pages = {
 
     // Movies page with categories and pagination
     async movies(category = 'popular', page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies(125) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(125) },
-            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(125) },
-            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(125) },
-            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, 125) },
-            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, 125) },
-            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, 125) },
-            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, 125) },
-            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, 125) },
-            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, 125) },
-            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, 125) },
-            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, 125) },
-            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, 125) },
-            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, 125) },
-            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, 125) },
-            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, 125) },
+            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies({ page }) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies({ page }) },
+            { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies({ page }) },
+            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies({ page }) },
+            { id: '28', name: '💥 Action', fetch: () => tmdbAPI.getMoviesByGenre(28, { page }) },
+            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getMoviesByGenre(35, { page }) },
+            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getMoviesByGenre(18, { page }) },
+            { id: '27', name: '😱 Horror', fetch: () => tmdbAPI.getMoviesByGenre(27, { page }) },
+            { id: '10749', name: '💕 Romance', fetch: () => tmdbAPI.getMoviesByGenre(10749, { page }) },
+            { id: '878', name: '🚀 Sci-Fi', fetch: () => tmdbAPI.getMoviesByGenre(878, { page }) },
+            { id: '53', name: '🔪 Thriller', fetch: () => tmdbAPI.getMoviesByGenre(53, { page }) },
+            { id: '10752', name: '⚔️ War', fetch: () => tmdbAPI.getMoviesByGenre(10752, { page }) },
+            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getMoviesByGenre(80, { page }) },
+            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getMoviesByGenre(16, { page }) },
+            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getMoviesByGenre(99, { page }) },
+            { id: '14', name: '🧙 Fantasy', fetch: () => tmdbAPI.getMoviesByGenre(14, { page }) },
         ];
 
         try {
             const selectedCategory = categories.find(c => c.id === category) || categories[0];
             const data = await selectedCategory.fetch();
             const allItems = data?.results || [];
-            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(data?.total_pages || 1, 500);
+            const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
                 `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateMovies('${c.id}', 1)">${c.name}</button>`
@@ -1235,7 +1026,7 @@ const pages = {
                     </div>
                     <div class="browse-results">
                         <div class="results-info">
-                            <span>Showing ${pageItems.length} of ${allItems.length} movies</span>
+                            <span>Page ${page} · ${pageItems.length} shown · ${data?.total_results || allItems.length} movies</span>
                         </div>
                         <div class="content-grid">
                             ${pageItems.map(m => components.card(m, 'movie')).join('')}
@@ -1252,34 +1043,33 @@ const pages = {
 
     // TV Shows page with categories and pagination
     async tv(category = 'popular', page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularTV(125) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(125) },
-            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV(125) },
-            { id: '10759', name: '💥 Action & Adventure', fetch: () => tmdbAPI.getTVByGenre(10759, 125) },
-            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getTVByGenre(35, 125) },
-            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getTVByGenre(80, 125) },
-            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getTVByGenre(18, 125) },
-            { id: '10765', name: '🚀 Sci-Fi & Fantasy', fetch: () => tmdbAPI.getTVByGenre(10765, 125) },
-            { id: '9648', name: '🔍 Mystery', fetch: () => tmdbAPI.getTVByGenre(9648, 125) },
-            { id: '10768', name: '⚔️ War & Politics', fetch: () => tmdbAPI.getTVByGenre(10768, 125) },
-            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getTVByGenre(16, 125) },
-            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getTVByGenre(99, 125) },
-            { id: '10751', name: '👨‍👩‍👧 Family', fetch: () => tmdbAPI.getTVByGenre(10751, 125) },
-            { id: '10764', name: '🎤 Reality', fetch: () => tmdbAPI.getTVByGenre(10764, 125) },
+            { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularTV({ page }) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV({ page }) },
+            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV({ page }) },
+            { id: '10759', name: '💥 Action & Adventure', fetch: () => tmdbAPI.getTVByGenre(10759, { page }) },
+            { id: '35', name: '😂 Comedy', fetch: () => tmdbAPI.getTVByGenre(35, { page }) },
+            { id: '80', name: '🔫 Crime', fetch: () => tmdbAPI.getTVByGenre(80, { page }) },
+            { id: '18', name: '🎭 Drama', fetch: () => tmdbAPI.getTVByGenre(18, { page }) },
+            { id: '10765', name: '🚀 Sci-Fi & Fantasy', fetch: () => tmdbAPI.getTVByGenre(10765, { page }) },
+            { id: '9648', name: '🔍 Mystery', fetch: () => tmdbAPI.getTVByGenre(9648, { page }) },
+            { id: '10768', name: '⚔️ War & Politics', fetch: () => tmdbAPI.getTVByGenre(10768, { page }) },
+            { id: '16', name: '🎨 Animation', fetch: () => tmdbAPI.getTVByGenre(16, { page }) },
+            { id: '99', name: '📹 Documentary', fetch: () => tmdbAPI.getTVByGenre(99, { page }) },
+            { id: '10751', name: '👨‍👩‍👧 Family', fetch: () => tmdbAPI.getTVByGenre(10751, { page }) },
+            { id: '10764', name: '🎤 Reality', fetch: () => tmdbAPI.getTVByGenre(10764, { page }) },
         ];
 
         try {
             const selectedCategory = categories.find(c => c.id === category) || categories[0];
             const data = await selectedCategory.fetch();
             const allItems = data?.results || [];
-            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(data?.total_pages || 1, 500);
+            const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
                 `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateTV('${c.id}', 1)">${c.name}</button>`
@@ -1298,7 +1088,7 @@ const pages = {
                     </div>
                     <div class="browse-results">
                         <div class="results-info">
-                            <span>Showing ${pageItems.length} of ${allItems.length} shows</span>
+                            <span>Page ${page} · ${pageItems.length} shown · ${data?.total_results || allItems.length} shows</span>
                         </div>
                         <div class="content-grid">
                             ${pageItems.map(s => components.card(s, 'tv')).join('')}
@@ -1315,15 +1105,15 @@ const pages = {
 
     // Anime page
     async anime(category = 'popular', page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         const ITEMS_PER_PAGE = 24;
 
         // Anime-specific categories — fetching 125 pages to get 2500+ titles
         const categories = [
-            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows(125) },
-            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies(125) },
+            { id: 'popular', name: '🔥 Popular Anime', fetch: () => tmdbAPI.getAnimeTVShows({ page }) },
+            { id: 'movies', name: '🎬 Anime Movies', fetch: () => tmdbAPI.getAnimationMovies({ page }) },
             { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV(50) },
         ];
 
@@ -1331,30 +1121,17 @@ const pages = {
             // Default to Anime TV Shows
             let data;
             if (category === 'movies') {
-                data = await tmdbAPI.getAnimationMovies(125);
+                data = await tmdbAPI.getAnimationMovies({ page });
             } else if (category === 'top_rated') {
-                const requests = [];
-                for (let i = 1; i <= 50; i++) {
-                    requests.push(tmdbAPI.fetch('/discover/tv', {
-                        with_genres: 16,
-                        with_origin_country: 'JP',
-                        page: i,
-                        sort_by: 'vote_average.desc',
-                        'vote_count.gte': 50
-                    }));
-                }
-                const responses = await Promise.all(requests);
-                const results = responses.flatMap(r => r?.results || []);
-                data = { results };
+                data = await tmdbAPI.fetch('/discover/tv', { with_genres: 16, with_origin_country: 'JP', page, sort_by: 'vote_average.desc', 'vote_count.gte': 50 });
             } else {
-                data = await tmdbAPI.getAnimeTVShows(125);
+                data = await tmdbAPI.getAnimeTVShows({ page });
             }
 
             // Standardize data structure if needed
             const allItems = data?.results || [];
-            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(data?.total_pages || 1, 500);
+            const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
                 `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="router.navigate('#/anime?category=${c.id}')">${c.name}</button>`
@@ -1379,7 +1156,7 @@ const pages = {
                     </div>
                     <div class="browse-results">
                         <div class="results-info">
-                            <span>Showing ${pageItems.length} of ${allItems.length} titles</span>
+                            <span>Page ${page} · ${pageItems.length} titles shown</span>
                         </div>
                         <div class="content-grid">
                             ${pageItems.map(item => components.card(item, category === 'movies' ? 'movie' : 'tv')).join('')}
@@ -1395,138 +1172,12 @@ const pages = {
     },
 
     // Movie watch page
-    async movie(id) {
-        const app = document.getElementById('app');
-        app.innerHTML = components.loading();
-
-        try {
-            const movie = await tmdbAPI.getMovieDetails(id);
-            if (!movie) throw new Error('Movie not found');
-
-            const posterUrl = utils.getImageUrl(movie.poster_path, 'large');
-            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-
-            app.innerHTML = `
-                <div class="watch-page">
-                    <div class="player-container">
-                        ${videoPlayer.createPlayer('movie', id)}
-                    </div>
-                    
-                    <div class="watch-info">
-                        <div class="watch-header">
-                            <div class="watch-poster">
-                                <img src="${posterUrl}" alt="${movie.title}">
-                            </div>
-                            <div class="watch-details">
-                                <h1 class="watch-title">${movie.title}</h1>
-                                <div class="watch-meta">
-                                    <span class="watch-meta-item">★ ${rating}</span>
-                                    <span class="watch-meta-item">${utils.formatDate(movie.release_date)}</span>
-                                    <span class="watch-meta-item">${utils.formatRuntime(movie.runtime)}</span>
-                                </div>
-                                <div class="watch-genres">
-                                    ${movie.genres?.map(g => components.genreTag(g)).join('')}
-                                </div>
-                                <p class="watch-overview">${movie.overview}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    ${movie.recommendations?.results?.length > 0 ?
-                    components.section('You May Also Like', components.contentRow(movie.recommendations.results.slice(0, 10), 'movie'))
-                    : ''
-                }
-                </div>
-            `;
-        } catch (error) {
-            console.error('Error loading movie:', error);
-            app.innerHTML = '<div class="section"><p>Error loading movie</p></div>';
-        }
-    },
-
-    // TV watch page
-    async tvShow(id, season = 1, episode = 1) {
-        const app = document.getElementById('app');
-        app.innerHTML = components.loading();
-
-        try {
-            const [tvDetails, seasonDetails] = await Promise.all([
-                tmdbAPI.getTVDetails(id),
-                tmdbAPI.getSeasonDetails(id, season)
-            ]);
-
-            if (!tvDetails) throw new Error('TV show not found');
-
-            const posterUrl = utils.getImageUrl(tvDetails.poster_path, 'large');
-            const rating = tvDetails.vote_average ? tvDetails.vote_average.toFixed(1) : 'N/A';
-
-            // Generate season buttons
-            const seasonButtons = tvDetails.seasons
-                ?.filter(s => s.season_number > 0)
-                .map(s => `
-                    <button class="season-btn ${s.season_number === parseInt(season) ? 'active' : ''}" 
-                            onclick="router.navigate('#/tv/${id}/${s.season_number}/1')">
-                        Season ${s.season_number}
-                    </button>
-                `).join('');
-
-            // Generate episode cards
-            const episodeCards = seasonDetails?.episodes?.map(ep =>
-                components.episodeCard(ep, id, season, ep.episode_number === parseInt(episode))
-            ).join('');
-
-            app.innerHTML = `
-                <div class="watch-page">
-                    <div class="player-container">
-                        ${videoPlayer.createPlayer('tv', id, season, episode)}
-                    </div>
-                    
-                    <div class="watch-info">
-                        <div class="watch-header">
-                            <div class="watch-poster">
-                                <img src="${posterUrl}" alt="${tvDetails.name}">
-                            </div>
-                            <div class="watch-details">
-                                <h1 class="watch-title">${tvDetails.name}</h1>
-                                <div class="watch-meta">
-                                    <span class="watch-meta-item">★ ${rating}</span>
-                                    <span class="watch-meta-item">${utils.formatDate(tvDetails.first_air_date)}</span>
-                                    <span class="watch-meta-item">${tvDetails.number_of_seasons} Seasons</span>
-                                    <span class="watch-meta-item">Now Playing: S${season} E${episode}</span>
-                                </div>
-                                <div class="watch-genres">
-                                    ${tvDetails.genres?.map(g => components.genreTag(g)).join('')}
-                                </div>
-                                <p class="watch-overview">${tvDetails.overview}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="episode-section">
-                        <h2 class="section-title mb-3">Episodes</h2>
-                        <div class="season-selector">
-                            ${seasonButtons}
-                        </div>
-                        <div class="episodes-grid">
-                            ${episodeCards || '<p class="text-muted">No episodes available</p>'}
-                        </div>
-                    </div>
-                    
-                    ${tvDetails.recommendations?.results?.length > 0 ?
-                    components.section('Similar Shows', components.contentRow(tvDetails.recommendations.results.slice(0, 10), 'tv'))
-                    : ''
-                }
-                </div>
-            `;
-        } catch (error) {
-            console.error('Error loading TV show:', error);
-            app.innerHTML = '<div class="section"><p>Error loading TV show</p></div>';
-        }
-    },
+    async movie(id) { window.location.assign('/movie/' + id); },
+    async tvShow(id, season = 1, episode = 1) { window.location.assign('/tv/' + id + '/' + season + '/' + episode); },
 
     // Search results page
     async search(query, page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         if (!query) {
@@ -1546,7 +1197,7 @@ const pages = {
 
         try {
             // Fetch 5 pages of results for a broader library
-            const results = await tmdbAPI.search(query, 5);
+            const results = await tmdbAPI.search(query, { page });
             const allItems = results?.results?.filter(item =>
                 (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path
             ) || [];
@@ -1554,8 +1205,9 @@ const pages = {
             // Deduplicate by id
             const seen = new Set();
             const items = allItems.filter(item => {
-                if (seen.has(item.id)) return false;
-                seen.add(item.id);
+                const key = item.media_type + ":" + item.id;
+                if (seen.has(key)) return false;
+                seen.add(key);
                 return true;
             });
 
@@ -1575,9 +1227,8 @@ const pages = {
                 return;
             }
 
-            const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = items.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(results?.total_pages || 1, 500);
+            const pageItems = items;
 
             // Build search pagination
             const pagination = components.pagination(page, totalPages, 'search', encodeURIComponent(query));
@@ -1586,7 +1237,7 @@ const pages = {
                 <div class="search-page">
                     <div class="search-header">
                         <h1 class="search-query">Results for <span>"${utils.sanitize(query)}"</span></h1>
-                        <p class="search-count">${items.length} results found</p>
+                        <p class="search-count">${items.length} results on page ${page}</p>
                     </div>
                     <div class="content-grid">
                         ${pageItems.map(item => components.card(item, item.media_type)).join('')}
@@ -1602,7 +1253,7 @@ const pages = {
 
     // Genre page
     async genre(genreId, page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         const ITEMS_PER_PAGE = 24;
@@ -1626,8 +1277,8 @@ const pages = {
         try {
             // Fetch both movies and TV shows for this genre — 50 pages for massive catalog
             const [movies, tvShows] = await Promise.all([
-                tmdbAPI.getMoviesByGenre(genreId, 50),
-                tmdbAPI.getTVByGenre(genreId, 50)
+                tmdbAPI.getMoviesByGenre(genreId, { page }),
+                tmdbAPI.getTVByGenre(genreId, { page })
             ]);
 
             const allItems = [
@@ -1635,9 +1286,8 @@ const pages = {
                 ...(tvShows?.results?.map(t => ({ ...t, media_type: 'tv' })) || [])
             ].sort((a, b) => b.popularity - a.popularity);
 
-            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(Math.max(movies?.total_pages || 1, tvShows?.total_pages || 1) || 1, 500);
+            const pageItems = allItems;
 
             const pagination = components.pagination(page, totalPages, 'genre', genreId);
 
@@ -1656,7 +1306,7 @@ const pages = {
                         </div>
                         <div class="browse-results">
                             <div class="results-info">
-                                <span>Showing ${pageItems.length} of ${allItems.length} titles in ${genreName}</span>
+                                <span>Page ${page} · ${pageItems.length} titles in ${genreName}</span>
                             </div>
                             <div class="content-grid">
                                 ${pageItems.map(item => components.card(item, item.media_type)).join('')}
@@ -1674,27 +1324,26 @@ const pages = {
 
     // New & Popular page
     async newPopular(category = 'trending', page = 1) {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = components.loading();
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
-            { id: 'trending', name: '🔥 Trending Now', fetch: () => tmdbAPI.getTrending('all', 'day', 5) },
-            { id: 'popular_movies', name: '🎬 Popular Movies', fetch: () => tmdbAPI.getPopularMovies(5) },
-            { id: 'popular_tv', name: '📺 Popular TV', fetch: () => tmdbAPI.getPopularTV(5) },
-            { id: 'now_playing', name: '🎥 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies(5) },
-            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies(5) },
-            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV(5) },
-            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies(5) },
+            { id: 'trending', name: '🔥 Trending Now', fetch: () => tmdbAPI.getTrending('all', 'day', { page }) },
+            { id: 'popular_movies', name: '🎬 Popular Movies', fetch: () => tmdbAPI.getPopularMovies({ page }) },
+            { id: 'popular_tv', name: '📺 Popular TV', fetch: () => tmdbAPI.getPopularTV({ page }) },
+            { id: 'now_playing', name: '🎥 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies({ page }) },
+            { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies({ page }) },
+            { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV({ page }) },
+            { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies({ page }) },
         ];
 
         try {
             const selectedCategory = categories.find(c => c.id === category) || categories[0];
             const data = await selectedCategory.fetch();
             const allItems = data?.results || [];
-            const totalPages = Math.ceil(allItems.length / ITEMS_PER_PAGE);
-            const startIdx = (page - 1) * ITEMS_PER_PAGE;
-            const pageItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+            const totalPages = Math.min(data?.total_pages || 1, 500);
+            const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
                 `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateNew('${c.id}', 1)">${c.name}</button>`
@@ -1713,7 +1362,7 @@ const pages = {
                     </div>
                     <div class="browse-results">
                         <div class="results-info">
-                            <span>Showing ${pageItems.length} of ${allItems.length} titles</span>
+                            <span>Page ${page} · ${pageItems.length} titles shown</span>
                         </div>
                         <div class="content-grid">
                             ${pageItems.map(item => components.card(item, item.media_type || 'movie')).join('')}
@@ -1730,8 +1379,8 @@ const pages = {
 
     // My List page
     async myList() {
-        const app = document.getElementById('app');
-        const myListItems = utils.loadFromStorage('streamflix_my_list') || [];
+        const app = routeTarget();
+        const myListItems = window.Watchlist.read();
 
         if (myListItems.length === 0) {
             app.innerHTML = `
@@ -1766,7 +1415,7 @@ const pages = {
 
     // FAQ page
     faq() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         const faqItems = [
             { q: 'What is HD Watchzone?', a: 'HD Watchzone is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
             { q: 'Is HD Watchzone free to use?', a: 'Yes, HD Watchzone is completely free. We aggregate content from various third-party providers so you can find and stream entertainment without any subscription or sign-up.' },
@@ -1810,7 +1459,7 @@ const pages = {
 
     // Help Center page
     help() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         const helpCategories = [
             { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '#/faq' }, { text: 'Understanding the interface', href: '#/faq' }] },
             { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '#/faq' }, { text: 'Switch streaming servers', href: '#/faq' }] },
@@ -1844,9 +1493,9 @@ const pages = {
 
     // Account page
     account() {
-        const app = document.getElementById('app');
-        const myListItems = utils.loadFromStorage('streamflix_my_list') || [];
-        const watchHistoryRaw = utils.loadFromStorage('streamflix_watch_progress') || {};
+        const app = routeTarget();
+        const myListItems = window.Watchlist.read();
+        const watchHistoryRaw = utils.loadFromStorage(CONFIG.STORAGE_KEYS.CONTINUE_WATCHING) || [];
         const watchHistoryCount = Object.keys(watchHistoryRaw).length;
 
         app.innerHTML = `
@@ -1890,7 +1539,7 @@ const pages = {
 
     // Contact Us page
     contact() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = `
             <div class="static-page">
                 <div class="static-page-header">
@@ -1922,7 +1571,7 @@ const pages = {
                             <label for="contact-message">Message</label>
                             <textarea id="contact-message" rows="5" placeholder="Describe your issue or suggestion in detail..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                        <button type="submit" class="btn btn-primary btn-block">Open Email App</button>
                     </form>
                     <div class="contact-info">
                         <div class="contact-info-card">
@@ -1931,7 +1580,7 @@ const pages = {
                         </div>
                         <div class="contact-info-card">
                             <h3>\u23f1\ufe0f Response Time</h3>
-                            <p>We typically respond within 24-48 hours</p>
+                            <p>This form opens your email app. Delivery and response times are not guaranteed.</p>
                         </div>
                         <div class="contact-info-card">
                             <h3>\ud83d\udccb FAQ</h3>
@@ -1945,7 +1594,7 @@ const pages = {
 
     // Terms of Use page
     terms() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = `
             <div class="static-page">
                 <div class="static-page-header">
@@ -2008,7 +1657,7 @@ const pages = {
 
     // Privacy Policy page
     privacy() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = `
             <div class="static-page">
                 <div class="static-page-header">
@@ -2026,7 +1675,7 @@ const pages = {
                         <p><strong>We do not collect personal information.</strong> HD Watchzone does not require registration, login, or any personal data to use the service. The following data is stored locally in your browser only:</p>
                         <ul>
                             <li><strong>Watchlist:</strong> Titles you add to "My List" are saved in your browser's localStorage.</li>
-                            <li><strong>Watch Progress:</strong> Your viewing progress is tracked locally so you can resume where you left off.</li>
+                            <li><strong>Watch Progress:</strong> Recently opened titles are stored locally. Playback position is not available from every external player.</li>
                             <li><strong>Preferences:</strong> Theme and language preferences are stored in your browser.</li>
                         </ul>
                         <p>This data never leaves your device and is not transmitted to our servers or any third party.</p>
@@ -2073,7 +1722,7 @@ const pages = {
 
     // Cookie Preferences page
     cookies() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         const analyticsConsent = localStorage.getItem('analytics_consent') === 'true';
 
         app.innerHTML = `
@@ -2139,7 +1788,7 @@ const pages = {
 
     // Legal Notices page
     legal() {
-        const app = document.getElementById('app');
+        const app = routeTarget();
         app.innerHTML = `
             <div class="static-page">
                 <div class="static-page-header">
@@ -2221,12 +1870,14 @@ function updateRouteMetadata(path) {
         '/help': ['Help Center | HD Watchzone', 'Get help with search, playback, servers, privacy and account-free viewing on HD Watchzone.'],
         '/contact': ['Contact HD Watchzone', 'Contact HD Watchzone to report playback issues, broken links or share feedback.'],
         '/terms': ['Terms of Use | HD Watchzone', 'Read the terms that apply when accessing and using HD Watchzone.'],
+        '/account': ['Local Preferences | HD Watchzone', 'Manage saved titles and recently opened titles on this device.'],
         '/privacy': ['Privacy Policy | HD Watchzone', 'Learn how HD Watchzone handles local preferences, analytics and third-party services.'],
         '/cookies': ['Cookie Policy | HD Watchzone', 'Learn about cookies, local storage and third-party services used by HD Watchzone.'],
         '/legal': ['Legal Notices | HD Watchzone', 'Review copyright, third-party content and legal information for HD Watchzone.']
     };
     let key = entries[route] ? route : route.startsWith('/genre/') ? '/genre' : route.startsWith('/search') ? '/search' : '/';
-    const genreName = route.startsWith('/genre/') ? 'Browse Movies & TV Shows by Genre | HD Watchzone' : null;
+    const names = {28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Science Fiction',53:'Thriller',10752:'War',37:'Western'};
+    const genreName = route.startsWith('/genre/') ? `${names[route.split('/')[2]] || 'Genre'} Movies & TV Shows | HD Watchzone` : null;
     const searchQuery = new URLSearchParams(path.split('?')[1] || '').get('q');
     const meta = entries[key] || (key === '/genre'
         ? [genreName, 'Browse movies and TV shows by genre on HD Watchzone.']
@@ -2240,6 +1891,7 @@ function updateRouteMetadata(path) {
         : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.href = `https://hdwatchzone.com${route === '/' ? '/' : route}`;
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical?.href || 'https://hdwatchzone.com/');
     ['og:title', 'twitter:title'].forEach(name => {
         const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
         if (element) element.content = meta[0];
@@ -2250,6 +1902,15 @@ function updateRouteMetadata(path) {
     });
 }
 
+let routeGeneration = 0;
+function routeTarget() {
+    const generation = routeGeneration;
+    const element = document.getElementById('app');
+    return new Proxy(element, {
+        set(target, key, value) { if (generation === routeGeneration) target[key] = value; return true; },
+        get(target, key) { const value = target[key]; return typeof value === 'function' ? value.bind(target) : value; }
+    });
+}
 const router = {
     routes: {
         '/': pages.home,
@@ -2274,9 +1935,11 @@ const router = {
     },
 
     handleRoute() {
+        routeGeneration++;
         const hash = window.location.hash;
         // Use hash if present, otherwise use pathname as fallback for clean URLs
-        let path = hash ? hash.slice(1) : window.location.pathname;
+        let path = hash ? hash.slice(1) : window.location.pathname + window.location.search;
+        if (path.startsWith('/index.html')) path = '/' + window.location.search;
 
         // Remove trailing slash and handle empty path
         if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
@@ -2294,11 +1957,15 @@ const router = {
         document.getElementById('mobile-nav')?.classList.remove('open');
         document.getElementById('mobile-nav-overlay')?.classList.remove('open');
         document.getElementById('hamburger-btn')?.classList.remove('open');
+        document.getElementById('hamburger-btn')?.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
 
         // Update active nav link
-        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+        document.querySelectorAll('.nav-link, .mobile-nav-link, .dnav-link').forEach(link => {
             const href = link.getAttribute('href');
-            link.classList.toggle('active', href === hash || (href === '#/' && path === '/'));
+            const active = href?.replace(/^#/, '') === path.split('?')[0];
+            link.classList.toggle('active', active);
+            if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
         });
 
         document.querySelectorAll('.mobile-bottom-link').forEach(link => {
@@ -2335,7 +2002,7 @@ const router = {
         } else if (path.startsWith('/movie/')) {
             const segment = path.split('/')[2];
             const id = parseInt(segment.split('-')[0], 10);
-            const app = document.getElementById('app');
+            const app = routeTarget();
             app.innerHTML = components.loading();
             pages.movie(id);
         } else if (path.startsWith('/tv/')) {
@@ -2344,7 +2011,7 @@ const router = {
             const id = parseInt(idSegment.split('-')[0], 10);
             const season = parts[3] || 1;
             const episode = parts[4] || 1;
-            const app = document.getElementById('app');
+            const app = routeTarget();
             app.innerHTML = components.loading();
             pages.tvShow(id, season, episode);
         } else if (path.startsWith('/search')) {
@@ -2558,11 +2225,24 @@ function initRowArrows() {
 // ==========================================
 // Hero Carousel Controls
 // ==========================================
+let heroPaused = false;
+window.toggleHeroRotation = button => { heroPaused = !heroPaused; button.textContent = heroPaused ? 'Resume slideshow' : 'Pause slideshow'; button.setAttribute('aria-pressed', String(heroPaused)); if (heroPaused) stopHeroCarousel(); else startHeroCarousel(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopHeroCarousel(); else if (document.querySelector('.hero-carousel')) startHeroCarousel(); });
 let heroCarouselInterval = null;
 let currentSlide = 0;
 const SLIDE_DURATION = 5000; // 5 seconds
 
 function startHeroCarousel() {
+    const carousel = document.getElementById('hero-carousel');
+    if (!carousel) return;
+    if (carousel && !carousel.dataset.rotationBound) {
+        carousel.dataset.rotationBound = 'true';
+        carousel.addEventListener('pointerenter', stopHeroCarousel);
+        carousel.addEventListener('pointerleave', startHeroCarousel);
+        carousel.addEventListener('focusin', stopHeroCarousel);
+        carousel.addEventListener('focusout', event => { if (!carousel.contains(event.relatedTarget)) startHeroCarousel(); });
+    }
+    if (heroPaused || document.hidden || carousel?.contains(document.activeElement) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     // Clear any existing interval
     if (heroCarouselInterval) {
         clearInterval(heroCarouselInterval);
@@ -2605,11 +2285,14 @@ function goToSlide(index) {
     // Update slides
     slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === currentSlide);
+        slide.inert = i !== currentSlide;
+        slide.setAttribute('aria-hidden', String(i !== currentSlide));
     });
 
     // Update dots
     dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
+        dot.setAttribute('aria-pressed', String(i === currentSlide));
     });
 
     // Reset progress bar
@@ -2617,9 +2300,7 @@ function goToSlide(index) {
 
     // Restart timer (clear old first to avoid duplicates)
     stopHeroCarousel();
-    heroCarouselInterval = setInterval(() => {
-        nextSlide();
-    }, SLIDE_DURATION);
+    startHeroCarousel();
 }
 
 function nextSlide() {
@@ -2689,11 +2370,12 @@ function initHeroSwipe() {
 // ==========================================
 // Initialize App
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    watchProgress.init();
+document.addEventListener('DOMContentLoaded', async () => {
+    await window.Watchlist.ready;
+    state.continueWatching = utils.loadFromStorage(CONFIG.STORAGE_KEYS.CONTINUE_WATCHING) || [];
     initEventListeners();
     router.init();
-    loadGenres();
+    // Navigation genres are already present in the static accessible menu.
 
     // Observe for dynamically loaded content
     const appEl = document.getElementById('app');
@@ -2753,25 +2435,25 @@ function toggleFaq(index) {
 function handleContactSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    form.innerHTML = `
-        <div class="contact-success">
-            <div class="contact-success-icon">✓</div>
-            <h2>Message Sent</h2>
-            <p>Thank you for contacting us. We will get back to you within 24-48 hours.</p>
-            <a href="#/" class="btn btn-primary">Back to Home</a>
-        </div>
-    `;
+    const subject = document.getElementById('contact-subject')?.value || 'Website feedback';
+    const message = 'From: ' + document.getElementById('contact-name').value + '\nReply email: ' + document.getElementById('contact-email').value + '\n\n' + document.getElementById('contact-message').value;
+    window.location.href = 'mailto:support@hdwatchzone.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(message);
+    let notice = form.querySelector('.contact-status');
+    if (!notice) { notice = document.createElement('p'); notice.className = 'contact-status'; notice.setAttribute('role', 'status'); form.appendChild(notice); }
+    notice.textContent = 'Your email app should open with this message. Nothing has been sent by this website; send it from your email app.';
 }
 
 function clearWatchHistory() {
     if (confirm('Are you sure you want to clear your watch history? This cannot be undone.')) {
         localStorage.removeItem('streamflix_watch_progress');
+        localStorage.removeItem(CONFIG.STORAGE_KEYS.CONTINUE_WATCHING);
+        state.continueWatching = [];
         pages.account();
     }
 }
 
 function toggleAnalyticsCookies(enabled) {
-    localStorage.setItem('analytics_consent', enabled.toString());
+    window.AnalyticsConsent.set(enabled);
     const statusEl = document.getElementById('analytics-status');
     if (statusEl) {
         statusEl.textContent = enabled ? 'Enabled' : 'Disabled';
