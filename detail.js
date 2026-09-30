@@ -61,7 +61,7 @@ async function fetchWithRetry(endpoint, params = {}, retries = 3) {
 }
 
 function imgUrl(path, size = 'w500') {
-    if (!path) return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750" fill="%23141414"/>';
+    if (!path) return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect width=%22300%22 height=%22450%22 fill=%22%23141414%22/%3E%3C/svg%3E';
     return `${TMDB.IMG}/${size}${path}`;
 }
 
@@ -70,14 +70,16 @@ function backdropUrl(path) {
     return `${TMDB.IMG}/w1280${path}`;
 }
 
+function responsiveImageAttrs(path, kind = 'poster', sizes = '(max-width: 560px) calc((100vw - 34px) / 2), (max-width: 1283px) 154px, (max-width: 1583px) 12vw, 190px') {
+    const dimensions = kind === 'still' ? 'width="300" height="169"' : 'width="300" height="450"';
+    if (!path || !path.startsWith('/') || path.startsWith('//')) return `${dimensions} decoding="async"`;
+    const widths = kind === 'still' ? [92, 185, 300] : [185, 342, 500, 780];
+    const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    return `${dimensions} decoding="async" srcset="${escape(widths.map(width => `${TMDB.IMG}/w${width}${path} ${width}w`).join(', '))}" sizes="${escape(sizes)}"`;
+}
+
 function createSlug(text) {
-    if (!text) return '';
-    return text.toString().toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-')
-        .replace(/^-+/, '')
-        .replace(/-+$/, '');
+    return window.SiteSEO.slug(text);
 }
 
 /* ---------- Continue Watching — localStorage ---------- */
@@ -113,10 +115,7 @@ function saveToHistory(data, type, season, episode) {
 }
 
 function sanitize(text) {
-    if (!text) return '';
-    const el = document.createElement('div');
-    el.textContent = text;
-    return el.innerHTML;
+    return String(text ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 }
 
 function formatDate(dateStr) {
@@ -139,17 +138,16 @@ function formatMoney(num) {
 
 /* ---------- Meta Updates ---------- */
 function updateMeta(data, type) {
-    const title = `Watch ${data.title || data.name} | HD Watchzone`;
-
-    // Build rich meta description (120-300 chars)
-    const desc = generateRichDescription(data, type);
+    const meta = window.SiteSEO.titleMeta(data,type);
+    const title = meta.title;
+    const desc = meta.description;
 
     let image = backdropUrl(data.backdrop_path) || imgUrl(data.poster_path, 'w780');
     // Use logo as fallback if image is data URI (placeholder) or empty
     if (!image || image.startsWith('data:')) {
         image = 'https://hdwatchzone.com/logo-v2.webp';
     }
-    const pageUrl = `${TMDB.SITE_URL}/${type}/${data.id}-${createSlug(data.title || data.name)}`;
+    const pageUrl = meta.canonical;
 
     document.title = title;
 
@@ -269,7 +267,7 @@ function injectBreadcrumbs(data, type) {
                 '@type': 'ListItem',
                 position: 3,
                 name: title,
-                item: `${TMDB.SITE_URL}/${type}/${data.id}`
+                item: window.SiteSEO.titleMeta(data,type).canonical
             }
         ]
     };
@@ -295,12 +293,6 @@ function buildMovieSchema(m) {
         actor: m.credits?.cast?.slice(0, 5).map(a => ({ '@type': 'Person', name: a.name })),
         genre: m.genres?.map(g => g.name),
         duration: m.runtime ? `PT${m.runtime}M` : undefined,
-        aggregateRating: m.vote_average > 0 ? {
-            '@type': 'AggregateRating',
-            ratingValue: m.vote_average.toFixed(1),
-            bestRating: '10',
-            ratingCount: m.vote_count
-        } : undefined,
         url: `${TMDB.SITE_URL}/movie/${m.id}-${createSlug(m.title)}`
     };
 
@@ -321,12 +313,6 @@ function buildTVSchema(tv) {
         numberOfEpisodes: tv.number_of_episodes,
         actor: tv.credits?.cast?.slice(0, 5).map(a => ({ '@type': 'Person', name: a.name })),
         genre: tv.genres?.map(g => g.name),
-        aggregateRating: tv.vote_average > 0 ? {
-            '@type': 'AggregateRating',
-            ratingValue: tv.vote_average.toFixed(1),
-            bestRating: '10',
-            ratingCount: tv.vote_count
-        } : undefined,
         url: `${TMDB.SITE_URL}/tv/${tv.id}-${createSlug(tv.name)}`
     };
 
@@ -381,7 +367,7 @@ function buildGenreSection(genres, type) {
     if (!genres || genres.length === 0) return '';
 
     const genreLinks = genres.map(g =>
-        `<a href="/#/genre/${g.id}" class="genre-link-card">
+        `<a href="/genre/${g.id}" class="genre-link-card">
             <span class="genre-icon">🎬</span>
             <span class="genre-name">${g.name}</span>
             <span class="genre-arrow">→</span>
@@ -412,7 +398,7 @@ async function buildTrendingSection(type) {
 
             return `
                 <a href="${href}" class="trending-card">
-                    <img src="${imgUrl(item.poster_path, 'w342')}" alt="${sanitize(title)}" loading="lazy">
+                    <img src="${imgUrl(item.poster_path, 'w342')}" alt="${sanitize(title)}" ${responsiveImageAttrs(item.poster_path)} loading="lazy">
                     <div class="trending-card-info">
                         <div class="trending-card-title">${sanitize(title)}</div>
                         <div class="trending-card-meta">
@@ -441,34 +427,34 @@ function buildDetailFooter() {
                     <h4 class="footer-heading">Browse</h4>
                     <ul class="footer-links">
                         <li><a href="/">Home</a></li>
-                        <li><a href="/#/movies">Movies</a></li>
-                        <li><a href="/#/tv">TV Shows</a></li>
-                        <li><a href="/#/trending">Trending</a></li>
+                        <li><a href="/movies">Movies</a></li>
+                        <li><a href="/tv">TV Shows</a></li>
+                        <li><a href="/new">Trending</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 class="footer-heading">Genres</h4>
                     <ul class="footer-links">
-                        <li><a href="/#/genre/28">Action</a></li>
-                        <li><a href="/#/genre/35">Comedy</a></li>
-                        <li><a href="/#/genre/18">Drama</a></li>
-                        <li><a href="/#/genre/878">Sci-Fi</a></li>
+                        <li><a href="/genre/28">Action</a></li>
+                        <li><a href="/genre/35">Comedy</a></li>
+                        <li><a href="/genre/18">Drama</a></li>
+                        <li><a href="/genre/878">Sci-Fi</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 class="footer-heading">Support</h4>
                     <ul class="footer-links">
-                        <li><a href="/#/help">Help Center</a></li>
-                        <li><a href="/#/contact">Contact Us</a></li>
-                        <li><a href="/#/faq">FAQ</a></li>
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/faq">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4 class="footer-heading">Legal</h4>
                     <ul class="footer-links">
-                        <li><a href="/#/privacy">Privacy Policy</a></li>
-                        <li><a href="/#/terms">Terms of Use</a></li>
-                        <li><a href="/#/legal">Legal Notices</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Use</a></li>
+                        <li><a href="/legal">Legal Notices</a></li>
                     </ul>
                 </div>
             </div>
@@ -492,47 +478,47 @@ function renderNav() {
         <nav class="detail-nav" id="detail-nav">
             <div class="dnav-inner">
                 <a href="/" class="dnav-logo" aria-label="HD Watchzone Home">
-                    <img src="/logo-v2.webp" alt="HD Watchzone" onerror="this.style.display='none'">
+                    <img src="/logo-v2.webp" alt="HD Watchzone" width="150" height="50" decoding="async" onerror="this.style.display='none'">
                     <span class="dnav-logo-text">HD<span class="dnav-red">Watchzone</span></span>
                 </a>
                 <div class="dnav-links">
-                    <a href="/#/movies" class="dnav-link">Movies</a>
-                    <a href="/#/tv" class="dnav-link">TV Shows</a>
-                    <a href="/#/anime" class="dnav-link">Anime</a>
+                    <a href="/movies" class="dnav-link">Movies</a>
+                    <a href="/tv" class="dnav-link">TV Shows</a>
+                    <a href="/anime" class="dnav-link">Anime</a>
                     
                     <div class="dnav-dropdown">
-                        <a href="/#/genre/28" class="dnav-link dropdown-toggle" id="nav-genres">
+                        <a href="/genre/28" class="dnav-link dropdown-toggle" id="nav-genres">
                             Genres
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                         </a>
                         <div class="dnav-dropdown-content">
                             <div class="dropdown-grid">
-                                <a href="/#/genre/28">Action</a>
-                                <a href="/#/genre/12">Adventure</a>
-                                <a href="/#/genre/16">Animation</a>
-                                <a href="/#/genre/35">Comedy</a>
-                                <a href="/#/genre/80">Crime</a>
-                                <a href="/#/genre/99">Documentary</a>
-                                <a href="/#/genre/18">Drama</a>
-                                <a href="/#/genre/10751">Family</a>
-                                <a href="/#/genre/14">Fantasy</a>
-                                <a href="/#/genre/36">History</a>
-                                <a href="/#/genre/27">Horror</a>
-                                <a href="/#/genre/10402">Music</a>
-                                <a href="/#/genre/9648">Mystery</a>
-                                <a href="/#/genre/10749">Romance</a>
-                                <a href="/#/genre/878">Sci-Fi</a>
-                                <a href="/#/genre/53">Thriller</a>
-                                <a href="/#/genre/10752">War</a>
-                                <a href="/#/genre/37">Western</a>
+                                <a href="/genre/28">Action</a>
+                                <a href="/genre/12">Adventure</a>
+                                <a href="/genre/16">Animation</a>
+                                <a href="/genre/35">Comedy</a>
+                                <a href="/genre/80">Crime</a>
+                                <a href="/genre/99">Documentary</a>
+                                <a href="/genre/18">Drama</a>
+                                <a href="/genre/10751">Family</a>
+                                <a href="/genre/14">Fantasy</a>
+                                <a href="/genre/36">History</a>
+                                <a href="/genre/27">Horror</a>
+                                <a href="/genre/10402">Music</a>
+                                <a href="/genre/9648">Mystery</a>
+                                <a href="/genre/10749">Romance</a>
+                                <a href="/genre/878">Sci-Fi</a>
+                                <a href="/genre/53">Thriller</a>
+                                <a href="/genre/10752">War</a>
+                                <a href="/genre/37">Western</a>
                             </div>
                         </div>
                     </div>
 
-                    <a href="/#/new" class="dnav-link">New Releases</a>
+                    <a href="/new" class="dnav-link">New Releases</a>
                 </div>
                 <div class="dnav-right">
-                    <button class="dnav-search-btn" onclick="window.location.href='/#/search'" aria-label="Search">
+                    <button class="dnav-search-btn" onclick="window.location.href='/search'" aria-label="Search">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                         </svg>
@@ -599,10 +585,10 @@ function buildCast(credits) {
     const cards = cast.map(person => {
         const photo = person.profile_path
             ? imgUrl(person.profile_path, 'w185')
-            : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="185" height="278"><rect width="185" height="278" fill="%231a1a1a"/><text x="92" y="139" text-anchor="middle" fill="%23555" font-size="42">?</text></svg>';
+            : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="185" height="278"><rect width="185" height="278" fill="#1a1a1a"/><text x="92" y="139" text-anchor="middle" fill="#555" font-size="42">?</text></svg>');
         return `
             <div class="cast-card">
-                <div class="cast-photo"><img src="${photo}" alt="${sanitize(person.name)}" loading="lazy"></div>
+                <div class="cast-photo"><img src="${photo}" alt="${sanitize(person.name)}" width="185" height="278" decoding="async" loading="lazy"></div>
                 <div class="cast-name">${sanitize(person.name)}</div>
                 <div class="cast-character">${sanitize(person.character)}</div>
             </div>`;
@@ -626,7 +612,7 @@ function buildTrailer(videos) {
         <div class="detail-section">
             <h2 class="section-title">Trailer</h2>
             <div class="trailer-wrapper">
-                <iframe src="https://www.youtube.com/embed/${trailer.key}?rel=0" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; encrypted-media; fullscreen"></iframe>
+                <iframe src="https://www.youtube.com/embed/${trailer.key}?rel=0" title="Trailer video" width="1280" height="720" loading="lazy" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; encrypted-media; fullscreen"></iframe>
             </div>
         </div>`;
 }
@@ -646,7 +632,7 @@ function buildRecos(items, type) {
 
         return `
             <a href="${href}" class="reco-card">
-                <img src="${imgUrl(item.poster_path, 'w342')}" alt="${sanitize(title)}" loading="lazy">
+                <img src="${imgUrl(item.poster_path, 'w342')}" alt="${sanitize(title)}" ${responsiveImageAttrs(item.poster_path)} loading="lazy">
                 <div class="reco-card-info">
                     <div class="reco-card-title">${sanitize(title)}</div>
                     <div class="reco-card-meta">
@@ -767,14 +753,14 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
         grid.innerHTML = episodes.map(ep => {
             const still = ep.still_path
                 ? imgUrl(ep.still_path, 'w300')
-                : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="170"><rect width="300" height="170" fill="%231a1a1a"/></svg>';
+                : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="169"><rect width="300" height="169" fill="#1a1a1a"/></svg>');
             const isActive = ep.virtual_number === currentEpisode;
 
             return `
                 <div data-season="${seasonNum}" data-episode="${ep.virtual_number}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="episode-card ${isActive ? 'active' : ''}"
                      onclick="DetailPage.playEpisode(${tvId}, ${seasonNum}, ${ep.virtual_number})">
                     <div class="episode-still">
-                        <img src="${still}" alt="Episode ${ep.virtual_number}" loading="lazy">
+                        <img src="${still}" alt="Episode ${ep.virtual_number}" ${responsiveImageAttrs(ep.still_path, 'still', '(max-width: 900px) calc(100vw - 32px), 300px')} loading="lazy">
                     </div>
                     <div class="episode-info">
                         <div class="episode-number">Episode ${ep.virtual_number}</div>
@@ -812,7 +798,7 @@ function layoutWatchPage() {
     const navigation = document.createElement('nav');
     navigation.className = 'detail-mobile-nav';
     navigation.setAttribute('aria-label', 'Mobile navigation');
-    navigation.innerHTML = '<a href="/">Home</a><a href="/#/search">Search</a><a href="/#/my-list">My List</a><a href="/#/movies">Movies</a>';
+    navigation.innerHTML = '<a href="/">Home</a><a href="/search">Search</a><a href="/my-list">My List</a><a href="/movies">Movies</a>';
     document.getElementById('detail-app').append(navigation);
     const button = document.getElementById('watchlist-btn');
     if (button) {
@@ -856,9 +842,6 @@ const DetailPage = {
                 ${renderNav()}
 
                 <div class="detail-hero">
-                    <div class="hero-backdrop">
-                        <img src="${backdropUrl(movie.backdrop_path)}" alt="${sanitize(movie.title)}">
-                    </div>
                     <div class="hero-content">
                         <div class="hero-info">
                             <div class="hero-tags">
@@ -884,9 +867,6 @@ const DetailPage = {
                                     Watchlist
                                 </button>
                             </div>
-                        </div>
-                        <div class="hero-poster">
-                            <img src="${imgUrl(movie.poster_path, 'w500')}" alt="${sanitize(movie.title)} poster">
                         </div>
                     </div>
                 </div>
@@ -978,9 +958,6 @@ const DetailPage = {
                 ${renderNav()}
 
                 <div class="detail-hero">
-                    <div class="hero-backdrop">
-                        <img src="${backdropUrl(tv.backdrop_path)}" alt="${sanitize(tv.name)}">
-                    </div>
                     <div class="hero-content">
                         <div class="hero-info">
                             <div class="hero-tags">
@@ -1010,9 +987,6 @@ const DetailPage = {
                                     Episodes
                                 </button>
                             </div>
-                        </div>
-                        <div class="hero-poster">
-                            <img src="${imgUrl(tv.poster_path, 'w500')}" alt="${sanitize(tv.name)} poster">
                         </div>
                     </div>
                 </div>

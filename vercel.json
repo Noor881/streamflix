@@ -3,14 +3,30 @@
     "outputDirectory": ".",
     "framework": null,
     "cleanUrls": false,
+    "trailingSlash": false,
     "redirects": [
         {
-            "source": "/movie/928480-monster-summer",
-            "destination": "/404.html",
-            "statusCode": 410
+            "source": "/:path*",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "www.hdwatchzone.com"
+                }
+            ],
+            "destination": "https://hdwatchzone.com/:path*",
+            "permanent": true
+        },
+        {
+            "source": "/index.html",
+            "destination": "/",
+            "permanent": true
         }
     ],
     "rewrites": [
+        {
+            "source": "/",
+            "destination": "/api/render?route=home"
+        },
         {
             "source": "/movie/:id",
             "destination": "/api/render?route=movie&id=:id"
@@ -158,10 +174,6 @@
                 {
                     "key": "Cache-Control",
                     "value": "no-cache, no-store, must-revalidate"
-                },
-                {
-                    "key": "X-Robots-Tag",
-                    "value": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
                 }
             ]
         },
@@ -184,6 +196,10 @@
                 {
                     "key": "Cache-Control",
                     "value": "public, max-age=0, must-revalidate"
+                },
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex"
                 }
             ]
         },
@@ -239,11 +255,62 @@
                     "value": "noindex, nofollow"
                 }
             ]
+        },
+        {
+            "source": "/(offline|404)\\.html",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/(account|my-list|search)",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/(docs|seo-results|tests|data)/:path*",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex"
+                }
+            ]
+        },
+        {
+            "source": "/(.*\\.(?:json|md|cjs))",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex"
+                }
+            ]
+        },
+        {
+            "source": "/(movie|tv)\\.html",
+            "missing": [
+                {
+                    "type": "query",
+                    "key": "id"
+                }
+            ],
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
         }
     ],
     "functions": {
         "api/render.js": {
-            "includeFiles": "{index,movie,tv}.html",
+            "includeFiles": "{index.html,movie.html,tv.html,app.js,detail.js,seo-core.js}",
             "maxDuration": 30
         }
     }

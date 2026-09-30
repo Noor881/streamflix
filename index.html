@@ -5,9 +5,8 @@
     <meta name="facebook-domain-verification" content="8bgdrm3l1z17cy9ahrb2aesr3htirg" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/seo-core.js?v=seo16" defer></script>
     <script src="/site-core.js" defer></script>
-
-    <!-- Ahrefs Analytics -->
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="gUv3UPUWfc-0jPQ4eosSHLGJvSnKrdCyc8x_bfResfg" />
@@ -16,16 +15,12 @@
     <meta name="p:domain_verify" content="d952dc862113ffe32be307f049a42a5e" />
 
     <!-- Primary Meta Tags -->
-    <title>HD Watchzone — Movies, TV Shows &amp; Anime in HD</title>
-    <meta name="title" content="HD Watchzone — Movies, TV Shows &amp; Anime in HD">
+    <title>HD Watchzone — Movies, TV Shows &amp; Anime</title>
+    <meta name="title" content="HD Watchzone — Movies, TV Shows &amp; Anime">
     <meta name="description"
-        content="Browse movies, TV shows and anime on HD Watchzone. Search thousands of titles, explore genres and discover new releases in a fast, responsive experience.">
+        content="Discover movies, TV shows and anime. Search titles, browse genres, save a watchlist on this device and explore cast, trailers and external playback options.">
     <meta name="author" content="HD Watchzone">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="language" content="English">
-
-    <meta name="distribution" content="global">
-    <meta name="rating" content="general">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://hdwatchzone.com/">
@@ -33,8 +28,12 @@
     <!-- Google Fonts - Inter for Premium UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <!-- Inter enhances typography without blocking the first screen; slow loads keep the system fallback. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=optional"
+        rel="stylesheet" media="print" onload="this.onload=null;this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=optional">
+    </noscript>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -42,22 +41,20 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://hdwatchzone.com/">
-    <meta property="og:title" content="HD Watchzone - Free Movies, TV Shows &amp; Anime Online">
+    <meta property="og:title" content="HD Watchzone — Movies, TV Shows &amp; Anime">
     <meta property="og:description"
-        content="Watch thousands of movies, TV shows, anime, and animated content in HD quality. Free streaming with no sign-up required.">
+        content="Discover movies, TV shows and anime. Search titles, browse genres, save a watchlist on this device and explore cast, trailers and external playback options.">
     <meta property="og:image" content="https://hdwatchzone.com/logo-v2.png">
     <meta property="og:site_name" content="HD Watchzone">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://hdwatchzone.com/">
-    <meta property="twitter:title" content="HD Watchzone - Watch Free Movies, TV Shows, Anime & Animation Online">
-    <meta property="twitter:description"
-        content="Watch thousands of movies, TV shows, anime in HD. Free streaming with no sign-up.">
-    <meta property="twitter:image" content="https://hdwatchzone.com/logo-v2.png">
-    <meta name="twitter:site" content="@hdwatchzone">
-    <meta name="twitter:creator" content="@hdwatchzone">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://hdwatchzone.com/">
+    <meta name="twitter:title" content="HD Watchzone — Movies, TV Shows &amp; Anime">
+    <meta name="twitter:description"
+        content="Discover movies, TV shows and anime. Search titles, browse genres, save a watchlist on this device and explore cast, trailers and external playback options.">
+    <meta name="twitter:image" content="https://hdwatchzone.com/logo-v2.png">
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon-v2.ico" sizes="any">
@@ -71,7 +68,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- CSP is enforced via vercel.json server-side headers, not meta tag, to avoid blocking ad/analytics scripts -->
+    <!-- Content security policy is enforced by the hosting response headers. -->
 
     <!-- Preconnect links already declared above (lines 34-35) for fonts -->
     <!-- Added dns-prefetch for API performance -->
@@ -80,112 +77,45 @@
 
 
 
-    <!-- Styles (Minified for Performance) -->
+    <!-- Styles -->
     <link rel="stylesheet" href="/nav.css?v=audit13">
     <link rel="stylesheet" href="/styles.css?v=audit13">
     <link rel="stylesheet" href="/responsive.css?v=audit13">
-    <link rel="stylesheet" href="/design-v2.css?v=ui15">
+    <link rel="stylesheet" href="/design-v2.css?v=seo16">
     <link rel="stylesheet" href="/cards.css?v=ui15">
 
-    <!-- Structured Data - Organization -->
-    <script type="application/ld+json">
+    <!-- Home-page identity. Public route rendering uses route-specific structured data. -->
+    <script id="site-identity-schema" type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "HD Watchzone",
-        "url": "https://hdwatchzone.com/",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "https://hdwatchzone.com/logo-v2.png"
-        },
-        "sameAs": [
-            "https://twitter.com/hdwatchzone",
-            "https://www.pinterest.com/hdwatchzone"
-        ],
-        "description": "HD Watchzone is a free online streaming platform offering thousands of movies, TV shows, anime, and animated content in HD quality with no sign-up required."
-    }
-    </script>
-
-    <!-- Structured Data - WebSite -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "HD Watchzone",
-        "description": "Watch free movies, TV shows, anime, and animation online in HD quality",
-        "url": "https://hdwatchzone.com/",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://hdwatchzone.com/#/search?q={search_term_string}"
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": "https://hdwatchzone.com/#organization",
+                "name": "HD Watchzone",
+                "url": "https://hdwatchzone.com/",
+                "logo": {"@type": "ImageObject", "url": "https://hdwatchzone.com/logo-v2.png"},
+                "description": "A movie, TV show and anime discovery website with local watchlists and external playback options."
             },
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
-
-    <!-- Structured Data - Video Streaming Service -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "HD Watchzone",
-        "applicationCategory": "EntertainmentApplication",
-        "operatingSystem": "Web",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        }
-    }
-    </script>
-
-    <!-- Structured Data - ItemList (Top Genres) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "Browse Free Movies &amp; Shows by Genre",
-        "description": "Explore thousands of free HD movies, TV shows, and anime by genre on HD Watchzone.",
-        "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Action Movies", "url": "https://hdwatchzone.com/genre/28"},
-            {"@type": "ListItem", "position": 2, "name": "Comedy Movies", "url": "https://hdwatchzone.com/genre/35"},
-            {"@type": "ListItem", "position": 3, "name": "Drama", "url": "https://hdwatchzone.com/genre/18"},
-            {"@type": "ListItem", "position": 4, "name": "Horror Movies", "url": "https://hdwatchzone.com/genre/27"},
-            {"@type": "ListItem", "position": 5, "name": "Sci-Fi Movies", "url": "https://hdwatchzone.com/genre/878"},
-            {"@type": "ListItem", "position": 6, "name": "Animation", "url": "https://hdwatchzone.com/genre/16"},
-            {"@type": "ListItem", "position": 7, "name": "Anime", "url": "https://hdwatchzone.com/anime"},
-            {"@type": "ListItem", "position": 8, "name": "TV Shows", "url": "https://hdwatchzone.com/tv"}
+            {
+                "@type": "WebSite",
+                "@id": "https://hdwatchzone.com/#website",
+                "name": "HD Watchzone",
+                "alternateName": "hdwatchzone.com",
+                "description": "Discover movies, TV shows and anime, browse genres and save a watchlist on this device.",
+                "url": "https://hdwatchzone.com/",
+                "publisher": {"@id": "https://hdwatchzone.com/#organization"}
+            }
         ]
     }
     </script>
 </head>
 
 <body class="app-shell">
-    <!-- Noscript SEO fallback: visible to crawlers & users with JS disabled -->
+    <!-- Explain the interactive features that require JavaScript. -->
     <noscript>
         <div style="max-width:900px;margin:40px auto;padding:20px;font-family:sans-serif;color:#fff;background:#141414;">
-            <h1>HD Watchzone — Free HD Movie & TV Show Streaming</h1>
-            <p>HD Watchzone lets you watch thousands of movies, TV shows, anime, and web series in HD quality — completely free, no sign-up required. Browse top genres including Action, Comedy, Drama, Horror, Sci-Fi, and Animation. Stream the latest releases and binge full seasons of popular series including anime like Naruto, Attack on Titan, and more.</p>
-            <h2>Browse by Category</h2>
-            <ul>
-                <li><a href="/#/movies" style="color:#e50914;">Free Movies</a></li>
-                <li><a href="/#/tv" style="color:#e50914;">Free TV Shows</a></li>
-                <li><a href="/#/anime" style="color:#e50914;">Free Anime Streaming</a></li>
-                <li><a href="/#/new" style="color:#e50914;">New &amp; Popular</a></li>
-            </ul>
-            <h2>Popular Genres</h2>
-            <ul>
-                <li><a href="/#/genre/28" style="color:#e50914;">Action Movies</a></li>
-                <li><a href="/#/genre/35" style="color:#e50914;">Comedy Movies</a></li>
-                <li><a href="/#/genre/18" style="color:#e50914;">Drama</a></li>
-                <li><a href="/#/genre/27" style="color:#e50914;">Horror</a></li>
-                <li><a href="/#/genre/878" style="color:#e50914;">Sci-Fi</a></li>
-                <li><a href="/#/genre/16" style="color:#e50914;">Animation</a></li>
-            </ul>
-            <p>HD Watchzone is a top free alternative to Fmovies, Netmirror, and Cineby. Stream in HD on any device.</p>
-            <p><strong>Please enable JavaScript for the full streaming experience.</strong></p>
+            <p>Enable JavaScript to use search, local watchlists and the interactive player. You can still follow the navigation links to browse title information.</p>
         </div>
     </noscript>
 
@@ -201,41 +131,41 @@
             </a>
 
             <nav class="dnav-links" role="navigation" aria-label="Main navigation">
-                <a href="#/" class="dnav-link" id="nav-home">Home</a>
-                <a href="#/movies" class="dnav-link" id="nav-movies">Movies</a>
-                <a href="#/tv" class="dnav-link" id="nav-tv">TV Shows</a>
-                <a href="#/anime" class="dnav-link" id="nav-anime">Anime</a>
+                <a href="/" class="dnav-link" id="nav-home">Home</a>
+                <a href="/movies" class="dnav-link" id="nav-movies">Movies</a>
+                <a href="/tv" class="dnav-link" id="nav-tv">TV Shows</a>
+                <a href="/anime" class="dnav-link" id="nav-anime">Anime</a>
                 
                 <div class="dnav-dropdown">
-                    <a href="#/genre/28" class="dnav-link dropdown-toggle" id="nav-genres">
+                    <a href="/genre/28" class="dnav-link dropdown-toggle" id="nav-genres">
                         Genres
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
                     </a>
                     <div class="dnav-dropdown-content">
                         <div class="dropdown-grid">
-                            <a href="#/genre/28">Action</a>
-                            <a href="#/genre/12">Adventure</a>
-                            <a href="#/genre/16">Animation</a>
-                            <a href="#/genre/35">Comedy</a>
-                            <a href="#/genre/80">Crime</a>
-                            <a href="#/genre/99">Documentary</a>
-                            <a href="#/genre/18">Drama</a>
-                            <a href="#/genre/10751">Family</a>
-                            <a href="#/genre/14">Fantasy</a>
-                            <a href="#/genre/36">History</a>
-                            <a href="#/genre/27">Horror</a>
-                            <a href="#/genre/10402">Music</a>
-                            <a href="#/genre/9648">Mystery</a>
-                            <a href="#/genre/10749">Romance</a>
-                            <a href="#/genre/878">Sci-Fi</a>
-                            <a href="#/genre/53">Thriller</a>
-                            <a href="#/genre/10752">War</a>
-                            <a href="#/genre/37">Western</a>
+                            <a href="/genre/28">Action</a>
+                            <a href="/genre/12">Adventure</a>
+                            <a href="/genre/16">Animation</a>
+                            <a href="/genre/35">Comedy</a>
+                            <a href="/genre/80">Crime</a>
+                            <a href="/genre/99">Documentary</a>
+                            <a href="/genre/18">Drama</a>
+                            <a href="/genre/10751">Family</a>
+                            <a href="/genre/14">Fantasy</a>
+                            <a href="/genre/36">History</a>
+                            <a href="/genre/27">Horror</a>
+                            <a href="/genre/10402">Music</a>
+                            <a href="/genre/9648">Mystery</a>
+                            <a href="/genre/10749">Romance</a>
+                            <a href="/genre/878">Sci-Fi</a>
+                            <a href="/genre/53">Thriller</a>
+                            <a href="/genre/10752">War</a>
+                            <a href="/genre/37">Western</a>
                         </div>
                     </div>
                 </div>
 
-                <a href="#/new" class="dnav-link" id="nav-new">New Releases</a>
+                <a href="/new" class="dnav-link" id="nav-new">New Releases</a>
             </nav>
 
             <div class="dnav-right">
@@ -263,22 +193,22 @@
     <!-- Mobile Navigation -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
     <nav class="mobile-nav" id="mobile-nav" role="navigation" aria-label="Mobile navigation">
-        <a href="#/" class="mobile-nav-link">Home</a>
-        <a href="#/movies" class="mobile-nav-link">Movies</a>
-        <a href="#/tv" class="mobile-nav-link">TV Shows</a>
-        <a href="#/anime" class="mobile-nav-link">Anime</a>
-        <a href="#/new" class="mobile-nav-link">New & Popular</a>
-        <a href="#/my-list" class="mobile-nav-link">My List</a>
+        <a href="/" class="mobile-nav-link">Home</a>
+        <a href="/movies" class="mobile-nav-link">Movies</a>
+        <a href="/tv" class="mobile-nav-link">TV Shows</a>
+        <a href="/anime" class="mobile-nav-link">Anime</a>
+        <a href="/new" class="mobile-nav-link">New & Popular</a>
+        <a href="/my-list" class="mobile-nav-link">My List</a>
     </nav>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
-        <a href="#/" class="mobile-bottom-link active" aria-label="Home">
+        <a href="/" class="mobile-bottom-link active" aria-label="Home">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8V21h-6v-6H9v6H3z"/></svg><span>Home</span>
         </a>
-        <a href="#/new" class="mobile-bottom-link" aria-label="Explore">
+        <a href="/new" class="mobile-bottom-link" aria-label="Explore">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.1 4.9-4.9 2.1 2.1-4.9z"/></svg><span>Explore</span>
         </a>
-        <a href="#/my-list" class="mobile-bottom-link" aria-label="My List">
+        <a href="/my-list" class="mobile-bottom-link" aria-label="My List">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-3.8L6 21z"/></svg><span>My List</span>
         </a>
     </nav>
@@ -302,24 +232,23 @@
         </div>
     </main>
 
-    <!-- SEO Content Section (visible to crawlers, subtle for users) -->
+    <!-- Service information and useful browse links. -->
     <section aria-label="About HD Watchzone" style="background:#0a0a0a;padding:40px 20px;border-top:1px solid #1a1a1a;">
         <div style="max-width:960px;margin:0 auto;color:rgba(255,255,255,0.6);font-family:Inter,sans-serif;font-size:0.9rem;line-height:1.7;">
             <h2 style="color:rgba(255,255,255,0.85);font-size:1.1rem;margin-bottom:12px;">About HD Watchzone</h2>
-            <p>HD Watchzone is a free streaming platform where you can watch thousands of movies, TV shows, anime, and web series in HD quality — completely free with no account or sign-up required. Whether you're looking for the latest Hollywood blockbusters, trending anime series, or classic TV shows, HD Watchzone has it all in one place.</p>
-            <p style="margin-top:12px;">Browse our extensive library by genre including Action, Comedy, Drama, Horror, Sci-Fi, Romance, Thriller, and Animation. Stream on any device — smartphone, tablet, laptop, or desktop — with a fully responsive interface built for smooth, uninterrupted viewing.</p>
-            <h3 style="color:rgba(255,255,255,0.85);font-size:1rem;margin:20px 0 10px;">Why Choose HD Watchzone?</h3>
+            <p>HD Watchzone helps you discover movies, TV shows and anime. Search by title, browse genres or explore trending releases, then open a title page for its overview, cast, trailer and available external players. Browsing and saving a watchlist do not require an account.</p>
+            <p style="margin-top:12px;">Looking for something specific? Explore Action, Comedy, Drama, Horror, Science Fiction or Animation, or use search to find a film or series by name. Saved titles and recently viewed items stay in this browser; they do not sync between devices.</p>
+            <h3 style="color:rgba(255,255,255,0.85);font-size:1rem;margin:20px 0 10px;">Before You Play</h3>
             <ul style="padding-left:20px;margin:0;">
-                <li>100% free — no subscription, no credit card, no sign-up</li>
-                <li>HD quality streaming across all devices</li>
-                <li>Thousands of movies, TV shows, anime &amp; animated content</li>
-                <li>Updated daily with new releases and trending titles</li>
-                <li>Fast, lightweight, and mobile-friendly</li>
-                <li>A clean, responsive alternative for people comparing Cineby, Net77.cc, Net77, Netmirror, or SFlix</li>
+                <li>External providers control video availability, picture quality, languages and subtitles.</li>
+                <li>Third-party players may show ads or redirects and have their own privacy practices.</li>
+                <li>If one player is unavailable, try another server. No player is guaranteed to work on every device.</li>
+                <li>Only access content you are authorized to watch in your region.</li>
             </ul>
-            <p style="margin-top:16px;">HD Watchzone does not host or store any media files. All content is provided via third-party embed services. Powered by <a href="https://www.themoviedb.org/" rel="noopener noreferrer" style="color:rgba(255,255,255,0.5);" target="_blank">The Movie Database (TMDB)</a>.</p>
+            <p style="margin-top:16px;">Movie and TV information, posters and ratings are supplied by <a href="https://www.themoviedb.org/" rel="noopener noreferrer" style="color:rgba(255,255,255,0.5);" target="_blank">The Movie Database (TMDB)</a>. HD Watchzone uses the TMDB API but is not endorsed or certified by TMDB. Video is provided by independent third-party embed services; HD Watchzone does not host or store video files.</p>
+            <p style="margin-top:12px;">Comparing HD Watchzone with Cineby, Net77.cc or Net77? HD Watchzone is independent and is not affiliated with those services. Our <a href="/faq" style="color:#e50914;">FAQ</a> explains local watchlists, device support and third-party playback limits so you can decide whether it meets your needs.</p>
             <nav aria-label="Quick links" style="margin-top:20px;display:flex;flex-wrap:wrap;gap:12px;">
-                <a href="/movies" style="color:#e50914;text-decoration:none;">Free Movies</a>
+                <a href="/movies" style="color:#e50914;text-decoration:none;">Movies</a>
                 <a href="/tv" style="color:#e50914;text-decoration:none;">TV Shows</a>
                 <a href="/anime" style="color:#e50914;text-decoration:none;">Anime</a>
                 <a href="/genre/28" style="color:#e50914;text-decoration:none;">Action</a>
@@ -338,7 +267,7 @@
         <div class="footer-container">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <a href="#/" class="logo" aria-label="HD Watchzone Home">
+                    <a href="/" class="logo" aria-label="HD Watchzone Home">
                         <picture>
                             <source type="image/webp" srcset="/logo-v2.webp">
                             <img src="/logo-v2.png" alt="HD Watchzone" class="logo-img"
@@ -350,47 +279,47 @@
                             style="display: none; font-size: 1.5rem; font-weight: 800; color: white;">HD <span
                                 style="color: var(--color-primary);">Watchzone</span></span>
                     </a>
-                    <p class="footer-tagline">Your gateway to endless entertainment. Stream thousands of movies, TV
-                        shows, anime, and animations in HD quality, anytime, anywhere.</p>
+                    <p class="footer-tagline">Discover movies, TV shows and anime. Explore title information, save a
+                        watchlist on this device and choose from external playback options.</p>
                 </div>
                 <nav class="footer-links" aria-label="Footer navigation">
                     <div class="footer-section">
                         <h4>Browse</h4>
-                        <a href="#/">Home</a>
-                        <a href="#/movies">Movies</a>
-                        <a href="#/tv">TV Shows</a>
-                        <a href="#/new">New & Popular</a>
-                        <a href="#/my-list">My List</a>
+                        <a href="/">Home</a>
+                        <a href="/movies">Movies</a>
+                        <a href="/tv">TV Shows</a>
+                        <a href="/new">New & Popular</a>
+                        <a href="/my-list">My List</a>
                     </div>
                     <div class="footer-section">
                         <h4>Genres</h4>
-                        <a href="#/genre/28">Action</a>
-                        <a href="#/genre/35">Comedy</a>
-                        <a href="#/genre/18">Drama</a>
-                        <a href="#/genre/27">Horror</a>
-                        <a href="#/genre/878">Sci-Fi</a>
-                        <a href="#/genre/16">Animation</a>
+                        <a href="/genre/28">Action</a>
+                        <a href="/genre/35">Comedy</a>
+                        <a href="/genre/18">Drama</a>
+                        <a href="/genre/27">Horror</a>
+                        <a href="/genre/878">Sci-Fi</a>
+                        <a href="/genre/16">Animation</a>
                     </div>
                     <div class="footer-section">
                         <h4>Help</h4>
-                        <a href="#/faq">FAQ</a>
-                        <a href="#/help">Help Center</a>
-                        <a href="#/account">Account</a>
-                        <a href="#/contact">Contact Us</a>
+                        <a href="/faq">FAQ</a>
+                        <a href="/help">Help Center</a>
+                        <a href="/account">Account</a>
+                        <a href="/contact">Contact Us</a>
                     </div>
                     <div class="footer-section">
                         <h4>Legal</h4>
-                        <a href="#/terms">Terms of Use</a>
-                        <a href="#/privacy">Privacy Policy</a>
-                        <a href="#/cookies">Cookie Preferences</a>
-                        <a href="#/legal">Legal Notices</a>
+                        <a href="/terms">Terms of Use</a>
+                        <a href="/privacy">Privacy Policy</a>
+                        <a href="/cookies">Cookie Preferences</a>
+                        <a href="/legal">Legal Notices</a>
                     </div>
                 </nav>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 HD Watchzone. All Rights Reserved. Powered by TM DB.</p>
-                <p class="footer-disclaimer">HD Watchzone does not host, store, or own any content. All media is
-                    provided by third-party services. All trademarks belong to their respective owners.</p>
+                <p>&copy; 2026 HD Watchzone. Movie and TV metadata by TMDB.</p>
+                <p class="footer-disclaimer">Video is provided by independent third-party services. Availability,
+                    quality and provider ads may vary. Media and trademarks belong to their respective owners.</p>
                 <div class="footer-lang">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         aria-hidden="true">
@@ -403,7 +332,6 @@
                     <span>English</span>
                 </div>
             </div>
-            <!-- Visitor Counter -->
     </footer>
 
     <!-- Back to Top Button -->
@@ -424,7 +352,7 @@
     </script>
 
     <!-- Application scripts -->
-    <script src="/app.js?v=ui15" defer></script>
+    <script src="/app.js?v=seo16" defer></script>
     <script src="/scripts/install.js" defer></script>
     <!-- Nav scroll + search toggle -->
     <script>
@@ -445,9 +373,10 @@
             }, { passive: true });
 
             // Mark active nav link
-            const hash = window.location.hash || '#/';
+            const currentPath = (window.location.pathname.replace(/\/$/, '') || '/');
             document.querySelectorAll('.dnav-link').forEach(function(link) {
-                if (link.getAttribute('href') === hash) link.classList.add('active');
+                const targetPath = new URL(link.getAttribute('href'), window.location.origin).pathname.replace(/\/$/, '') || '/';
+                link.classList.toggle('active', targetPath === currentPath);
             });
         })();
     </script>

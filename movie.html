@@ -5,6 +5,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/seo-core.js?v=seo16" defer></script>
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="gUv3UPUWfc-0jPQ4eosSHLGJvSnKrdCyc8x_bfResfg" />
@@ -13,30 +14,27 @@
     <meta name="facebook-domain-verification" content="8bgdrm3l1z17cy9ahrb2aesr3htirg" />
     <script src="/site-core.js" defer></script>
 
-    <!-- Primary Meta (updated by JS) -->
-    <title>Watch Movie - HD Watchzone</title>
+    <!-- Public title routes receive title-specific metadata from the server. -->
+    <title>Movie Details | HD Watchzone</title>
     <link rel="canonical" href="https://hdwatchzone.com/">
-    <meta name="description" content="Watch movies in HD on HD Watchzone. Free streaming, no sign-up required. Stream the latest blockbusters, action films, comedy, drama, horror and more in full HD quality.">
+    <meta name="description" content="Explore movie information, cast, trailers and available external playback options on HD Watchzone.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="language" content="English">
 
-    <!-- Open Graph (updated by JS for social crawlers that run JS) -->
+    <!-- Open Graph metadata is supplied by the server and kept current by the client. -->
     <meta property="og:type" content="video.movie">
     <meta property="og:site_name" content="HD Watchzone">
     <meta property="og:locale" content="en_US">
     <meta property="og:url" content="">
-    <meta property="og:title" content="Watch Movie - HD Watchzone">
-    <meta property="og:description" content="Watch movies in HD on HD Watchzone. Free streaming.">
+    <meta property="og:title" content="Movie Details | HD Watchzone">
+    <meta property="og:description" content="Explore movie information, cast, trailers and available external playback options on HD Watchzone.">
     <meta property="og:image" content="https://hdwatchzone.com/logo-v2.png">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@hdwatchzone">
-    <meta name="twitter:title" content="Watch Movie - HD Watchzone">
-    <meta name="twitter:description" content="Watch movies in HD on HD Watchzone.">
+    <meta name="twitter:title" content="Movie Details | HD Watchzone">
+    <meta name="twitter:description" content="Explore movie information, cast, trailers and available external playback options on HD Watchzone.">
     <meta name="twitter:image" content="https://hdwatchzone.com/logo-v2.png">
 
-    <!-- Canonical (dynamically injected via app.js) -->
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon-v2.ico" sizes="any">
@@ -53,25 +51,29 @@
     <link rel="preconnect" href="https://image.tmdb.org">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <!-- Inter enhances typography without blocking the first screen; slow loads keep the system fallback. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=optional"
+        rel="stylesheet" media="print" onload="this.onload=null;this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=optional">
+    </noscript>
 
     <!-- Styles -->
     <link rel="stylesheet" href="/nav.css?v=audit13">
     <link rel="stylesheet" href="/detail.css?v=audit13">
     <link rel="stylesheet" href="/seo-enhancements.css?v=audit13">
     <link rel="stylesheet" href="/responsive.css?v=audit13">
-    <link rel="stylesheet" href="/design-v2.css?v=ui15">
+    <link rel="stylesheet" href="/design-v2.css?v=seo16">
     <link rel="stylesheet" href="/cards.css?v=ui15">
 
-    <!-- Schema.org (injected by JS) -->
+    <!-- Title-specific structured data is supplied by the server and client. -->
     <script id="schema-movie" type="application/ld+json">{}</script>
 </head>
 
 <body>
     <div id="detail-app">
-        <!-- Static H1 for SEO crawlers (updated by JS with movie title) -->
-        <h1 class="visually-hidden" id="static-h1">Watch Movie on HD Watchzone</h1>
+        <!-- Title information is rendered here by the server, then enhanced by the client. -->
+        <h1 id="static-h1">Movie Details</h1>
         <div class="detail-loading">
             <div class="loader"></div>
             <p>Loading movie...</p>
@@ -87,7 +89,7 @@
             });
         }
     </script>
-    <script src="/detail.js?v=audit13"></script>
+    <script src="/detail.js?v=seo16" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);

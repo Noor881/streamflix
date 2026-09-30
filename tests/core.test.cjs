@@ -8,7 +8,7 @@ function appContext() {
     const storage=new Map();
     const context={console,URL,URLSearchParams,AbortSignal,Promise,Map,Set,Date,Math,JSON,Number,String,parseInt,setTimeout,clearTimeout,setInterval:()=>1,clearInterval(){},requestAnimationFrame:fn=>fn(),matchMedia:()=>({matches:false}),localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},navigator:{},fetch:async()=>({ok:true,json:async()=>({results:[],total_pages:1})})};
     const document={hidden:false,body:{style:{}},addEventListener(){},getElementById:id=>id==='app'?app:null,querySelector:()=>null,querySelectorAll:()=>[]};
-    context.document=document;context.window={location:{hash:'#/',pathname:'/',search:''},addEventListener(){},scrollTo(){},Watchlist:{read:()=>[]}};
+    context.document=document;context.window={SiteSEO:require('../seo-core.js'),history:{pushState(){},replaceState(){}},location:{hash:'#/',pathname:'/',search:''},addEventListener(){},scrollTo(){},Watchlist:{read:()=>[]}};
     vm.createContext(context);vm.runInContext(appSource+'\nthis.testing={tmdbAPI,router,pages,components,routeTarget};',context);
     return {...context,app,context};
 }
@@ -57,7 +57,7 @@ test('rendered initial HTML contains unique canonical and safe title/schema',asy
     global.fetch=async()=>({ok:true,json:async()=>({id:550,title:'Fight <Club>',overview:'A & B',release_date:'1999-10-15',poster_path:'/x.jpg'})});
     try {let html;const res={headers:{},setHeader(k,v){this.headers[k]=v;},end(value){html=value;}};
         await render({query:{route:'movie',id:'550-fight-club'}},res);
-        assert.ok(html.includes('<title>Fight &lt;Club&gt; | HD Watchzone</title>'));
+        assert.ok(html.includes('<title>Fight &lt;Club&gt; (1999) — Movie | HD Watchzone</title>'));
         assert.equal((html.match(/rel="canonical"/g)||[]).length,1);
         assert.ok(html.includes('https://hdwatchzone.com/movie/550-fight-club'));
         assert.ok(html.includes('"@type":"Movie"'));assert.ok(!html.includes('VideoObject'));
@@ -78,15 +78,18 @@ test('homepage waits for only its four visible data sources',async()=>{
 test('metadata outages return retryable 503, not an indexable generic movie',async()=>{
     const render=require('../api/render.js'),original=global.fetch;
     global.fetch=async()=>{throw new Error('Unavailable');};
-    try {let html;const res={setHeader(){},end(value){html=value;}};await render({query:{route:'movie',id:'550'}},res);assert.equal(res.statusCode,503);assert.ok(!html.includes('<title>'));} finally {global.fetch=original;}
+    try {let html;const headers={};const res={setHeader(key,value){headers[key]=value;},end(value){html=value;}};await render({query:{route:'movie',id:'550'}},res);assert.equal(res.statusCode,503);assert.equal(headers['Retry-After'],'60');assert.equal(headers['X-Robots-Tag'],'noindex, follow');assert.ok(html.includes('<title>Temporarily unavailable | HD Watchzone</title>'));} finally {global.fetch=original;}
 });
 test('initial category metadata and privacy-sensitive noindex are emitted before JS',async()=>{
-    const render=require('../api/render.js');
-    for(const route of ['movies','tv','anime','new','account','my-list','search']) {
-        let html;const res={setHeader(){},end(value){html=value;}};await render({query:{route}},res);
-        assert.ok(html.includes(`https://hdwatchzone.com/${route}`));
-        if(['account','my-list','search'].includes(route)) assert.ok(html.includes('name="robots" content="noindex, follow"'));
-    }
+    const render=require('../api/render.js'),original=global.fetch;
+    global.fetch=async()=>({ok:true,json:async()=>({results:[{id:550,title:'Fight Club',media_type:'movie',genre_ids:[],vote_average:8}],total_pages:10})});
+    try {
+        for(const route of ['movies','tv','anime','new','account','my-list','search']) {
+            let html;const res={setHeader(){},end(value){html=value;}};await render({query:{route}},res);
+            assert.ok(html.includes(`https://hdwatchzone.com/${route}`));
+            if(['account','my-list','search'].includes(route)) assert.ok(html.includes('name="robots" content="noindex, follow"'));
+        }
+    } finally {global.fetch=original;}
 });
 test('SW passes opaque images and real 404s through unchanged',async()=>{
     const cache={put:async()=>{},keys:async()=>[],match:async()=>null};

@@ -1,7 +1,7 @@
 # HD Watchzone
-> Free HD streaming platform for movies, TV shows, anime, and animated content — no sign-up required.
+> Movie, TV show and anime discovery, title information and local watchlists.
 
-HD Watchzone is a free online streaming site offering thousands of movies, TV series, anime, and web series in HD quality. Users can watch instantly without creating an account or any subscription.
+HD Watchzone helps visitors search titles, browse genres and explore overviews, cast, trailers, seasons and episodes. Browsing and saving a watchlist do not require an account. Saved titles and recently viewed items stay in the current browser and do not sync between devices.
 
 ## Key Pages
 
@@ -19,11 +19,18 @@ HD Watchzone is a free online streaming site offering thousands of movies, TV se
 
 ## Content
 
-HD Watchzone provides access to thousands of titles across all genres. Content is sourced via third-party embeds and is powered by The Movie Database (TMDB) metadata. The platform is free and ad-supported.
+Title metadata, posters and community scores are supplied by The Movie Database (TMDB). HD Watchzone uses the TMDB API but is not endorsed or certified by TMDB. A catalog listing does not confirm that a playable or authorized stream is available.
+
+Video is supplied by independent external players. Availability, quality, languages, subtitles, ads and device support vary by provider. HD Watchzone does not host video files or guarantee ad-free, HD or uninterrupted playback. Only access content you are authorized to watch in your region.
+
+This file is a plain-language site summary for services that choose to read it. It is not a special Google Search ranking or indexing mechanism.
 
 ## Contact & Legal
 
 - Privacy Policy: https://hdwatchzone.com/privacy
 - Terms of Use: https://hdwatchzone.com/terms
 - Contact: https://hdwatchzone.com/contact
-- DMCA: https://hdwatchzone.com/legal
+- Legal Notices: https://hdwatchzone.com/legal
+- FAQ: https://hdwatchzone.com/faq
+- Help Center: https://hdwatchzone.com/help
+- Cookie Preferences: https://hdwatchzone.com/cookies

@@ -1,0 +1,10 @@
+# Preserve existing local-only exclusions for direct CLI deployments.
+.vercel
+.env*.local
+AGENT.md
+CLAUDE.md
+.agent-mem/
+
+# Agent encryption material, context and personalized rules are not site assets.
+.brainsync/
+.cursor/active-context.md

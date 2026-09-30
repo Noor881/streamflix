@@ -1,8 +1,9 @@
 /* Bounded sitemap build. No automatic external indexing submission. */
 const fs = require('node:fs');
 const SITE = 'https://hdwatchzone.com';
-const slug = value => String(value || '').toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]+/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'');
-const staticRoutes = ['/', '/movies','/tv','/anime','/new','/faq','/help','/contact','/privacy','/terms','/cookies','/legal', ...[28,12,16,35,80,99,18,10751,14,36,27,10402,9648,10749,878,53,10752,37].map(id=>'/genre/'+id)];
+const SEO = require('./seo-core.js');
+const slug = SEO.slug;
+const staticRoutes = ['/', '/movies','/tv','/anime','/new','/faq','/help','/contact','/privacy','/terms','/legal', ...Object.keys(SEO.genres).map(id=>'/genre/'+id)];
 async function generateSitemap() {
     const urls = new Set(staticRoutes.map(route => SITE + route));
     const jobs = ['movie/popular','movie/top_rated','movie/now_playing','movie/upcoming','trending/movie/week','tv/popular','tv/top_rated','tv/on_the_air','tv/airing_today','trending/tv/week'].flatMap(endpoint => Array.from({length:10},(_,i)=>({endpoint,page:i+1})));

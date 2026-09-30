@@ -1,7 +1,7 @@
 // ====================================================
-// HDWatchZone Auto Blogger - GitHub Actions Edition
-// Posts trending movie/TV articles to 10 Blogger sites
-// using round-robin rotation (hour-based)
+// HD Watchzone editorial draft helper.
+// Creates unpublished Blogger drafts for human review, never public posts.
+// Existing destinations are preserved; no scheduled Blogger workflow is configured.
 // ====================================================
 
 const https = require('https');
@@ -125,8 +125,7 @@ async function fetchTrending() {
         posterUrl: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
         backdropUrl: item.backdrop_path ? `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` : '',
         movieUrl: `https://hdwatchzone.com/${mediaType}/${item.id}-${slug}`,
-        homeUrl: 'https://hdwatchzone.com',
-        keywords: [`watch ${title} online free`, `${title} streaming`, `${title} HD`, `where to watch ${title}`].join(', ')
+        homeUrl: 'https://hdwatchzone.com'
     };
     console.log(`   Selected: ${title} (${year}) - ${mediaType}`);
     return movieData;
@@ -150,40 +149,31 @@ async function fetchCast(movieData) {
 // ── Step 3: Generate Article with Groq AI (with retry) ──
 async function generateArticle(movieData) {
     console.log('Step 3: Generating article with Groq AI...');
-    const prompt = `Write a 600-word SEO blog article about '${movieData.title}'
+    const prompt = `Prepare an unpublished editorial research draft about '${movieData.title}'.
 
-MOVIE INFO:
+SUPPLIED TMDB INFORMATION:
 - Title: ${movieData.title}
 - Year: ${movieData.year}
-- Rating: ${movieData.rating}/10
+- TMDB community score: ${movieData.rating}/10 (not an HD Watchzone or IMDb rating)
 - Type: ${movieData.contentType}
 - Plot: ${movieData.overview}
 
-REQUIRED LINK PLACEMENTS (use exact HTML):
-1. After intro paragraph: <a href='${movieData.movieUrl}' target='_blank' class='hdw-watch-btn'>Watch ${movieData.title} Now</a>
-2. In 'Why You Should Watch' section: <a href='${movieData.movieUrl}' target='_blank'>Stream ${movieData.title} free in HD</a>
-3. In 'Where to Watch' section: <a href='${movieData.homeUrl}' target='_blank'>HDWatchZone</a>
-4. In body paragraph: <a href='${movieData.movieUrl}' target='_blank'>${movieData.title} online</a>
-5. Call-to-action at end: <a href='${movieData.movieUrl}' target='_blank'>Start watching ${movieData.title} now</a>
-
-ARTICLE STRUCTURE (return ONLY clean HTML, no <style> or images):
-<p>Introduction (100 words) [END WITH LINK #1]</p>
-<h2>Why You Should Watch ${movieData.title}</h2>
-<p>150 words [INCLUDE LINK #2]</p>
-<h2>Plot Summary</h2>
-<p>150 words [INCLUDE LINK #4]</p>
-<h2>Where to Watch ${movieData.title} Online</h2>
-<p>100 words [INCLUDE LINK #3]</p>
-<p>Conclusion (100 words) [INCLUDE LINK #5]</p>
-
-IMPORTANT: Do NOT include h1, cast section, images, or style tags.
-SEO REQUIREMENTS: Use keywords naturally: ${movieData.keywords}
-Return ONLY the HTML article body.`;
+Use only supplied facts. Attribute the overview and score to TMDB. Do not invent
+critic quotes, awards, audience praise, first-hand viewing, plot details or availability.
+Do not promise HD quality, instant playback, legal availability or an ad-free player.
+Do not pad to a word count or repeat keywords and links. Use natural headings and
+brief paragraphs. Include at most one useful HD Watchzone title-information link:
+${movieData.movieUrl}. Do not describe that link as confirmed streaming availability.
+Explain that third-party player availability, quality and ads may vary.
+Label this as an AI-assisted draft needing fact-checking and original human editorial
+value before publication; it is not an independent review. Return only clean HTML
+with paragraphs, h2 headings and that optional single link. No h1, scripts, styles,
+images, markdown or fabricated author.`;
 
     const requestBody = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-            { role: 'system', content: 'You are an expert movie blogger writing SEO-optimized articles for HDWatchZone. Write engaging, natural content. Return ONLY clean HTML - paragraphs and h2 tags only. No markdown code fences, no h1, no style tags, no images, no backticks.' },
+            { role: 'system', content: 'You prepare factual, AI-assisted editorial drafts for human review. Never claim first-hand experience, fabricate facts or optimize repeated backlinks. Return only clean HTML paragraphs and h2 headings with at most one useful link.' },
             { role: 'user', content: prompt }
         ],
         temperature: 0.7,
@@ -232,20 +222,13 @@ Return ONLY the HTML article body.`;
 }
 
 function generateFallbackArticle(m) {
-    return `
-<p>Looking for where to watch ${m.title} (${m.year}) online? This ${m.contentType.toLowerCase()} has been making waves with a rating of ${m.rating}/10, and for good reason. ${m.overview} <a href='${m.movieUrl}' target='_blank' class='hdw-watch-btn'>Watch ${m.title} Now</a></p>
-
-<h2>Why You Should Watch ${m.title}</h2>
-<p>${m.title} is one of the most talked-about ${m.contentType.toLowerCase()}s of ${m.year}. With its compelling storyline and strong performances, it has quickly become a favorite among viewers. Whether you are a fan of gripping drama, intense action, or thought-provoking narratives, this ${m.contentType.toLowerCase()} delivers on all fronts. You can <a href='${m.movieUrl}' target='_blank'>Stream ${m.title} free in HD</a> right now and experience the excitement for yourself. The film has garnered praise from critics and audiences alike, making it a must-watch for anyone who loves quality entertainment.</p>
-
-<h2>Plot Summary</h2>
-<p>${m.overview} The story takes unexpected turns that keep viewers engaged from start to finish. Every scene is crafted with precision, building tension and emotional depth that makes <a href='${m.movieUrl}' target='_blank'>${m.title} online</a> streaming an immersive experience. The characters are well-developed, and the narrative arc is both satisfying and thought-provoking, leaving audiences wanting more.</p>
-
-<h2>Where to Watch ${m.title} Online</h2>
-<p>You can watch ${m.title} (${m.year}) in full HD on <a href='${m.homeUrl}' target='_blank'>HDWatchZone</a>, your premier destination for free movie streaming. No sign-up required and no subscription fees — just click and watch. HDWatchZone offers the best streaming experience with fast loading times and crystal-clear quality.</p>
-
-<p>In conclusion, ${m.title} is a standout ${m.contentType.toLowerCase()} that deserves your attention. With its stellar cast, engaging plot, and high production value, it is one of the best releases of ${m.year}. Do not miss out — <a href='${m.movieUrl}' target='_blank'>Start watching ${m.title} now</a> and enjoy a cinematic experience from the comfort of your home.</p>
-`.trim();
+    const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+    return `<p><strong>Unpublished research draft:</strong> This is a TMDB-based summary, not a first-hand review. A human editor must check the facts and add useful original analysis before publication.</p>
+<h2>${escape(m.title)} — title information</h2>
+<p>Type: ${escape(m.contentType)}. Year: ${escape(m.year || 'not supplied')}. TMDB community score: ${escape(m.rating)}/10.</p>
+<h2>TMDB overview</h2>
+<p>${escape(m.overview)}</p>
+<p>Third-party playback availability, quality and ads may vary. Metadata does not confirm a playable or authorized stream.</p>`.trim();
 }
 
 // ── Step 4: Format Premium HTML ──
@@ -258,7 +241,7 @@ function formatForBlogger(movieData, articleBody) {
   <div class="hdw-hero-overlay">
     <h1>${movieData.title}</h1>
     <div class="hdw-meta">
-      <span class="hdw-rating">⭐ ${movieData.rating}/10</span>
+      <span class="hdw-rating">TMDB ${movieData.rating}/10</span>
       <span>${movieData.year}</span>
       <span>${movieData.contentType}</span>
     </div>
@@ -278,16 +261,15 @@ function formatForBlogger(movieData, articleBody) {
 
     const ctaHTML = `
 <div class="hdw-cta">
-  <p>Ready to watch? Stream now in full HD!</p>
-  <a href="${movieData.movieUrl}" target="_blank" class="hdw-watch-btn">▶ Watch ${movieData.title} Free in HD</a>
+  <p>AI-assisted draft. Human fact-checking and original editorial work are required before publication.</p>
 </div>`;
 
     const fullContent = PREMIUM_CSS + '<div class="hdw-article">' + heroHTML + articleBody + castGridHTML + ctaHTML + '</div>';
 
     return {
-        title: `${movieData.title}: Watch Free Online in HD (${movieData.year})`,
+        title: `${movieData.title} — Editorial Draft${movieData.year ? ` (${movieData.year})` : ''}`,
         content: fullContent,
-        labels: [movieData.title, String(movieData.year), movieData.contentType, 'Free Streaming', 'HD Movies', 'Watch Online']
+        labels: [movieData.title, movieData.contentType, 'Editorial Draft']
     };
 }
 
@@ -300,9 +282,15 @@ function selectBlog() {
     return { ...blog, blogIndex: idx + 1 };
 }
 
-// ── Step 6: Post to Blogger ──
-async function postToBlogger(blog, post, accessToken) {
-    console.log(`Step 6: Posting to ${blog.name}...`);
+// No publish flag is supported. Publication requires a human in the Blogger UI.
+function bloggerDraftUrl(blogId) {
+    if (!/^\d+$/.test(String(blogId))) throw new Error('Invalid Blogger blog ID');
+    return `https://www.googleapis.com/blogger/v3/blogs/${blogId}/posts?isDraft=true`;
+}
+
+// ── Step 6: Create an unpublished Blogger draft ──
+async function postToBlogger(blog, post, accessToken, request = httpsRequest) {
+    console.log(`Step 6: Creating unpublished draft for ${blog.name}...`);
     const body = JSON.stringify({
         kind: 'blogger#post',
         blog: { id: blog.id },
@@ -311,7 +299,7 @@ async function postToBlogger(blog, post, accessToken) {
         labels: post.labels
     });
 
-    const r = await httpsRequest(`https://www.googleapis.com/blogger/v3/blogs/${blog.id}/posts`, {
+    const r = await request(bloggerDraftUrl(blog.id), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -322,8 +310,9 @@ async function postToBlogger(blog, post, accessToken) {
     });
 
     if (r.status === 200 || r.status === 201) {
-        console.log('   Posted successfully! URL:', r.data?.url || 'N/A');
-        return { success: true, url: r.data?.url };
+        if (r.data?.status !== 'DRAFT') return {success: false, error: 'Blogger did not confirm DRAFT status'};
+        console.log('   Draft created. Review and publish manually in Blogger.');
+        return { success: true, draft: true, url: r.data?.url };
     } else {
         console.error('   Post failed:', r.status, JSON.stringify(r.data).substring(0, 300));
         return { success: false, error: r.data };
@@ -344,9 +333,9 @@ async function logToSheets(movieData, blog, postResult, sheetsToken) {
         blog.name,
         blog.url,
         movieData.title,
-        `${movieData.title}: Watch Free Online in HD (${movieData.year})`,
+        `${movieData.title} — Editorial Draft${movieData.year ? ` (${movieData.year})` : ''}`,
         movieData.contentType,
-        postResult.success ? 'Posted' : 'Failed'
+        postResult.success && postResult.draft ? 'Draft — awaiting human review' : 'Failed'
     ]];
 
     const body = JSON.stringify({ values });
@@ -371,7 +360,7 @@ async function logToSheets(movieData, blog, postResult, sheetsToken) {
 
 // ── Main ──
 async function main() {
-    console.log('=== HDWatchZone Auto Blogger ===');
+    console.log('=== HD Watchzone Editorial Draft Helper — no public publication ===');
     console.log(`Time: ${new Date().toISOString()}\n`);
 
     // Validate secrets
@@ -403,7 +392,7 @@ async function main() {
         console.log('\n=== DONE ===');
         console.log(`Blog: ${blog.name} (#${blog.blogIndex})`);
         console.log(`Movie: ${movieData.title} (${movieData.year})`);
-        console.log(`Status: ${result.success ? 'SUCCESS' : 'FAILED'}`);
+        console.log(`Status: ${result.success ? 'DRAFT CREATED — HUMAN REVIEW REQUIRED' : 'FAILED'}`);
 
         if (!result.success) process.exit(1);
     } catch (err) {
@@ -412,4 +401,5 @@ async function main() {
     }
 }
 
-main();
+module.exports = {bloggerDraftUrl, postToBlogger, generateFallbackArticle, formatForBlogger};
+if (require.main === module) main();

@@ -1,8 +1,9 @@
 .vercel
 .env*.local
 
-# Auto-generated agent rules (personalized per developer)
-.brainsync/agent-rules.md
+# Local agent state and encryption material must never enter source control.
+.brainsync/
+.cursor/active-context.md
 
 AGENT.md
 CLAUDE.md

@@ -33,6 +33,7 @@ const IMAGE_SIZES = {
         original: 'original'
     }
 };
+const POSTER_SIZES = '(max-width: 560px) calc((100vw - 34px) / 2), (max-width: 1283px) 154px, (max-width: 1583px) 12vw, 190px';
 
 // ==========================================
 // State Management
@@ -53,6 +54,16 @@ const utils = {
         if (!path) return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect width=%22300%22 height=%22450%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%22150%22 y=%22225%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';
         const sizeKey = IMAGE_SIZES[type][size] || IMAGE_SIZES[type].medium;
         return `${CONFIG.TMDB_IMAGE_BASE}/${sizeKey}${path}`;
+    },
+
+    // Use TMDB's configured widths so browsers can choose without downloading every variant.
+    imageAttrs(path, sizes = POSTER_SIZES, type = 'poster') {
+        const dimensions = type === 'backdrop' ? 'width="1280" height="720"' : 'width="300" height="450"';
+        const normalized = String(path || '').replace(/^https:\/\/image\.tmdb\.org\/t\/p\/(?:w\d+|original)/, '');
+        if (!normalized.startsWith('/') || normalized.startsWith('//')) return `${dimensions} decoding="async"`;
+        const widths = type === 'backdrop' ? [300, 780, 1280] : [185, 342, 500, 780];
+        const srcset = widths.map(width => `${CONFIG.TMDB_IMAGE_BASE}/w${width}${normalized} ${width}w`).join(', ');
+        return `${dimensions} decoding="async" srcset="${utils.sanitize(srcset)}" sizes="${utils.sanitize(sizes)}"`;
     },
 
     // Format date
@@ -116,13 +127,7 @@ const utils = {
 
     // Create URL friendly slug
     createSlug(text) {
-        if (!text) return '';
-        return text.toString().toLowerCase()
-            .replace(/\s+/g, '-')           // Replace spaces with -
-            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-            .replace(/^-+/, '')             // Trim - from start of text
-            .replace(/-+$/, '');            // Trim - from end of text
+        return window.SiteSEO.slug(text);
     }
 };
 
@@ -131,6 +136,18 @@ const utils = {
 // ==========================================
 const apiCache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000;
+const initialCatalog = document.getElementById('initial-catalog-data');
+if (initialCatalog) {
+    try {
+        for (const entry of JSON.parse(initialCatalog.textContent).responses || []) {
+            const url = new URL(CONFIG.TMDB_BASE_URL + entry.endpoint);
+            url.searchParams.set('api_key', CONFIG.TMDB_API_KEY);
+            Object.entries(entry.params).forEach(([key,value]) => url.searchParams.set(key,value));
+            url.searchParams.sort();
+            apiCache.set(url.toString(), {data:entry.data,timestamp:Date.now()});
+        }
+    } catch { /* Invalid initial data falls back to bounded API requests. */ }
+}
 
 // Image error fallback
 const FALLBACK_IMG = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect width=%22300%22 height=%22450%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%22150%22 y=%22225%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22 text-anchor=%22middle%22%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -148,6 +165,7 @@ const tmdbAPI = {
             url.searchParams.append(key, value);
         });
 
+        url.searchParams.sort();
         const cacheKey = url.toString();
         const cached = apiCache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -172,7 +190,7 @@ const tmdbAPI = {
             requests.push(this.fetch(`/trending/${mediaType}/${timeWindow}`, { page }));
         }
         const responses = await Promise.all(requests);
-        const allResults = responses.flatMap(r => r?.results || []);
+        const allResults = responses.flatMap(r => r?.results || []).filter(item => item.media_type !== 'person' && (item.title || item.name));
         return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
@@ -378,6 +396,7 @@ const components = {
                         src="${posterUrl}" 
                         alt="${utils.sanitize(title)}" 
                         class="card-poster"
+                        ${utils.imageAttrs(item.poster_path)}
                         loading="lazy"
                         onerror="imgErr(this)"
                     >
@@ -419,7 +438,7 @@ const components = {
         return `
             <a href="${route}" class="card-wrapper recent-card" data-id="${item.id}" data-type="${mediaType}">
                 <div class="card">
-                    <img src="${utils.sanitize(posterUrl)}" alt="${utils.sanitize(title)}" class="card-poster" loading="lazy" onerror="imgErr(this)">
+                    <img src="${utils.sanitize(posterUrl)}" alt="${utils.sanitize(title)}" class="card-poster" ${utils.imageAttrs(item.poster_path || item.poster)} loading="lazy" onerror="imgErr(this)">
                     <div class="card-overlay">
                         <div class="card-meta"><span class="card-type">${mediaType === 'movie' ? 'Movie' : 'TV'}</span></div>
                     </div>
@@ -453,13 +472,15 @@ const components = {
 
     // Section
     section(title, content, link = null, tabs = null) {
+        if (link) link = link.replace(/^#/, '');
+        const linkLabel = ({'/movies':'Browse movies','/tv':'Browse TV','/anime':'Browse anime'})[link] || `Browse ${title}`;
         return `
             <section class="section">
                 <div class="section-header">
                     <h2 class="section-title">${title}</h2>
                     <div class="section-header-right">
                         ${tabs ? `<div class="section-tabs">${tabs}</div>` : ''}
-                        ${link ? `<a href="${link}" class="section-link">See All →</a>` : ''}
+                        ${link ? `<a href="${link}" class="section-link">${utils.sanitize(linkLabel)} →</a>` : ''}
                     </div>
                 </div>
                 ${content}
@@ -490,7 +511,8 @@ const components = {
             const genrePills = (item.genre_ids || []).slice(0, 3).map(id => genreMap[id] || '').filter(Boolean).map(g => `<span class="hero-genre-pill">${g}</span>`).join('');
 
             return `
-                <div ${index === 0 ? '' : 'inert aria-hidden="true"'} class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="background-image: url('${backdropUrl}')">
+                <div ${index === 0 ? '' : 'inert aria-hidden="true"'} class="hero-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
+                    ${item.backdrop_path ? `<img src="${utils.sanitize(backdropUrl)}" alt="" class="hero-backdrop-image" ${utils.imageAttrs(item.backdrop_path, '100vw', 'backdrop')} loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'low'}">` : ''}
                     <div class="hero-gradient-overlay"></div>
                     <div class="hero-content hero-content-split">
                         <div class="hero-text-col">
@@ -506,18 +528,18 @@ const components = {
                             </div>
                             <p class="hero-description">${utils.sanitize(overview)}</p>
                             <div class="hero-buttons">
-                                <a href="${route}" class="btn-cineby btn-cineby-primary">
+                                <a href="${route}" class="btn-cineby btn-cineby-primary" aria-label="Open player for ${utils.sanitize(title)}">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                     Play Now
                                 </a>
                                 <a href="${route}" class="btn-cineby btn-cineby-glass">
                                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                                    More Info
+                                    Title details<span class="sr-only"> for ${utils.sanitize(title)}</span>
                                 </a>
                             </div>
                         </div>
                         <div class="hero-poster-col">
-                            <img src="${posterUrl}" alt="${utils.sanitize(title)}" class="hero-poster-img" loading="lazy">
+                            <img src="${posterUrl}" alt="${utils.sanitize(title)}" class="hero-poster-img" ${utils.imageAttrs(item.poster_path, '180px')} loading="lazy" fetchpriority="low">
                         </div>
                     </div>
                 </div>
@@ -566,7 +588,7 @@ const components = {
                     ${tabsHtml}
                 </div>
                 ${content}
-                <a class="section-link" href="#/new">See all trending titles →</a>
+                <a class="section-link" href="/new">See all trending titles →</a>
             </section>
         `;
     },
@@ -649,7 +671,7 @@ const components = {
                                 <circle cx="12" cy="12" r="10"/>
                                 <path d="M12 16v-4M12 8h.01"/>
                             </svg>
-                            More Info
+                            Title details<span class="sr-only"> for ${utils.sanitize(title)}</span>
                         </button>
                     </div>
                 </div>
@@ -697,34 +719,31 @@ const components = {
             start = Math.max(1, end - maxVisible + 1);
         }
 
-        const navFunc = pageType === 'movies' ? 'navigateMovies' :
-            pageType === 'tv' ? 'navigateTV' :
-                pageType === 'anime' ? 'navigateAnime' :
-                    pageType === 'genre' ? 'navigateGenre' : 'navigateNew';
+        const pageLink = (number, label, active = false) => `<a class="page-btn ${active ? 'active' : ''}" href="${utils.sanitize(window.SiteSEO.pageURL(pageType,category,number))}" ${active ? 'aria-current="page"' : ''}>${label}</a>`;
 
         if (currentPage > 1) {
-            pages.push(`<button class="page-btn" onclick="${navFunc}('${category}', ${currentPage - 1})">‹ Prev</button>`);
+            pages.push(pageLink(currentPage - 1, '‹ Prev'));
         }
 
         if (start > 1) {
-            pages.push(`<button class="page-btn" onclick="${navFunc}('${category}', 1)">1</button>`);
+            pages.push(pageLink(1, '1'));
             if (start > 2) pages.push('<span class="page-dots">...</span>');
         }
 
         for (let i = start; i <= end; i++) {
-            pages.push(`<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="${navFunc}('${category}', ${i})">${i}</button>`);
+            pages.push(pageLink(i, i, i === currentPage));
         }
 
         if (end < totalPages) {
             if (end < totalPages - 1) pages.push('<span class="page-dots">...</span>');
-            pages.push(`<button class="page-btn" onclick="${navFunc}('${category}', ${totalPages})">${totalPages}</button>`);
+            pages.push(pageLink(totalPages, totalPages));
         }
 
         if (currentPage < totalPages) {
-            pages.push(`<button class="page-btn" onclick="${navFunc}('${category}', ${currentPage + 1})">Next ›</button>`);
+            pages.push(pageLink(currentPage + 1, 'Next ›'));
         }
 
-        return `<div class="pagination">${pages.join('')}</div>`;
+        return `<nav class="pagination" aria-label="Pagination">${pages.join('')}</nav>`;
     }
 };
 
@@ -900,7 +919,7 @@ const pages = {
     // Home page
     async home() {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         try {
             // Fetch all data in parallel
@@ -979,7 +998,7 @@ const pages = {
     // Movies page with categories and pagination
     async movies(category = 'popular', page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
@@ -1009,7 +1028,7 @@ const pages = {
             const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
-                `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateMovies('${c.id}', 1)">${c.name}</button>`
+                `<a class="category-tab ${c.id === category ? 'active' : ''}" href="${window.SiteSEO.pageURL('movies',c.id,1)}">${c.name}</a>`
             ).join('');
 
             const pagination = components.pagination(page, totalPages, 'movies', category);
@@ -1043,7 +1062,7 @@ const pages = {
     // TV Shows page with categories and pagination
     async tv(category = 'popular', page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
@@ -1071,7 +1090,7 @@ const pages = {
             const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
-                `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateTV('${c.id}', 1)">${c.name}</button>`
+                `<a class="category-tab ${c.id === category ? 'active' : ''}" href="${window.SiteSEO.pageURL('tv',c.id,1)}">${c.name}</a>`
             ).join('');
 
             const pagination = components.pagination(page, totalPages, 'tv', category);
@@ -1105,7 +1124,7 @@ const pages = {
     // Anime page
     async anime(category = 'popular', page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         const ITEMS_PER_PAGE = 24;
 
@@ -1133,7 +1152,7 @@ const pages = {
             const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
-                `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="router.navigate('#/anime?category=${c.id}')">${c.name}</button>`
+                `<a class="category-tab ${c.id === category ? 'active' : ''}" href="${window.SiteSEO.pageURL('anime',c.id,1)}">${c.name}</a>`
             ).join('');
 
             // Custom pagination navigation function
@@ -1177,7 +1196,7 @@ const pages = {
     // Search results page
     async search(query, page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         if (!query) {
             app.innerHTML = `
@@ -1253,7 +1272,7 @@ const pages = {
     // Genre page
     async genre(genreId, page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         const ITEMS_PER_PAGE = 24;
         const genreNames = {
@@ -1270,7 +1289,7 @@ const pages = {
 
         // Genre List for sidebar
         const genreList = Object.entries(genreNames).map(([id, name]) => 
-            `<a href="#/genre/${id}" class="genre-sidebar-link ${id === genreId ? 'active' : ''}">${name}</a>`
+            `<a href="/genre/${id}" class="genre-sidebar-link ${id === genreId ? 'active' : ''}">${name}</a>`
         ).join('');
 
         try {
@@ -1324,7 +1343,7 @@ const pages = {
     // New & Popular page
     async newPopular(category = 'trending', page = 1) {
         const app = routeTarget();
-        app.innerHTML = components.loading();
+        showRouteLoading(app);
 
         const ITEMS_PER_PAGE = 24;
         const categories = [
@@ -1345,7 +1364,7 @@ const pages = {
             const pageItems = allItems;
 
             const categoryTabs = categories.map(c =>
-                `<button class="category-tab ${c.id === category ? 'active' : ''}" onclick="navigateNew('${c.id}', 1)">${c.name}</button>`
+                `<a class="category-tab ${c.id === category ? 'active' : ''}" href="${window.SiteSEO.pageURL('new',c.id,1)}">${c.name}</a>`
             ).join('');
 
             const pagination = components.pagination(page, totalPages, 'new', category);
@@ -1392,7 +1411,7 @@ const pages = {
                         <div class="no-results-icon">📋</div>
                         <h2>Your list is empty</h2>
                         <p>Add movies and TV shows to your list by clicking the + button</p>
-                        <a href="#/" class="btn btn-primary">Browse Content</a>
+                        <a href="/" class="btn btn-primary">Browse Content</a>
                     </div>
                 </div>
             `;
@@ -1417,16 +1436,16 @@ const pages = {
         const app = routeTarget();
         const faqItems = [
             { q: 'What is HD Watchzone?', a: 'HD Watchzone is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
-            { q: 'Is HD Watchzone free to use?', a: 'Yes, HD Watchzone is completely free. We aggregate content from various third-party providers so you can find and stream entertainment without any subscription or sign-up.' },
+            { q: 'Is HD Watchzone free to use?', a: 'HD Watchzone does not charge for browsing titles or saving a local watchlist. Playback is supplied by independent providers, which control their own availability, ads and terms. Only access content you are authorized to watch.' },
             { q: 'Do I need to create an account?', a: 'No account is required. You can browse and watch content immediately. However, features like My List use your browser\'s local storage to save your preferences.' },
-            { q: 'What devices are supported?', a: 'HD Watchzone works on any device with a modern web browser including desktop computers, laptops, tablets, and smartphones. We recommend Chrome, Firefox, Safari, or Edge for the best experience.' },
+            { q: 'What devices are supported?', a: 'The website has responsive layouts for phones, tablets and desktop browsers. External players have separate browser and device requirements; playback, fullscreen support and picture quality are not guaranteed on every device.' },
             { q: 'Why is a video not playing?', a: 'If a video is not playing, try switching to a different server using the server selector above the player. Different servers may have different availability for certain titles.' },
             { q: 'Where does the content come from?', a: 'All content metadata (titles, descriptions, posters, ratings) is provided by The Movie Database (TMDB). Video streams are provided by third-party embed services. HD Watchzone does not host, store, or own any media content.' },
             { q: 'How do I report a broken link?', a: 'You can report issues through our Contact Us page. Please include the title of the content and which server you were using so we can investigate.' },
             { q: 'Can I download content for offline viewing?', a: 'No, HD Watchzone is a streaming-only platform. We do not offer downloads as we do not host any content directly.' },
-            { q: 'How often is new content added?', a: 'Our catalog updates automatically as new titles become available on TMDB and our third-party providers. Trending and popular sections refresh daily.' },
+            { q: 'How is the catalog updated?', a: 'Catalog information is fetched from TMDB when you browse, with caching to reduce repeated requests. A title appearing in TMDB does not confirm that an external player has it available.' },
             { q: 'Is HD Watchzone an alternative to Cineby or Net77?', a: 'People comparing Cineby, Net77.cc, Net77 and similar discovery sites can use HD Watchzone to search movies, TV shows and anime in a responsive interface. HD Watchzone is independent and is not affiliated with those services.' },
-            { q: 'Is my data safe?', a: 'We take privacy seriously. We only store your preferences (like your watchlist) locally in your browser. We do not collect personal information or require registration. See our Privacy Policy for full details.' }
+            { q: 'How is my data handled?', a: 'Watchlists, recently viewed titles and consent choices are stored in this browser. Loading the website, metadata, images or external players sends requests to hosting and third-party services. Optional Google Analytics runs only after consent. Read the Privacy Policy for the limits of these local settings.' }
         ];
 
         app.innerHTML = `
@@ -1450,7 +1469,7 @@ const pages = {
                 </div>
                 <div class="static-page-cta">
                     <p>Still have questions?</p>
-                    <a href="#/contact" class="btn btn-primary">Contact Us</a>
+                    <a href="/contact" class="btn btn-primary">Contact Us</a>
                 </div>
             </div>
         `;
@@ -1460,12 +1479,12 @@ const pages = {
     help() {
         const app = routeTarget();
         const helpCategories = [
-            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '#/faq' }, { text: 'Understanding the interface', href: '#/faq' }] },
-            { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '#/faq' }, { text: 'Switch streaming servers', href: '#/faq' }] },
-            { icon: '\ud83d\udccb', title: 'My List & Preferences', desc: 'Manage your watchlist and personalize your experience.', links: [{ text: 'Adding to My List', href: '#/my-list' }, { text: 'Managing saved content', href: '#/my-list' }] },
-            { icon: '\ud83d\udd12', title: 'Privacy & Security', desc: 'Understand how your data is handled and protected.', links: [{ text: 'Privacy Policy', href: '#/privacy' }, { text: 'Cookie Preferences', href: '#/cookies' }] },
-            { icon: '\ud83d\udcdc', title: 'Legal Information', desc: 'Review our terms of service and legal notices.', links: [{ text: 'Terms of Use', href: '#/terms' }, { text: 'Legal Notices', href: '#/legal' }] },
-            { icon: '\ud83d\udcac', title: 'Contact Support', desc: 'Get in touch with us for any other issues or feedback.', links: [{ text: 'Contact Us', href: '#/contact' }, { text: 'Report a Problem', href: '#/contact' }] }
+            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '/faq' }, { text: 'Understanding the interface', href: '/faq' }] },
+            { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '/faq' }, { text: 'Switch streaming servers', href: '/faq' }] },
+            { icon: '\ud83d\udccb', title: 'My List & Preferences', desc: 'Manage your watchlist and personalize your experience.', links: [{ text: 'Adding to My List', href: '/my-list' }, { text: 'Managing saved content', href: '/my-list' }] },
+            { icon: '\ud83d\udd12', title: 'Privacy & Security', desc: 'Understand how your data is handled and protected.', links: [{ text: 'Privacy Policy', href: '/privacy' }, { text: 'Cookie Preferences', href: '/cookies' }] },
+            { icon: '\ud83d\udcdc', title: 'Legal Information', desc: 'Review our terms of service and legal notices.', links: [{ text: 'Terms of Use', href: '/terms' }, { text: 'Legal Notices', href: '/legal' }] },
+            { icon: '\ud83d\udcac', title: 'Contact Support', desc: 'Get in touch with us for any other issues or feedback.', links: [{ text: 'Contact Us', href: '/contact' }, { text: 'Report a Problem', href: '/contact' }] }
         ];
 
         app.innerHTML = `
@@ -1500,15 +1519,15 @@ const pages = {
         app.innerHTML = `
             <div class="static-page">
                 <div class="static-page-header">
-                    <h1>Your Account</h1>
-                    <p>Manage your preferences and viewing data</p>
+                    <h1>Local Preferences</h1>
+                    <p>Manage saved titles and recently viewed items on this device</p>
                 </div>
                 <div class="account-grid">
                     <div class="account-card">
                         <div class="account-card-icon">\ud83d\udccb</div>
                         <h3>My List</h3>
                         <p class="account-stat">${myListItems.length} saved titles</p>
-                        <a href="#/my-list" class="btn btn-primary btn-sm">View My List</a>
+                        <a href="/my-list" class="btn btn-primary btn-sm">View My List</a>
                     </div>
                     <div class="account-card">
                         <div class="account-card-icon">\u25b6\ufe0f</div>
@@ -1520,17 +1539,17 @@ const pages = {
                         <div class="account-card-icon">\ud83d\udd12</div>
                         <h3>Privacy</h3>
                         <p class="account-stat">Local storage only</p>
-                        <a href="#/privacy" class="btn btn-secondary btn-sm">Privacy Policy</a>
+                        <a href="/privacy" class="btn btn-secondary btn-sm">Privacy Policy</a>
                     </div>
                     <div class="account-card">
                         <div class="account-card-icon">\ud83c\udf6a</div>
                         <h3>Cookie Settings</h3>
                         <p class="account-stat">Manage preferences</p>
-                        <a href="#/cookies" class="btn btn-secondary btn-sm">Cookie Preferences</a>
+                        <a href="/cookies" class="btn btn-secondary btn-sm">Cookie Preferences</a>
                     </div>
                 </div>
                 <div class="disclaimer-banner">
-                    <p><strong>Note:</strong> HD Watchzone does not require an account. All your data (watchlist, history) is stored locally in your browser and never sent to any server.</p>
+                    <p><strong>Note:</strong> HD Watchzone does not require an account. Watchlist and history records are stored in this browser and do not sync between devices. Visiting pages and loading third-party services still sends network requests; see the Privacy Policy.</p>
                 </div>
             </div>
         `;
@@ -1583,7 +1602,7 @@ const pages = {
                         </div>
                         <div class="contact-info-card">
                             <h3>\ud83d\udccb FAQ</h3>
-                            <p>Check our <a href="#/faq">FAQ page</a> for instant answers</p>
+                            <p>Check our <a href="/faq">FAQ page</a> for instant answers</p>
                         </div>
                     </div>
                 </div>
@@ -1647,7 +1666,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>9. Contact</h2>
-                        <p>If you have any questions about these Terms of Use, please <a href="#/contact">contact us</a>.</p>
+                        <p>If you have any questions about these Terms of Use, please <a href="/contact">contact us</a>.</p>
                     </section>
                 </div>
             </div>
@@ -1661,7 +1680,7 @@ const pages = {
             <div class="static-page">
                 <div class="static-page-header">
                     <h1>Privacy Policy</h1>
-                    <p>Last updated: February 14, 2026</p>
+                    <p>Last updated: September 30, 2026</p>
                 </div>
                 <div class="legal-content">
                     <section class="legal-section">
@@ -1671,13 +1690,13 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>2. Information We Collect</h2>
-                        <p><strong>We do not collect personal information.</strong> HD Watchzone does not require registration, login, or any personal data to use the service. The following data is stored locally in your browser only:</p>
+                        <p>No registration or login is required. The following feature records are stored in this browser:</p>
                         <ul>
                             <li><strong>Watchlist:</strong> Titles you add to "My List" are saved in your browser's localStorage.</li>
-                            <li><strong>Watch Progress:</strong> Recently opened titles are stored locally. Playback position is not available from every external player.</li>
-                            <li><strong>Preferences:</strong> Theme and language preferences are stored in your browser.</li>
+                            <li><strong>Recently Viewed:</strong> Recently opened titles and selected TV episodes are stored locally. This is not verified playback progress.</li>
+                            <li><strong>Consent choices:</strong> Your analytics preference is saved in your browser.</li>
                         </ul>
-                        <p>This data never leaves your device and is not transmitted to our servers or any third party.</p>
+                        <p>These saved feature records are not an online account and are not synced to another device. Requests to the website and its third-party services can still expose technical information such as IP address, browser details and requested URLs. A contact email includes the name, email address and message you choose to send from your email app.</p>
                     </section>
 
                     <section class="legal-section">
@@ -1686,18 +1705,19 @@ const pages = {
                         <ul>
                             <li><strong>TMDB API:</strong> We fetch movie and TV show metadata (titles, descriptions, images, ratings) from The Movie Database. TMDB's privacy policy applies to their data handling.</li>
                             <li><strong>Video Embed Providers:</strong> Video streams are loaded via third-party embed services. These providers may set their own cookies and collect data according to their own privacy policies.</li>
-                            <li><strong>Google Analytics:</strong> If you have consented to analytics cookies, we use Google Analytics to understand site usage patterns. No personally identifiable information is collected.</li>
+                            <li><strong>Google Analytics:</strong> Analytics loads only after you opt in. Google processes usage events and technical information under its own policies. You can disable optional analytics on the Cookie Preferences page.</li>
+                            <li><strong>Hosting and fonts:</strong> Delivering pages, scripts and Google Fonts requires network requests to their service providers. We cannot use local storage settings to prevent the technical processing needed to deliver those requests.</li>
                         </ul>
                     </section>
 
                     <section class="legal-section">
                         <h2>4. Cookies</h2>
-                        <p>HD Watchzone uses minimal cookies. Essential cookies are required for basic site functionality. Analytics cookies are only enabled with your explicit consent. You can manage your cookie preferences on our <a href="#/cookies">Cookie Preferences</a> page.</p>
+                        <p>Local storage remembers watchlists, recently viewed titles and consent choices. Optional analytics cookies are enabled only after consent. External players can use their own cookies or storage; this website's analytics preference does not control those providers. Manage optional analytics on the <a href="/cookies">Cookie Preferences</a> page.</p>
                     </section>
 
                     <section class="legal-section">
                         <h2>5. Data Security</h2>
-                        <p>Since all user data is stored locally in your browser, you have full control over it. You can clear your data at any time by clearing your browser's localStorage or using the clear options on the <a href="#/account">Account</a> page.</p>
+                        <p>You can remove saved feature records by clearing this site's browser data or using the local history controls on the <a href="/account">Local Preferences</a> page. This does not erase records independently held by hosting, email, analytics or external player services.</p>
                     </section>
 
                     <section class="legal-section">
@@ -1712,7 +1732,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>8. Contact</h2>
-                        <p>For privacy-related questions, please <a href="#/contact">contact us</a>.</p>
+                        <p>For privacy-related questions, please <a href="/contact">contact us</a>.</p>
                     </section>
                 </div>
             </div>
@@ -1739,22 +1759,22 @@ const pages = {
                     <div class="cookie-settings">
                         <div class="cookie-option">
                             <div class="cookie-option-info">
-                                <h3>Essential Cookies</h3>
-                                <p>Required for basic site functionality including navigation, localStorage for your watchlist, and video playback. These cannot be disabled.</p>
+                                <h3>Local Feature Storage</h3>
+                                <p>Stores your watchlist, recently viewed titles and consent choice in this browser. You can clear or block it through browser settings; saving these features may then stop working. This is distinct from third-party player cookies.</p>
                             </div>
                             <div class="cookie-toggle">
                                 <label class="toggle-switch">
                                     <input type="checkbox" checked disabled>
                                     <span class="toggle-slider"></span>
                                 </label>
-                                <span class="cookie-status">Always Active</span>
+                                <span class="cookie-status">Managed in your browser</span>
                             </div>
                         </div>
 
                         <div class="cookie-option">
                             <div class="cookie-option-info">
                                 <h3>Analytics Cookies</h3>
-                                <p>Help us understand how visitors interact with the site by collecting anonymous usage data through Google Analytics. No personal information is collected.</p>
+                                <p>Optional Google Analytics measures usage events and technical information after you opt in. Turning it off stops this site's optional analytics; it does not control external players or their tracking.</p>
                             </div>
                             <div class="cookie-toggle">
                                 <label class="toggle-switch">
@@ -1778,7 +1798,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>More Information</h2>
-                        <p>For more details about how we handle your data, please read our <a href="#/privacy">Privacy Policy</a>. If you have any questions, <a href="#/contact">contact us</a>.</p>
+                        <p>For more details about how we handle your data, please read our <a href="/privacy">Privacy Policy</a>. If you have any questions, <a href="/contact">contact us</a>.</p>
                     </section>
                 </div>
             </div>
@@ -1798,7 +1818,7 @@ const pages = {
                     <div class="disclaimer-banner disclaimer-banner--prominent">
                         <h2>\u26a0\ufe0f Third-Party Content Disclaimer</h2>
                         <p>HD Watchzone <strong>does not host, store, or own</strong> any of the content displayed on this site. All movies, TV shows, anime, and other media are provided by third-party services and embed providers. HD Watchzone acts solely as a content discovery and aggregation interface.</p>
-                        <p>All trademarks, service marks, trade names, logos, and content belong to their respective owners. If you believe that any content accessible through HD Watchzone infringes your copyright, please contact us immediately through our <a href="#/contact">Contact page</a>.</p>
+                        <p>All trademarks, service marks, trade names, logos, and content belong to their respective owners. If you believe that any content accessible through HD Watchzone infringes your copyright, please contact us immediately through our <a href="/contact">Contact page</a>.</p>
                     </div>
 
                     <section class="legal-section">
@@ -1814,7 +1834,7 @@ const pages = {
 
                     <section class="legal-section">
                         <h2>DMCA / Copyright Claims</h2>
-                        <p>If you are a copyright owner and believe that content accessible through HD Watchzone infringes your rights, please <a href="#/contact">contact us</a> with the following information:</p>
+                        <p>If you are a copyright owner and believe that content accessible through HD Watchzone infringes your rights, please <a href="/contact">contact us</a> with the following information:</p>
                         <ul>
                             <li>A description of the copyrighted work you claim has been infringed</li>
                             <li>The URL on HD Watchzone where the infringing content is accessible</li>
@@ -1841,10 +1861,10 @@ const pages = {
                     <section class="legal-section">
                         <h2>Related Pages</h2>
                         <p>
-                            <a href="#/terms">Terms of Use</a> \u00b7
-                            <a href="#/privacy">Privacy Policy</a> \u00b7
-                            <a href="#/cookies">Cookie Preferences</a> \u00b7
-                            <a href="#/contact">Contact Us</a>
+                            <a href="/terms">Terms of Use</a> \u00b7
+                            <a href="/privacy">Privacy Policy</a> \u00b7
+                            <a href="/cookies">Cookie Preferences</a> \u00b7
+                            <a href="/contact">Contact Us</a>
                         </p>
                     </section>
                 </div>
@@ -1857,48 +1877,26 @@ const pages = {
 // Router
 // ==========================================
 function updateRouteMetadata(path) {
-    const route = path.split('?')[0];
-    const entries = {
-        '/': ['HD Watchzone — Movies, TV Shows & Anime in HD', 'Browse movies, TV shows and anime on HD Watchzone. Search thousands of titles, explore genres and discover new releases.'],
-        '/movies': ['Browse Movies in HD | HD Watchzone', 'Explore popular, top-rated and newly released movies by genre on HD Watchzone.'],
-        '/tv': ['Browse TV Shows in HD | HD Watchzone', 'Discover popular and top-rated TV series, seasons and episodes on HD Watchzone.'],
-        '/anime': ['Browse Anime Series & Movies | HD Watchzone', 'Discover popular anime series, animated movies and new releases on HD Watchzone.'],
-        '/new': ['New & Popular Releases | HD Watchzone', 'Find trending movies and TV shows plus newly released entertainment on HD Watchzone.'],
-        '/my-list': ['My List | HD Watchzone', 'View the movies and TV shows saved to your personal HD Watchzone list.'],
-        '/faq': ['Frequently Asked Questions | HD Watchzone', 'Answers about playback, supported devices, privacy and using HD Watchzone.'],
-        '/help': ['Help Center | HD Watchzone', 'Get help with search, playback, servers, privacy and account-free viewing on HD Watchzone.'],
-        '/contact': ['Contact HD Watchzone', 'Contact HD Watchzone to report playback issues, broken links or share feedback.'],
-        '/terms': ['Terms of Use | HD Watchzone', 'Read the terms that apply when accessing and using HD Watchzone.'],
-        '/account': ['Local Preferences | HD Watchzone', 'Manage saved titles and recently opened titles on this device.'],
-        '/privacy': ['Privacy Policy | HD Watchzone', 'Learn how HD Watchzone handles local preferences, analytics and third-party services.'],
-        '/cookies': ['Cookie Policy | HD Watchzone', 'Learn about cookies, local storage and third-party services used by HD Watchzone.'],
-        '/legal': ['Legal Notices | HD Watchzone', 'Review copyright, third-party content and legal information for HD Watchzone.']
-    };
-    let key = entries[route] ? route : route.startsWith('/genre/') ? '/genre' : route.startsWith('/search') ? '/search' : '/';
-    const names = {28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Science Fiction',53:'Thriller',10752:'War',37:'Western'};
-    const genreName = route.startsWith('/genre/') ? `${names[route.split('/')[2]] || 'Genre'} Movies & TV Shows | HD Watchzone` : null;
-    const searchQuery = new URLSearchParams(path.split('?')[1] || '').get('q');
-    const meta = entries[key] || (key === '/genre'
-        ? [genreName, 'Browse movies and TV shows by genre on HD Watchzone.']
-        : [`Search${searchQuery ? ` for ${searchQuery}` : ''} | HD Watchzone`, 'Search movies, TV shows and anime on HD Watchzone.']);
-    document.title = meta[0];
+    const meta = window.SiteSEO.describe(path);
+    if (meta.status !== 200) return;
+    document.title = meta.title;
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = meta[1];
+    if (description) description.content = meta.description;
     const robots = document.querySelector('meta[name="robots"]');
-    if (robots) robots.content = ['/my-list', '/account'].includes(route) || route.startsWith('/search')
-        ? 'noindex, follow'
-        : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+    if (robots) robots.content = meta.robots;
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.href = `https://hdwatchzone.com${route === '/' ? '/' : route}`;
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical?.href || 'https://hdwatchzone.com/');
+    if (canonical) canonical.href = meta.canonical;
+    ['og:url','twitter:url'].forEach(name => document.querySelector(`meta[property="${name}"],meta[name="${name}"]`)?.setAttribute('content',meta.canonical));
     ['og:title', 'twitter:title'].forEach(name => {
         const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
-        if (element) element.content = meta[0];
+        if (element) element.content = meta.title;
     });
     ['og:description', 'twitter:description'].forEach(name => {
         const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
-        if (element) element.content = meta[1];
+        if (element) element.content = meta.description;
     });
+    // Homepage identity is not a genre/listing schema for every SPA route.
+    document.getElementById('page-schema')?.remove();
 }
 
 let routeGeneration = 0;
@@ -1909,6 +1907,14 @@ function routeTarget() {
         set(target, key, value) { if (generation === routeGeneration) target[key] = value; return true; },
         get(target, key) { const value = target[key]; return typeof value === 'function' ? value.bind(target) : value; }
     });
+}
+function showRouteLoading(app) {
+    // Keep crawlable initial content visible until its cached data is hydrated.
+    if (app.dataset?.serverRendered === 'true') {
+        delete app.dataset.serverRendered;
+        return;
+    }
+    app.innerHTML = components.loading();
 }
 const router = {
     routes: {
@@ -1926,11 +1932,23 @@ const router = {
 
     init() {
         window.addEventListener('hashchange', () => this.handleRoute());
+        window.addEventListener('popstate', () => this.handleRoute());
+        document.addEventListener('click', event => {
+            if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            const link = event.target.closest('a[href]');
+            if (!link || link.target || link.hasAttribute('download')) return;
+            const url = new URL(link.href, window.location.href);
+            if (url.origin !== window.location.origin || url.hash || window.SiteSEO.describe(url).status !== 200) return;
+            event.preventDefault();
+            this.navigate(url.pathname + url.search);
+        });
         this.handleRoute();
     },
 
     navigate(hash) {
-        window.location.hash = hash;
+        const path = hash.replace(/^#/, '');
+        window.history.pushState(null, '', path);
+        this.handleRoute();
     },
 
     handleRoute() {
@@ -1939,11 +1957,20 @@ const router = {
         // Use hash if present, otherwise use pathname as fallback for clean URLs
         let path = hash ? hash.slice(1) : window.location.pathname + window.location.search;
         if (path.startsWith('/index.html')) path = '/' + window.location.search;
+        if (hash.startsWith('#/')) window.history.replaceState(null, '', path);
 
         // Remove trailing slash and handle empty path
         if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
         if (!path || path === '') path = '/';
 
+        const routeMeta = window.SiteSEO.describe(path);
+        const detailRoute = /^\/(movie|tv)\/\d+(?:-[^/?]+)?(?:\/\d+\/\d+)?(?:\?.*)?$/.test(path);
+        if (routeMeta.status !== 200 && !detailRoute) {
+            document.title = 'Page not found | HD Watchzone';
+            document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex, follow');
+            routeTarget().innerHTML = '<section class="section"><h1>Page not found</h1><p><a href="/">Return home</a></p></section>';
+            return;
+        }
         updateRouteMetadata(path);
 
         // Scroll to top on navigation
@@ -1969,7 +1996,8 @@ const router = {
 
         document.querySelectorAll('.mobile-bottom-link').forEach(link => {
             const href = link.getAttribute('href');
-            const active = href === '#/' ? path === '/' : path.startsWith(href.slice(1));
+            const target = href?.replace(/^#/, '');
+            const active = target === '/' ? path === '/' : target && path.startsWith(target);
             link.classList.toggle('active', active);
             if (active) link.setAttribute('aria-current', 'page');
             else link.removeAttribute('aria-current');
@@ -2341,7 +2369,7 @@ async function loadGenres() {
         uniqueGenres.sort((a, b) => a.name.localeCompare(b.name));
 
         dropdown.innerHTML = uniqueGenres.map(genre =>
-            `<a href="#/genre/${genre.id}">${genre.name}</a>`
+            `<a href="/genre/${genre.id}">${genre.name}</a>`
         ).join('');
     } catch (error) {
         // Silently fail for genres
