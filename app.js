@@ -1440,7 +1440,11 @@ const pages = {
         const faqItems = [
             { q: 'What is HD Watchzone?', a: 'HD Watchzone is a free streaming aggregator that helps you discover and watch movies, TV shows, and anime. We do not host any content ourselves — all media is provided by third-party streaming services.' },
             { q: 'Is HD Watchzone free to use?', a: 'HD Watchzone does not charge for browsing titles or saving a local watchlist. Playback is supplied by independent providers, which control their own availability, ads and terms. Only access content you are authorized to watch.' },
-            { q: 'Do I need to create an account?', a: 'No account is required. You can browse and watch content immediately. However, features like My List use your browser\'s local storage to save your preferences.' },
+            { q: 'Do I need to create an account?', a: 'No account is required to browse titles or save a watchlist in this browser. External playback providers have their own requirements and terms; a title listing does not guarantee playback availability.' },
+            { q: 'How do I search for a title?', a: 'On desktop, enter a movie or TV title in the header search box and press Enter. On mobile, tap the search icon to open the search field, then enter the title and submit. Open a result to see its title information and external player options. If there are multiple matches, use the release year and movie or TV label to identify the title you want.' },
+            { q: 'How do I save or remove a title from My List?', a: 'Use the My List control on a title page to save or unsave it. Open My List from navigation to review saved titles. The list stays in this browser and does not sync to another device; clearing browser storage can remove it. Saving a title is not a video download.' },
+            { q: 'How do I use full screen?', a: 'Open a title page and use the Full screen button outside the embedded video player. Browser, device and external-provider support can differ. If full screen is unavailable, you can continue using the inline player. The site does not guarantee fullscreen support in every mobile browser.' },
+            { q: 'Why does an external player show ads or redirects?', a: 'External providers control their own ads, redirects and playback behavior. HD Watchzone cannot guarantee ad-free playback or remove every advertisement inside a third-party player. You can try another listed server or close the player. Do not enter passwords or payment details into unexpected pop-ups.' },
             { q: 'What devices are supported?', a: 'The website has responsive layouts for phones, tablets and desktop browsers. External players have separate browser and device requirements; playback, fullscreen support and picture quality are not guaranteed on every device.' },
             { q: 'Why is a video not playing?', a: 'If a video is not playing, try switching to a different server using the server selector above the player. Different servers may have different availability for certain titles.' },
             { q: 'Where does the content come from?', a: 'All content metadata (titles, descriptions, posters, ratings) is provided by The Movie Database (TMDB). Video streams are provided by third-party embed services. HD Watchzone does not host, store, or own any media content.' },
@@ -1459,15 +1463,15 @@ const pages = {
                 </div>
                 <div class="faq-list">
                     ${faqItems.map((item, i) => `
-                        <div class="faq-item" id="faq-item-${i}">
-                            <button class="faq-question" onclick="toggleFaq(${i})" aria-expanded="false" aria-controls="faq-answer-${i}">
+                        <details class="faq-item" id="faq-item-${i}" name="hdw-faq">
+                            <summary class="faq-question" id="faq-question-${i}">
                                 <span>${item.q}</span>
                                 <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                            </button>
-                            <div class="faq-answer" id="faq-answer-${i}" role="region">
+                            </summary>
+                            <div class="faq-answer" id="faq-answer-${i}" role="region" aria-labelledby="faq-question-${i}">
                                 <p>${item.a}</p>
                             </div>
-                        </div>
+                        </details>
                     `).join('')}
                 </div>
                 <div class="static-page-cta">
@@ -1482,12 +1486,12 @@ const pages = {
     help() {
         const app = routeTarget();
         const helpCategories = [
-            { icon: '\ud83c\udfac', title: 'Getting Started', desc: 'Learn how to browse and stream content on HD Watchzone.', links: [{ text: 'How to search for content', href: '/faq' }, { text: 'Understanding the interface', href: '/faq' }] },
-            { icon: '\ud83d\udda5\ufe0f', title: 'Playback Issues', desc: 'Troubleshoot video playback and streaming problems.', links: [{ text: 'Video not loading', href: '/faq' }, { text: 'Switch streaming servers', href: '/faq' }] },
-            { icon: '\ud83d\udccb', title: 'My List & Preferences', desc: 'Manage your watchlist and personalize your experience.', links: [{ text: 'Adding to My List', href: '/my-list' }, { text: 'Managing saved content', href: '/my-list' }] },
-            { icon: '\ud83d\udd12', title: 'Privacy & Security', desc: 'Understand how your data is handled and protected.', links: [{ text: 'Privacy Policy', href: '/privacy' }, { text: 'Cookie Preferences', href: '/cookies' }] },
-            { icon: '\ud83d\udcdc', title: 'Legal Information', desc: 'Review our terms of service and legal notices.', links: [{ text: 'Terms of Use', href: '/terms' }, { text: 'Legal Notices', href: '/legal' }] },
-            { icon: '\ud83d\udcac', title: 'Contact Support', desc: 'Get in touch with us for any other issues or feedback.', links: [{ text: 'Contact Us', href: '/contact' }, { text: 'Report a Problem', href: '/contact' }] }
+            { icon: '\ud83c\udfac', title: 'Search and Browse', desc: 'On desktop, type a title in the header search box and press Enter. On mobile, tap the search icon first. Open a result for its overview, cast and external player options. To explore without a title in mind, use the Movies, TV Shows, Anime or Genres navigation.', links: [{ text: 'Browse Movies', href: '/movies' }, { text: 'Browse TV Shows', href: '/tv' }, { text: 'Search Questions', href: '/faq' }] },
+            { icon: '\ud83d\udda5\ufe0f', title: 'Playback and Full Screen', desc: 'Choose a server above the player; if it fails, try another listed server. Use Full screen outside the embedded video. External services control availability, quality, ads and redirects, and mobile fullscreen support can vary. A catalog listing is not a playback guarantee.', links: [{ text: 'Playback Questions', href: '/faq' }, { text: 'Report a Playback Problem', href: '/contact' }] },
+            { icon: '\ud83d\udccb', title: 'My List and Saved Titles', desc: 'Use the My List control on a title page to save or unsave it, then open My List to review your saved titles. Records stay in this browser and do not sync between devices. Clearing browser storage can remove them; saving a title does not download the video.', links: [{ text: 'Open My List', href: '/my-list' }, { text: 'Local Preferences', href: '/account' }] },
+            { icon: '\ud83d\udd12', title: 'Privacy and Local Storage', desc: 'Cookie Preferences controls optional Google Analytics. Hosting, metadata, image and external-player requests still contact other services. Read the Privacy Policy to understand these limits and the watchlist, recently viewed and consent records kept in this browser.', links: [{ text: 'Read the Privacy Policy', href: '/privacy' }, { text: 'Manage Cookie Preferences', href: '/cookies' }] },
+            { icon: '\ud83d\udcdc', title: 'Terms and Content Attribution', desc: 'The legal pages explain site terms, TMDB metadata attribution and independent external providers. Each provider has its own terms and privacy practices. These notices do not verify media rights or guarantee that a title is available or authorized in your region.', links: [{ text: 'Read the Terms of Use', href: '/terms' }, { text: 'Read Legal Notices', href: '/legal' }] },
+            { icon: '\ud83d\udcac', title: 'Contact the Operator', desc: 'For a problem report, include the title URL, selected server, device, browser and error text. The Contact form opens a prepared draft in your email app; send it there yourself. Do not include passwords, payment information or other sensitive details.', links: [{ text: 'Open the Contact Form', href: '/contact' }] }
         ];
 
         app.innerHTML = `
@@ -1500,7 +1504,7 @@ const pages = {
                     ${helpCategories.map(cat => `
                         <div class="help-card">
                             <div class="help-card-icon">${cat.icon}</div>
-                            <h3>${cat.title}</h3>
+                            <h2>${cat.title}</h2>
                             <p>${cat.desc}</p>
                             <div class="help-card-links">
                                 ${cat.links.map(link => `<a href="${link.href}">${link.text}</a>`).join('')}
@@ -2510,20 +2514,6 @@ window.navigateGenre = navigateGenre;
 window.navigateNew = navigateNew;
 
 // Static page helper functions
-function toggleFaq(index) {
-    const item = document.getElementById(`faq-item-${index}`);
-    const btn = item.querySelector('.faq-question');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(el => {
-        el.classList.remove('open');
-        el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-    });
-    if (!isOpen) {
-        item.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-    }
-}
-
 function handleContactSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -2552,7 +2542,6 @@ function toggleAnalyticsCookies(enabled) {
     }
 }
 
-window.toggleFaq = toggleFaq;
 window.handleContactSubmit = handleContactSubmit;
 window.clearWatchHistory = clearWatchHistory;
 window.toggleAnalyticsCookies = toggleAnalyticsCookies;

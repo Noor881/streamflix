@@ -4,6 +4,17 @@ const SITE = 'https://hdwatchzone.com';
 const SEO = require('./seo-core.js');
 const slug = SEO.slug;
 const staticRoutes = ['/', '/movies','/tv','/anime','/new','/faq','/help','/contact','/privacy','/terms','/legal', ...Object.keys(SEO.genres).map(id=>'/genre/'+id)];
+function titleURL(item, type) {
+    if (type !== 'movie' && type !== 'tv') throw new Error('Unsupported sitemap title type');
+    if (!item || typeof item !== 'object' || Array.isArray(item) || !Number.isSafeInteger(item.id) || item.id < 1) {
+        throw new Error('Invalid sitemap title identifier');
+    }
+    if (type === 'movie' && item.id === 928480) return null;
+    if (item.media_type !== undefined && item.media_type !== type) throw new Error('Unexpected sitemap media type');
+    const name = type === 'movie' ? item.title : item.name;
+    if (typeof name !== 'string' || !name.trim()) throw new Error('Missing sitemap title name');
+    return `${SITE}/${type}/${item.id}-${slug(name)}`;
+}
 async function generateSitemap() {
     const urls = new Set(staticRoutes.map(route => SITE + route));
     const jobs = ['movie/popular','movie/top_rated','movie/now_playing','movie/upcoming','trending/movie/week','tv/popular','tv/top_rated','tv/on_the_air','tv/airing_today','trending/tv/week'].flatMap(endpoint => Array.from({length:10},(_,i)=>({endpoint,page:i+1})));
@@ -17,8 +28,8 @@ async function generateSitemap() {
             if (!Array.isArray(data.results) || !data.results.length) throw new Error('Empty sitemap metadata');
             const type = endpoint.startsWith('movie/') || endpoint.includes('/movie/') ? 'movie' : 'tv';
             for (const item of data.results) {
-                if (type === 'movie' && item.id === 928480) continue;
-                urls.add(`${SITE}/${type}/${item.id}-${slug(item.title || item.name)}`);
+                const url = titleURL(item, type);
+                if (url) urls.add(url);
             }
         }
     }
@@ -28,4 +39,4 @@ async function generateSitemap() {
     console.log(`Sitemap generated: ${urls.size} URLs, including categories and public information pages.`);
 }
 if (require.main === module) generateSitemap().catch(error=>{console.error(error.message); process.exitCode=1;});
-module.exports = {generateSitemap,staticRoutes};
+module.exports = {generateSitemap,staticRoutes,titleURL};

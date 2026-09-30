@@ -49,6 +49,33 @@ function compositedBackground(overlay, background) {
     return '#' + [0, 1, 2].map(index => Math.round(Number(rgba[index + 1]) * alpha + parseInt(base.slice(index * 2, index * 2 + 2), 16) * (1 - alpha)).toString(16).padStart(2, '0')).join('');
 }
 
+test('Help instructions and body-text links remain readable without relying on hover or color alone', () => {
+    const background = declarations('.help-card', pageCss).background;
+    minimum(declarations('.help-card p', pageCss).color, background, 'Help instructions');
+    const style = declarations('.help-card-links a', pageCss);
+    minimum(style.color, background, 'Help links');
+    minimum(declarations('.help-card-links a:hover', pageCss).color, background, 'Hovered Help links');
+    assert.equal(style['text-decoration'], 'underline');
+    assert.equal(style['overflow-wrap'], 'anywhere');
+});
+
+test('hero CTA shadows are static at rest without the previous infinite box-shadow repaint', () => {
+    const style = declarations('.btn-cineby-primary', pageCss);
+    assert.ok(style.animation === undefined || style.animation === 'none');
+    assert.ok(style['box-shadow'] && style['box-shadow'] !== 'none');
+    assert.ok(!/btn-glow/.test(pageCss));
+    assert.ok(declarations('.btn-cineby-primary:hover', pageCss)['box-shadow']);
+});
+
+test('native FAQ disclosures have readable answers, visible keyboard focus and no fixed height clipping', () => {
+    const style = declarations('.faq-answer', pageCss);
+    for (const property of ['height', 'max-height']) assert.ok(style[property] === undefined || style[property] === 'none', property);
+    assert.notEqual(style.overflow, 'hidden');
+    assert.equal(style['overflow-wrap'], 'anywhere');
+    assert.ok(declarations('.faq-question:focus-visible', pageCss).outline);
+    minimum(declarations('.faq-answer p', pageCss).color, declarations('body', pageCss).background, 'FAQ answers');
+});
+
 test('Contact and Legal normal text and permanently underlined links meet 4.5:1 in the actual page stylesheet cascade', () => {
     const body = declarations('body', pageCss);
     const pageBackground = body.background || body['background-color'];

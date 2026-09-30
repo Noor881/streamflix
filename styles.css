@@ -3282,6 +3282,7 @@ ol {
 }
 
 .faq-question {
+    list-style: none;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -3302,24 +3303,27 @@ ol {
     background: var(--color-bg-tertiary);
 }
 
+.faq-question::-webkit-details-marker {
+    display: none;
+}
+
+.faq-question:focus-visible {
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: -3px;
+}
+
 .faq-icon {
     flex-shrink: 0;
     transition: transform var(--transition-base);
 }
 
-.faq-item.open .faq-icon {
+.faq-item[open] .faq-icon {
     transform: rotate(180deg);
 }
 
 .faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, padding 0.35s ease;
-}
-
-.faq-item.open .faq-answer {
-    max-height: 300px;
     padding: 0 var(--spacing-lg) var(--spacing-lg);
+    overflow-wrap: anywhere;
 }
 
 .faq-answer p {
@@ -3366,7 +3370,7 @@ ol {
     margin-bottom: var(--spacing-md);
 }
 
-.help-card h3 {
+.help-card h2 {
     font-size: var(--font-size-lg);
     font-weight: 700;
     margin-bottom: var(--spacing-sm);
@@ -3374,7 +3378,7 @@ ol {
 }
 
 .help-card p {
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
     line-height: 1.6;
     margin-bottom: var(--spacing-md);
@@ -3387,15 +3391,17 @@ ol {
 }
 
 .help-card-links a {
-    color: var(--color-primary);
+    color: var(--color-text-primary);
     font-size: var(--font-size-sm);
     font-weight: 500;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    overflow-wrap: anywhere;
     transition: color var(--transition-fast);
 }
 
 .help-card-links a:hover {
-    color: #ff4444;
+    color: var(--color-text-primary);
     text-decoration: underline;
 }
 
@@ -4085,15 +4091,7 @@ textarea,
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Hero CTA button glow pulse --- */
-.btn-cineby-primary {
-    animation: btn-glow 3s ease-in-out infinite;
-}
-
-@keyframes btn-glow {
-    0%, 100% { box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
-    50%       { box-shadow: 0 4px 30px rgba(255,255,255,0.35); }
-}
+/* Hero CTAs retain their normal/hover shadows without a continuous paint animation. */
 
 /* --- Scrollbar style for main content --- */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
