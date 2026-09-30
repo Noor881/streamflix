@@ -4,6 +4,16 @@ const SEO = require('../seo-core.js');
 const SSR = require('../server/ssr.js');
 const escape = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const json = value => JSON.stringify(value).replace(/</g,'\\u003c');
+function validateTitleData(data, type, requestedId) {
+    if (!data || typeof data !== 'object' || Array.isArray(data) ||
+        !Number.isSafeInteger(data.id) || data.id !== requestedId) throw new Error('Unexpected title identity');
+    const name = type === 'movie' ? data.title : data.name;
+    if (typeof name !== 'string' || !name.trim()) throw new Error('Incomplete title metadata');
+    if (data.media_type !== undefined && data.media_type !== type) throw new Error('Unexpected title media type');
+    for (const key of ['overview', 'release_date', 'first_air_date']) {
+        if (data[key] != null && typeof data[key] !== 'string') throw new Error('Invalid title text metadata');
+    }
+}
 function errorResponse(res,status,message) {
     res.statusCode=status; res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','no-store'); res.setHeader('X-Robots-Tag','noindex, follow');
@@ -18,13 +28,15 @@ module.exports = async function render(req,res) {
         const match=String(query.id || '').match(/^(\d+)(?:-[^/]+)?$/);
         if(!match) return errorResponse(res,404,'Title not found');
         const id=match[1];
-        if(type==='movie' && id==='928480') return errorResponse(res,410,'This title has been removed');
+        const numericId=Number(id);
+        if(!Number.isSafeInteger(numericId) || numericId<1) return errorResponse(res,404,'Title not found');
+        if(type==='movie' && numericId===928480) return errorResponse(res,410,'This title has been removed');
         try {
             const response=await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=d74b73cd4563f614919e6493152fbc1e&append_to_response=credits,videos,recommendations`,{signal:AbortSignal.timeout(10000)});
             if(response.status===404) return errorResponse(res,404,'Title not found');
             if(!response.ok) throw new Error('Metadata unavailable');
             data=await response.json();
-            if(!data.id || !(data.title || data.name)) throw new Error('Incomplete title metadata');
+            validateTitleData(data,type,numericId);
         } catch { return errorResponse(res,503,'Title information is temporarily unavailable. Please retry shortly.'); }
         meta={...SEO.titleMeta(data,type),noindex:false,robots:'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'};
         const season=Number(query.s || 1),episode=Number(query.e || 1);
