@@ -10,6 +10,8 @@
 .card-wrapper > .card-info { width: 100%; height: 84px; padding: 10px 2px 0; overflow: hidden; }
 .card-info-title, .trending-card-title, .reco-card-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; overflow: hidden; overflow-wrap: anywhere; font-size: 13px; line-height: 18px; height: 36px; margin: 0 0 4px; }
 .card-info-desc { display: block; color: #b1bac9; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-progress-bar { position: absolute; bottom: 0; inset-inline: 0; height: 3px; background: rgba(255,255,255,.2); }
+.recent-progress-fill { height: 100%; background: #e50914; }
 .content-grid { grid-template-columns: repeat(auto-fill, var(--poster-card-width)); }
 .content-grid > .card-wrapper { width: 100%; min-width: 0; max-width: 100%; }
 .trending-grid, .reco-grid { display: grid; grid-template-columns: repeat(auto-fill, var(--poster-card-width)); align-items: start; gap: 16px; }

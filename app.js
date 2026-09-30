@@ -397,39 +397,38 @@ const components = {
         `;
     },
 
-    // Continue watching card
+    // Recently viewed cards use the same portrait shell as the catalog.
     continueCard(item) {
         const title = item.title || item.name;
+        const mediaType = item.media_type || item.type || 'movie';
         const posterUrl = item.poster || (item.poster_path ? utils.getImageUrl(item.poster_path, 'medium') : utils.getImageUrl(null));
-        const slug = item.slug || utils.createSlug(title);
-        const route = item.type === 'movie'
+        const slug = utils.createSlug(title);
+        const season = Math.max(0, parseInt(item.season, 10) || 0);
+        const episode = Math.max(1, parseInt(item.episode, 10) || 1);
+        const route = mediaType === 'movie'
             ? `/movie/${item.id}-${slug}`
-            : `/tv/${item.id}-${slug}${item.season ? `/${item.season}/${item.episode || 1}` : ''}`;
-        const progressPercent = item.progressVerified ? Math.min(100, item.progress || 0) : 0;
+            : `/tv/${item.id}-${slug}${season ? `/${season}/${episode}` : ''}`;
+        const progressPercent = item.progressVerified ? Math.max(0, Math.min(100, Number(item.progress) || 0)) : 0;
         // Estimate time left
         const runtime = item.runtime || 120;
         const watchedMin = Math.round((progressPercent / 100) * runtime);
         const leftMin = Math.max(1, runtime - watchedMin);
         const leftLabel = progressPercent > 0 ? `${leftMin}m left` : 'Recently opened';
-        const episodeLabel = item.season ? `S${item.season} E${item.episode || 1}` : '';
+        const episodeLabel = mediaType === 'tv' && season ? `S${season} E${episode}` : '';
 
         return `
-            <a href="${route}" class="continue-card">
-                <div class="continue-card-thumb">
-                    <img src="${posterUrl}" alt="${utils.sanitize(title)}" loading="lazy" onerror="imgErr(this)">
-                    <div class="continue-card-play">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+            <a href="${route}" class="card-wrapper recent-card" data-id="${item.id}" data-type="${mediaType}">
+                <div class="card">
+                    <img src="${utils.sanitize(posterUrl)}" alt="${utils.sanitize(title)}" class="card-poster" loading="lazy" onerror="imgErr(this)">
+                    <div class="card-overlay">
+                        <div class="card-meta"><span class="card-type">${mediaType === 'movie' ? 'Movie' : 'TV'}</span></div>
                     </div>
-                    <div class="continue-progress-bar">
-                        <div class="continue-progress-fill" style="width:${progressPercent}%"></div>
-                    </div>
+                    <div class="card-play"></div>
+                    ${progressPercent > 0 ? `<div class="recent-progress-bar"><div class="recent-progress-fill" style="width:${progressPercent}%"></div></div>` : ''}
                 </div>
-                <div class="continue-card-info">
-                    <div class="continue-card-title">${utils.sanitize(title)}</div>
-                    <div class="continue-card-meta">
-                        ${episodeLabel ? `<span class="continue-ep">${episodeLabel}</span>` : ''}
-                        <span class="continue-left">${leftLabel}</span>
-                    </div>
+                <div class="card-info">
+                    <h3 class="card-info-title">${utils.sanitize(title)}</h3>
+                    <p class="card-info-desc">${episodeLabel ? `${episodeLabel} <span>•</span> ` : ''}${leftLabel}</p>
                 </div>
             </a>
         `;
@@ -918,7 +917,7 @@ const pages = {
                         <div class="section-header">
                             <h2 class="section-title">Recently Viewed</h2>
                         </div>
-                        <div class="continue-row">${cwCards}</div>
+                        <div class="content-row recent-row">${cwCards}</div>
                     </section>`;
             }
 
@@ -2237,12 +2236,18 @@ function startHeroCarousel() {
     if (!carousel) return;
     if (carousel && !carousel.dataset.rotationBound) {
         carousel.dataset.rotationBound = 'true';
-        carousel.addEventListener('pointerenter', stopHeroCarousel);
-        carousel.addEventListener('pointerleave', startHeroCarousel);
+        currentSlide = Math.max(0, [...carousel.querySelectorAll('.hero-slide')].findIndex(slide => slide.classList.contains('active')));
+        const pauseButton = carousel.querySelector('.hero-pause');
+        if (pauseButton) {
+            pauseButton.textContent = heroPaused ? 'Resume slideshow' : 'Pause slideshow';
+            pauseButton.setAttribute('aria-pressed', String(heroPaused));
+        }
+        carousel.addEventListener('pointerenter', event => { if (event.pointerType !== 'touch') { carousel.dataset.pointerPaused = 'true'; stopHeroCarousel(); } });
+        carousel.addEventListener('pointerleave', () => { delete carousel.dataset.pointerPaused; startHeroCarousel(); });
         carousel.addEventListener('focusin', stopHeroCarousel);
         carousel.addEventListener('focusout', event => { if (!carousel.contains(event.relatedTarget)) startHeroCarousel(); });
     }
-    if (heroPaused || document.hidden || carousel?.contains(document.activeElement) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (heroPaused || document.hidden || carousel.dataset.pointerPaused || carousel.contains(document.activeElement) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     // Clear any existing interval
     if (heroCarouselInterval) {
         clearInterval(heroCarouselInterval);
@@ -2348,23 +2353,30 @@ async function loadGenres() {
 // ==========================================
 function initHeroSwipe() {
     const heroCarousel = document.getElementById('hero-carousel');
-    if (!heroCarousel) return;
+    if (!heroCarousel || heroCarousel.dataset.swipeBound) return;
+    heroCarousel.dataset.swipeBound = 'true';
 
     let touchStartX = 0;
-    let touchEndX = 0;
+    let touchStartY = 0;
+    let swipeStarted = false;
 
     heroCarousel.addEventListener('touchstart', (e) => {
+        swipeStarted = e.touches.length === 1 && !e.target.closest('a, button, input');
         touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     heroCarousel.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 50) {
+        if (!swipeStarted) return;
+        swipeStarted = false;
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        const verticalDiff = touchStartY - e.changedTouches[0].screenY;
+        if (Math.abs(diff) > 50 && Math.abs(diff) > Math.abs(verticalDiff) * 1.25) {
             if (diff > 0) nextSlide();
             else prevSlide();
         }
     }, { passive: true });
+    heroCarousel.addEventListener('touchcancel', () => { swipeStarted = false; }, { passive: true });
 }
 
 // ==========================================
