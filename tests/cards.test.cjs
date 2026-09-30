@@ -68,5 +68,5 @@ test('saved cards share authoritative portrait sizing without the old landscape 
     const design = fs.readFileSync('design-v2.css', 'utf8');
     assert.ok(!design.includes('.continue-card-thumb'));
     assert.ok(!design.includes('min(360px, 78vw)'));
-    for (const file of ['index.html', 'movie.html', 'tv.html']) assert.ok(!fs.readFileSync(file, 'utf8').includes('scripts/watchlist.js'));
+    for (const file of ['index.html', 'movie.html', 'tv.html']) assert.ok(!fs.readFileSync(`server/templates/${file}`, 'utf8').includes('scripts/watchlist.js'));
 });

@@ -76,7 +76,9 @@ test('homepage SSR, permanent index alias, and slash policy agree with canonical
     assert.equal(config.trailingSlash,false);
     assert.ok(!config.redirects.some(rule => rule.source.includes('928480')),'renderer emits a real removal response');
     assert.ok(config.functions['api/render.js'].includeFiles.includes('app.js'));
+    assert.ok(config.functions['api/render.js'].includeFiles.includes('detail.js'));
     assert.ok(config.functions['api/render.js'].includeFiles.includes('seo-core.js'));
+    assert.ok(config.functions['api/render.js'].includeFiles.includes('server/templates/*.html'));
 });
 
 test('the www host canonical redirect is permanent and cannot redirect the apex to itself', () => {

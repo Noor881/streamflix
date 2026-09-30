@@ -65,7 +65,7 @@ module.exports = async function render(req,res) {
             if(items.length && route!=='home' && !meta.noindex) schema={'@context':'https://schema.org','@type':'CollectionPage',name:meta.title,url:meta.canonical,mainEntity:{'@type':'ItemList',itemListElement:items.map((item,i)=>({'@type':'ListItem',position:i+1,url:SEO.titleMeta(item,item.media_type || (item.name?'tv':'movie')).canonical,name:item.title||item.name}))}};
         } catch(error) { return errorResponse(res,error.status||503,error.status===404?'Page not found':'Catalog information is temporarily unavailable. Please retry shortly.'); }
     }
-    let html=fs.readFileSync(path.resolve(__dirname,'..',isDetail?`${type}.html`:'index.html'),'utf8');
+    let html=fs.readFileSync(path.resolve(__dirname,'..','server','templates',isDetail?`${type}.html`:'index.html'),'utf8');
     html=html.replace(/<title>[\s\S]*?<\/title>/,`<title>${escape(meta.title)}</title>`);
     const values={title:meta.title,description:meta.description,robots:meta.robots,'og:title':meta.title,'og:description':meta.description,'og:url':meta.canonical,'og:image':image,'twitter:title':meta.title,'twitter:description':meta.description,'twitter:url':meta.canonical,'twitter:image':image};
     for(const [key,value] of Object.entries(values)) {

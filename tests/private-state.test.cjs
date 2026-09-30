@@ -21,7 +21,7 @@ test('private agent key, context and personalized rules are untracked and Git-ig
 
 test('deployment ignores exclude private state without excluding SSR or public assets', () => {
     for (const file of privateFiles) assert.equal(deploymentExcluded(file),true,file);
-    for (const file of ['api/render.js','server/ssr.js','seo-core.js','app.js','detail.js','index.html','movie.html','tv.html','cards.css','sitemap.xml','robots.txt','docs/editorial-drafts.md']) {
+    for (const file of ['api/render.js','server/ssr.js','seo-core.js','app.js','detail.js','server/templates/index.html','server/templates/movie.html','server/templates/tv.html','cards.css','sitemap.xml','robots.txt','docs/editorial-drafts.md']) {
         assert.equal(deploymentExcluded(file),false,file);
         assert.ok(fs.existsSync(path.join(root,file)),file);
     }

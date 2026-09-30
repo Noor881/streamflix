@@ -8,3 +8,7 @@
 AGENT.md
 CLAUDE.md
 .agent-mem/
+
+# Generated allowlisted deployment assets and their ownership manifest.
+/public/
+/public.streamflix-build.json

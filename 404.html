@@ -295,7 +295,7 @@
                 </svg>
                 Go Home
             </a>
-            <a href="/#/movies" class="btn btn-outline">
+            <a href="/movies" class="btn btn-outline">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="M21 21l-4.35-4.35"></path>
@@ -321,37 +321,51 @@
         const TMDB_KEY = 'd74b73cd4563f614919e6493152fbc1e';
         const IMG_BASE = 'https://image.tmdb.org/t/p/w342';
 
+        function escapeTrendingHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+        }
+
+        function renderTrendingCards(results) {
+            const items = (Array.isArray(results) ? results : []).filter(item =>
+                item && (item.media_type === 'movie' || item.media_type === 'tv') &&
+                Number.isSafeInteger(item.id) && item.id > 0 &&
+                typeof item.poster_path === 'string' &&
+                /^\/[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)$/i.test(item.poster_path)
+            ).slice(0, 12);
+
+            return items.map(item => {
+                const title = escapeTrendingHtml(item.title || item.name || 'Untitled');
+                const poster = escapeTrendingHtml(`${IMG_BASE}${item.poster_path}`);
+                const href = escapeTrendingHtml(`/${item.media_type}/${item.id}`);
+                const rating = typeof item.vote_average === 'number' &&
+                    Number.isFinite(item.vote_average) && item.vote_average > 0 && item.vote_average <= 10
+                    ? item.vote_average.toFixed(1) : '';
+
+                return `
+                    <div class="trending-card">
+                        <img src="${poster}" alt="${title}" loading="lazy">
+                        <a href="${href}">
+                            <div>
+                                <div class="trending-card-title">${title}</div>
+                                ${rating ? `<div class="trending-card-rating">★ ${rating}</div>` : ''}
+                            </div>
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+
         async function loadTrending() {
             try {
                 const res = await fetch(
                     `https://api.themoviedb.org/3/trending/all/day?api_key=${TMDB_KEY}`
                 );
+                if (!res.ok) throw new Error('Trending request failed');
                 const data = await res.json();
-                const items = data.results.slice(0, 12);
                 const grid = document.getElementById('trending-grid');
-
-                grid.innerHTML = items.map(item => {
-                    const title = item.title || item.name;
-                    const type = item.media_type === 'movie' ? 'movie' : 'tv';
-                    const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
-                    const poster = item.poster_path
-                        ? `${IMG_BASE}${item.poster_path}`
-                        : '';
-
-                    if (!poster) return '';
-
-                    return `
-                        <div class="trending-card">
-                            <img src="${poster}" alt="${title}" loading="lazy">
-                            <a href="/${type}/${item.id}">
-                                <div>
-                                    <div class="trending-card-title">${title}</div>
-                                    ${rating ? `<div class="trending-card-rating">★ ${rating}</div>` : ''}
-                                </div>
-                            </a>
-                        </div>
-                    `;
-                }).join('');
+                grid.innerHTML = renderTrendingCards(data.results);
             } catch {
                 document.getElementById('trending-grid').innerHTML =
                     '<p style="color:#666">Could not load trending content.</p>';

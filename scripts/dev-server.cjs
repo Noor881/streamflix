@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const config = require('../vercel.json');
+const publicFiles = new Set(require('./build-static.cjs').publicAssets());
 
 function routeForURL(url) {
     const pathname = decodeURIComponent(url.pathname);
@@ -17,7 +18,7 @@ function routeForURL(url) {
         return {...params, route:'show', id:tv?.[1] || params.id, ...(tv?.[2] ? {s:tv[2],e:tv[3]} : {})};
     }
     if (genre) return {...params,route:'genre',id:genre[1]};
-    const rewrite = config.rewrites.find(rule => rule.source === pathname && rule.destination.startsWith('/api/render'));
+    const rewrite = config.rewrites.find(rule => !rule.has && rule.source === pathname && rule.destination.startsWith('/api/render'));
     if (rewrite) return {...params,...Object.fromEntries(new URL(rewrite.destination,'http://localhost').searchParams)};
     if (pathname === '/api/render' || pathname === '/api/render.js') return params;
     return null;
@@ -61,7 +62,8 @@ function createPreviewServer(options = {}) {
         }
         if (pathname === '/admin') pathname = '/admin.html';
         const file = path.resolve(root,'.' + pathname);
-        if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+        const relative = path.relative(root,file).split(path.sep).join('/');
+        if (!file.startsWith(root + path.sep) || !publicFiles.has(relative) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
             res.writeHead(404,{'Content-Type':'text/plain','X-Robots-Tag':'noindex'});res.end('Not found');return;
         }
         const mime = {'.html':'text/html','.js':'text/javascript','.cjs':'text/javascript','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.svg':'image/svg+xml','.json':'application/json','.xml':'application/xml','.ico':'image/x-icon','.md':'text/markdown'};

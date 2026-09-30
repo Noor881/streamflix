@@ -13,6 +13,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
+      - name: Build allowlisted public assets without upstream requests
+        run: npm run build:static
       - name: Check browser and server JavaScript
         run: |
           node --check app.js
@@ -25,3 +27,5 @@ jobs:
           node --check seo-core.js
           node --check scripts/dev-server.cjs
           node --check scripts/auto-blogger.js
+          node --check scripts/build.cjs
+          node --check scripts/build-static.cjs

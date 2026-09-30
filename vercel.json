@@ -1,6 +1,6 @@
 {
-    "buildCommand": "node generate-sitemap.js",
-    "outputDirectory": ".",
+    "buildCommand": "npm run build",
+    "outputDirectory": "public",
     "framework": null,
     "cleanUrls": false,
     "trailingSlash": false,
@@ -310,7 +310,7 @@
     ],
     "functions": {
         "api/render.js": {
-            "includeFiles": "{index.html,movie.html,tv.html,app.js,detail.js,seo-core.js}",
+            "includeFiles": "{server/templates/*.html,app.js,detail.js,seo-core.js}",
             "maxDuration": 30
         }
     }

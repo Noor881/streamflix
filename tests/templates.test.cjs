@@ -7,7 +7,7 @@ const templates = ['index.html', 'movie.html', 'tv.html'];
 
 test('templates execute shared SEO before application or detail scripts', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         const scripts = [...html.matchAll(/<script\b([^>]*)\bsrc="([^"]+)"([^>]*)>/g)].map(match => ({
             path: new URL(match[2], 'https://hdwatchzone.com').pathname,
             attributes: match[1] + match[3]
@@ -24,10 +24,10 @@ test('templates execute shared SEO before application or detail scripts', () => 
 
 test('template navigation uses real clean URLs rather than hash routes', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         assert.doesNotMatch(html, /href=["'](?:\/)?#\//, `${file}: no hash-based internal anchors`);
     }
-    const home = fs.readFileSync('index.html', 'utf8');
+    const home = fs.readFileSync('server/templates/index.html', 'utf8');
     for (const path of ['/', '/movies', '/tv', '/anime', '/new', '/my-list', '/faq', '/help', '/contact', '/privacy', '/terms', '/cookies', '/legal']) {
         assert.ok(home.includes(`href="${path}"`), `clean navigation to ${path}`);
     }
@@ -35,7 +35,7 @@ test('template navigation uses real clean URLs rather than hash routes', () => {
 
 test('template inline scripts and JSON-LD parse and verification tags remain', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         assert.match(html, /name="google-site-verification"/);
         assert.match(html, /name="facebook-domain-verification"/);
         for (const [, attributes, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
@@ -54,7 +54,7 @@ function linkAttribute(tag, name) {
 
 test('Inter does not block screen rendering and activates once loaded', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         const withoutNoscript = html.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/g, '');
         const fontLinks = [...withoutNoscript.matchAll(/<link\b[^>]*>/g)]
             .map(match => match[0])
@@ -78,7 +78,7 @@ test('Inter does not block screen rendering and activates once loaded', () => {
 
 test('Inter has a matching normal stylesheet fallback when JavaScript is disabled', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         const fallbackLinks = [...html.matchAll(/<noscript\b[^>]*>([\s\S]*?)<\/noscript>/g)]
             .flatMap(match => [...match[1].matchAll(/<link\b[^>]*>/g)].map(link => link[0]))
             .filter(tag => (linkAttribute(tag, 'href') || '').startsWith('https://fonts.googleapis.com/css2?'));
@@ -95,7 +95,7 @@ test('Inter has a matching normal stylesheet fallback when JavaScript is disable
 
 test('layout styles remain blocking and ordered after the optional font declaration', () => {
     for (const file of templates) {
-        const html = fs.readFileSync(file, 'utf8');
+        const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         const expected = file === 'index.html'
             ? ['/nav.css', '/styles.css', '/responsive.css', '/design-v2.css', '/cards.css']
             : ['/nav.css', '/detail.css', '/seo-enhancements.css', '/responsive.css', '/design-v2.css', '/cards.css'];

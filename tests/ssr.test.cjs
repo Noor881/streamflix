@@ -235,6 +235,8 @@ test('preview routing preserves search, catalog and episode parameters and canno
     assert.deepEqual(routeForURL(url('/genre/invalid?page=3')),{page:'3',route:'genre',id:'invalid'});
     assert.equal(routeForURL(url('/movie/550/extra')),null);
     assert.equal(routeForURL(url('/tv/1396/2')),null);
+    assert.equal(routeForURL(url('/movie.html')),null);
+    assert.equal(routeForURL(url('/tv.html')),null);
 });
 
 test('preview HTTP serves homepage SSR and query routes, redirects aliases, and keeps malformed routes non-indexable 404',async()=>{
@@ -250,6 +252,9 @@ test('preview HTTP serves homepage SSR and query routes, redirects aliases, and 
             assert.equal(result.headers.get('location'),path.startsWith('/index')?'/?page=2':'/movies?page=2');
         }
         const malformed=await fetch(base+'/movie/550/extra');assert.equal(malformed.status,404);assert.equal(malformed.headers.get('x-robots-tag'),'noindex');
+        for (const path of ['/movie.html','/tv.html','/server/templates/index.html','/server/templates/movie.html','/.brainsync/.context-key','/.cursor/active-context.md','/tests/core.test.cjs','/scripts/auto-blogger.js']) {
+            const result=await fetch(base+path);assert.equal(result.status,404,path);
+        }
         const offline=await fetch(base+'/offline.html');assert.equal(offline.status,200);assert.equal(offline.headers.get('x-robots-tag'),'noindex, follow');
         assert.equal(requests.length,2);
     } finally {await new Promise(resolve=>server.close(resolve));}

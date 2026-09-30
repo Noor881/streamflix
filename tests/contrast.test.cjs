@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const css = fs.readFileSync('design-v2.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const detailCss = fs.readFileSync('detail.css', 'utf8');
-const html = fs.readFileSync('index.html', 'utf8');
+const html = fs.readFileSync('server/templates/index.html', 'utf8');
 
 function declarations(selector, source = css) {
     const result = {};

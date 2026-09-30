@@ -8,3 +8,7 @@ CLAUDE.md
 # Agent encryption material, context and personalized rules are not site assets.
 .brainsync/
 .cursor/active-context.md
+
+# Rebuilt from reviewed source on Vercel; never upload local generated output.
+/public/
+/public.streamflix-build.json

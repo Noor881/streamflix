@@ -37,7 +37,7 @@ test('cards escape titles and Trending owns only one row ID',()=>{
 test('TV slug URL retains season and episode',()=>{
     const pattern=/\/tv\/(\d+)(?:-[^/]+)?(?:\/(\d+))?(?:\/(\d+))?/;
     assert.deepEqual('/tv/1396-breaking-bad/2/3'.match(pattern).slice(1),['1396','2','3']);
-    assert.ok(fs.readFileSync('tv.html','utf8').includes(String(pattern)));
+    assert.ok(fs.readFileSync('server/templates/tv.html','utf8').includes(String(pattern)));
 });
 test('watchlist migration keeps same numeric ID for movie and TV',()=>{
     const data=new Map([['watchlist',JSON.stringify([{id:10,title:'Movie',type:'movie',poster:'https://image.tmdb.org/t/p/w342/a.jpg'}])],['streamflix_my_list',JSON.stringify([{id:10,name:'TV',media_type:'tv'}])]]);
