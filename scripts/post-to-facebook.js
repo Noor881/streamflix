@@ -28,28 +28,28 @@ const FACEBOOK_PAGES = [
 
 const POST_TEMPLATES = [
     (m, r, y, link) =>
-        `🔗 ${link}\n\n🎬 ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ Rating: ${r}` : ''}\n\n🍿 Watch now free on HD Watchzone!`,
+        `🔗 ${link}\n\n🎬 ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n🍿 Explore title information on HD Watchzone.`,
     (m, r, _y, link) =>
-        `🔗 ${link}\n\n🔥 NOW STREAMING: ${m.title}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n👉 Stream free in HD now!`,
+        `🔗 ${link}\n\n🎬 Discover: ${m.title}\n\n${m.overview}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n👉 Browse cast, genres and title information.`,
     (m, r, _y, link) =>
-        `🔗 ${link}\n\n🎥 Don't miss ${m.title}!\n\n${m.overview}\n\n${r ? `⭐ IMDb: ${r}` : ''}\n\n🍿 Free HD streaming!`,
+        `🔗 ${link}\n\n🎥 Explore ${m.title}\n\n${m.overview}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n🍿 Find title information on HD Watchzone.`,
     (m, r, y, link) =>
-        `🔗 ${link}\n\n📺 Featured: ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n🎬 Available now in HD!`,
+        `🔗 ${link}\n\n📺 Featured title: ${m.title}${y ? ` (${y})` : ''}\n\n${m.overview}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n🎬 Explore the overview and cast.`,
     (m, r, _y, link) =>
-        `🔗 ${link}\n\n🌟 ${m.title} is now available!\n\n${m.overview}\n\n${r ? `⭐ ${r}` : ''}\n\n▶️ Watch free in HD!`,
+        `🔗 ${link}\n\n🌟 Discover ${m.title}\n\n${m.overview}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n🎬 Browse title information and related movies.`,
 ];
 
 const TWEET_TEMPLATES = [
     (m, r, link, desc) =>
-        `🔗 ${link}\n\n🎬 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#Movies #Streaming #FreeMovies`,
+        `🔗 ${link}\n\n🎬 ${m.title}\n\n${desc}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n#Movies #MovieDiscovery`,
     (m, r, link, desc) =>
-        `🔗 ${link}\n\n🔥 Now Streaming: ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#NowPlaying #HDMovies #WatchFree`,
+        `🔗 ${link}\n\n🎬 Discover: ${m.title}\n\n${desc}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n#Movies #FilmInfo`,
     (m, r, link, desc) =>
-        `🔗 ${link}\n\n🎥 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#MovieNight #FreeStreaming`,
+        `🔗 ${link}\n\n🎥 ${m.title}\n\n${desc}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n#MovieNight #FilmDiscovery`,
     (m, r, link, desc) =>
-        `🔗 ${link}\n\n📺 ${m.title}\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#Movies #HDWatchzone`,
+        `🔗 ${link}\n\n📺 ${m.title}\n\n${desc}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n#Movies #HDWatchzone`,
     (m, r, link, desc) =>
-        `🔗 ${link}\n\n🌟 Don't miss ${m.title}!\n\n${desc}\n\n${r ? `⭐ ${r}` : ''}\n\n#MovieTime #Free`,
+        `🔗 ${link}\n\n🌟 Explore ${m.title}\n\n${desc}\n\n${r ? `⭐ TMDB community score: ${r}` : ''}\n\n#MovieTime #FilmInfo`,
 ];
 
 async function fetchJson(url) {

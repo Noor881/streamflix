@@ -5,17 +5,17 @@ HD Watchzone helps visitors search titles, browse genres and explore overviews, 
 
 ## Key Pages
 
-- Homepage: https://hdwatchzone.com/
-- Movies: https://hdwatchzone.com/movies
-- TV Shows: https://hdwatchzone.com/tv
-- Anime: https://hdwatchzone.com/anime
-- New & Popular: https://hdwatchzone.com/new
-- Action Movies: https://hdwatchzone.com/genre/28
-- Comedy Movies: https://hdwatchzone.com/genre/35
-- Drama: https://hdwatchzone.com/genre/18
-- Horror Movies: https://hdwatchzone.com/genre/27
-- Sci-Fi Movies: https://hdwatchzone.com/genre/878
-- Animation: https://hdwatchzone.com/genre/16
+- [Homepage](https://hdwatchzone.com/): Featured titles and catalog collections.
+- [Movies](https://hdwatchzone.com/movies): Browse the movie catalog.
+- [TV Shows](https://hdwatchzone.com/tv): Browse television series.
+- [Anime](https://hdwatchzone.com/anime): Browse the anime catalog.
+- [New & Popular](https://hdwatchzone.com/new): Recently released and popular titles.
+- [Action Movies](https://hdwatchzone.com/genre/28): Action movie collection.
+- [Comedy Movies](https://hdwatchzone.com/genre/35): Comedy movie collection.
+- [Drama](https://hdwatchzone.com/genre/18): Drama movie collection.
+- [Horror Movies](https://hdwatchzone.com/genre/27): Horror movie collection.
+- [Sci-Fi Movies](https://hdwatchzone.com/genre/878): Science-fiction movie collection.
+- [Animation](https://hdwatchzone.com/genre/16): Animated movie collection.
 
 ## Content
 
@@ -27,10 +27,10 @@ This file is a plain-language site summary for services that choose to read it. 
 
 ## Contact & Legal
 
-- Privacy Policy: https://hdwatchzone.com/privacy
-- Terms of Use: https://hdwatchzone.com/terms
-- Contact: https://hdwatchzone.com/contact
-- Legal Notices: https://hdwatchzone.com/legal
-- FAQ: https://hdwatchzone.com/faq
-- Help Center: https://hdwatchzone.com/help
-- Cookie Preferences: https://hdwatchzone.com/cookies
+- [Privacy Policy](https://hdwatchzone.com/privacy): Browser storage and third-party services.
+- [Terms of Use](https://hdwatchzone.com/terms): Conditions for using the site.
+- [Contact](https://hdwatchzone.com/contact): Site contact information.
+- [Legal Notices](https://hdwatchzone.com/legal): Content and attribution notices.
+- [FAQ](https://hdwatchzone.com/faq): Answers about the catalog and playback.
+- [Help Center](https://hdwatchzone.com/help): Browsing and playback troubleshooting.
+- [Cookie Preferences](https://hdwatchzone.com/cookies): Manage local browser preferences.

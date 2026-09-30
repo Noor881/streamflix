@@ -65,6 +65,11 @@ function imgUrl(path, size = 'w500') {
     return `${TMDB.IMG}/${size}${path}`;
 }
 
+function schemaPoster(path) {
+    // A blank visual placeholder is not a crawlable image of the title.
+    return typeof path === 'string' && /^\/[a-zA-Z0-9_-][a-zA-Z0-9._-]*\.(?:jpg|jpeg|png|webp)$/i.test(path) ? imgUrl(path, 'w780') : undefined;
+}
+
 function backdropUrl(path) {
     if (!path) return '';
     return `${TMDB.IMG}/w1280${path}`;
@@ -287,7 +292,7 @@ function buildMovieSchema(m) {
         '@type': 'Movie',
         name: m.title,
         description: m.overview,
-        image: imgUrl(m.poster_path, 'w780'),
+        image: schemaPoster(m.poster_path),
         datePublished: m.release_date,
         director: m.credits?.crew?.filter(c => c.job === 'Director').map(c => ({ '@type': 'Person', name: c.name })),
         actor: m.credits?.cast?.slice(0, 5).map(a => ({ '@type': 'Person', name: a.name })),
@@ -307,7 +312,7 @@ function buildTVSchema(tv) {
         '@type': 'TVSeries',
         name: tv.name,
         description: tv.overview,
-        image: imgUrl(tv.poster_path, 'w780'),
+        image: schemaPoster(tv.poster_path),
         datePublished: tv.first_air_date,
         numberOfSeasons: tv.number_of_seasons,
         numberOfEpisodes: tv.number_of_episodes,

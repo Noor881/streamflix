@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const {transformSync} = require('esbuild');
 const root = path.resolve(__dirname,'..');
 const OUTPUT_DIRECTORY = path.join(root,'public');
 const OWNER = 'streamflix-public-assets-v1';
@@ -14,6 +15,31 @@ const ROOT_ASSETS = [
 ];
 const SCRIPT_ASSETS = ['install.js','idb-helper.js','playback.js','recommendations.js','search.js','visitor-counter.js','watchlist.js'];
 const ICON_SIZES = [72,96,128,144,152,192,384,512];
+// Targets constrain syntax rewrites; they do not polyfill browser APIs or existing CSS features.
+const BROWSER_TARGETS = ['chrome90','edge90','firefox88','safari14'];
+
+function productionAsset(file,source) {
+    const extension=path.extname(file);
+    if (extension!=='.js' && extension!=='.css') return source;
+    const result=transformSync(source.toString('utf8'),{
+        loader:extension==='.css'?'css':'js',
+        // ES2020 matches syntax already present in the classic sources. Browser targets would
+        // also request unsupported Safari destructuring bug workarounds, outside this build's scope.
+        target:extension==='.css'?BROWSER_TARGETS:'es2020',
+        minifyWhitespace:true,
+        minifySyntax:true,
+        // Classic scripts share globals with inline handlers and other files. Preserve identifiers
+        // and properties; no format, bundling, tree shaking or property mangling.
+        minifyIdentifiers:false,
+        treeShaking:false,
+        legalComments:'inline',
+        charset:'utf8',
+        sourcemap:false,
+        logLevel:'silent'
+    });
+    if (result.warnings.length) throw new Error(`Refusing to publish ${file}: ${result.warnings.map(warning=>warning.text).join('; ')}`);
+    return Buffer.from(result.code,'utf8');
+}
 
 function publicAssets() {
     return [...ROOT_ASSETS,...SCRIPT_ASSETS.map(file=>'scripts/'+file),...ICON_SIZES.map(size=>`icons/icon-${size}x${size}.png`)];
@@ -55,13 +81,15 @@ function buildStatic({outputDirectory=OUTPUT_DIRECTORY}={}) {
         }
         inspectOutput(output,{root:output,files:assets});
     }
+    // Finish all transforms before touching generated output. A parse error preserves the old build.
+    const prepared=assets.map(file=>({file,contents:productionAsset(file,fs.readFileSync(path.join(root,file)))}));
     fs.mkdirSync(output,{recursive:true});
     // The ownership marker stays outside the deployed static directory.
     fs.writeFileSync(manifest,JSON.stringify({owner:OWNER,files:assets},null,2)+'\n');
-    for (const file of assets) {
+    for (const {file,contents} of prepared) {
         const destination=path.join(output,file);
         fs.mkdirSync(path.dirname(destination),{recursive:true});
-        fs.copyFileSync(path.join(root,file),destination);
+        fs.writeFileSync(destination,contents);
     }
     return {outputDirectory:output,files:assets};
 }

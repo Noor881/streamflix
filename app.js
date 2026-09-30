@@ -1895,8 +1895,40 @@ function updateRouteMetadata(path) {
         const element = document.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
         if (element) element.content = meta.description;
     });
-    // Homepage identity is not a genre/listing schema for every SPA route.
-    document.getElementById('page-schema')?.remove();
+    // Keep matching SSR data during hydration; discard it when the route changes.
+    const schema = document.getElementById('page-schema');
+    if (schema) {
+        let schemaURL;
+        try { schemaURL = JSON.parse(schema.textContent).url; } catch { /* Invalid data is replaced after rendering. */ }
+        if (meta.noindex || schemaURL !== meta.canonical) schema.remove();
+    }
+}
+
+function updateCollectionSchema(app) {
+    // The server render has no browser DOM. Its collection data is supplied by the renderer.
+    if (!document.head || !document.createElement || !app.querySelectorAll) return;
+    const meta = window.SiteSEO.describe(window.location.pathname + window.location.search);
+    const existing = document.getElementById('page-schema');
+    if (meta.status !== 200 || meta.noindex || !(['/movies', '/tv', '/anime', '/new'].includes(meta.path) || meta.genreId)) {
+        existing?.remove();
+        return;
+    }
+    const seen = new Set();
+    const items = [];
+    for (const card of app.querySelectorAll('.content-grid > a.card-wrapper')) {
+        const name = card.querySelector('.card-info-title')?.textContent.trim();
+        let url;
+        try { url = new URL(card.getAttribute('href'), window.SiteSEO.SITE); } catch { continue; }
+        if (!name || url.origin !== window.SiteSEO.SITE || !/^\/(movie|tv)\/\d+-[^/]+$/.test(url.pathname) || url.search || url.hash || seen.has(url.href)) continue;
+        seen.add(url.href);
+        items.push({ '@type': 'ListItem', position: items.length + 1, url: url.href, name });
+    }
+    if (!items.length) { existing?.remove(); return; }
+    const schema = existing || document.createElement('script');
+    schema.id = 'page-schema';
+    schema.type = 'application/ld+json';
+    schema.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'CollectionPage', name: meta.title, url: meta.canonical, mainEntity: { '@type': 'ItemList', itemListElement: items } });
+    if (!existing) document.head.appendChild(schema);
 }
 
 let routeGeneration = 0;
@@ -1904,7 +1936,13 @@ function routeTarget() {
     const generation = routeGeneration;
     const element = document.getElementById('app');
     return new Proxy(element, {
-        set(target, key, value) { if (generation === routeGeneration) target[key] = value; return true; },
+        set(target, key, value) {
+            if (generation === routeGeneration) {
+                target[key] = value;
+                if (key === 'innerHTML') updateCollectionSchema(target);
+            }
+            return true;
+        },
         get(target, key) { const value = target[key]; return typeof value === 'function' ? value.bind(target) : value; }
     });
 }
@@ -1968,6 +2006,7 @@ const router = {
         if (routeMeta.status !== 200 && !detailRoute) {
             document.title = 'Page not found | HD Watchzone';
             document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex, follow');
+            document.getElementById('page-schema')?.remove();
             routeTarget().innerHTML = '<section class="section"><h1>Page not found</h1><p><a href="/">Return home</a></p></section>';
             return;
         }

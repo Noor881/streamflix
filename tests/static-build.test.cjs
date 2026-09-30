@@ -38,15 +38,21 @@ test('deployed static output cannot shadow homepage or legacy title SSR rewrites
     assert.ok(config.functions['api/render.js'].includeFiles.includes('server/templates/*.html'));
 });
 
-test('build copies required runtime and verification assets, excluding source and local state', t => {
+test('build emits required runtime and verification assets, excluding source and local state', t => {
     const outputDirectory=temporaryBuild(t);
     const first=buildStatic({outputDirectory});
     assert.equal(new Set(first.files).size,first.files.length);
     for (const file of publicAssets()) {
         assert.ok(fs.existsSync(path.join(outputDirectory,file)),file);
-        assert.deepEqual(fs.readFileSync(path.join(outputDirectory,file)),fs.readFileSync(path.join(root,file)),`copied source bytes: ${file}`);
+        const generated=fs.readFileSync(path.join(outputDirectory,file));
+        const source=fs.readFileSync(path.join(root,file));
+        if (/\.(?:js|css)$/.test(file)) {
+            assert.ok(!generated.equals(source),`transformed production bytes: ${file}`);
+        } else {
+            assert.deepEqual(generated,source,`copied source bytes: ${file}`);
+        }
     }
-    for (const file of ['server/templates/index.html','server/ssr.js','api/render.js','tests/ssr.test.cjs','docs/editorial-drafts.md','FULL-AUDIT-REPORT-RAW.md','seo-expert.skill','scripts/auto-blogger.js','scripts/post-to-facebook.js','scripts/build-static.cjs','.brainsync/.context-key','.cursor/active-context.md','data/movies.sample.json','.github/workflows/verify.yml']) {
+    for (const file of ['server/templates/index.html','server/ssr.js','api/render.js','tests/ssr.test.cjs','docs/editorial-drafts.md','FULL-AUDIT-REPORT-RAW.md','seo-expert.skill','scripts/auto-blogger.js','scripts/post-to-facebook.js','scripts/build-static.cjs','package.json','package-lock.json','node_modules/esbuild/lib/main.js','.brainsync/.context-key','.cursor/active-context.md','data/movies.sample.json','.github/workflows/verify.yml']) {
         assert.equal(fs.existsSync(path.join(outputDirectory,file)),false,file);
     }
     for (const asset of ['404.html','offline.html','admin.html','sw.js','manifest.json','logo-v2.webp','favicon-v2.ico','540bb093e1ba44239f8dc4bb75201b7d.txt']) assert.ok(first.files.includes(asset),asset);

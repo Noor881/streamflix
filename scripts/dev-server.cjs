@@ -37,6 +37,8 @@ function applyIndexingHeaders(pathname, searchParams, res) {
 }
 
 function createPreviewServer(options = {}) {
+    // Exercise the exact built browser assets while keeping server rendering on its originals.
+    const assetRoot = options.productionAssets ? path.join(root,'public') : root;
     const renderer = options.render || (async (req,res) => {
         // Reload the renderer and its shared policy, while SSR recompiles changed UI.
         for (const filename of ['../api/render.js','../server/ssr.js','../seo-core.js']) {
@@ -61,9 +63,9 @@ function createPreviewServer(options = {}) {
             return;
         }
         if (pathname === '/admin') pathname = '/admin.html';
-        const file = path.resolve(root,'.' + pathname);
-        const relative = path.relative(root,file).split(path.sep).join('/');
-        if (!file.startsWith(root + path.sep) || !publicFiles.has(relative) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+        const file = path.resolve(assetRoot,'.' + pathname);
+        const relative = path.relative(assetRoot,file).split(path.sep).join('/');
+        if (!file.startsWith(assetRoot + path.sep) || !publicFiles.has(relative) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
             res.writeHead(404,{'Content-Type':'text/plain','X-Robots-Tag':'noindex'});res.end('Not found');return;
         }
         const mime = {'.html':'text/html','.js':'text/javascript','.cjs':'text/javascript','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.svg':'image/svg+xml','.json':'application/json','.xml':'application/xml','.ico':'image/x-icon','.md':'text/markdown'};
@@ -74,6 +76,7 @@ function createPreviewServer(options = {}) {
 
 if (require.main === module) {
     const port = Number(process.env.PORT || 4173);
-    createPreviewServer().listen(port,'127.0.0.1',() => console.log(`Preview: http://127.0.0.1:${port}`));
+    const productionAssets = process.argv.includes('--production-assets');
+    createPreviewServer({productionAssets}).listen(port,'127.0.0.1',() => console.log(`Preview: http://127.0.0.1:${port}${productionAssets ? ' (built assets)' : ''}`));
 }
 module.exports = {createPreviewServer,routeForURL};

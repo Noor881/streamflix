@@ -112,7 +112,7 @@ async function postToTelegram(movie, details) {
 
     const title = movie.title;
     const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
-    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+    const rating = movie.vote_average ? `${movie.vote_average.toFixed(1)}/10` : 'Not supplied';
     const runtime = details.runtime ? formatRuntime(details.runtime) : '';
     const genres = (details.genres || []).slice(0, 3).map(g => `#${g.name.replace(/\s+/g, '')}`).join(' ');
     const overview = movie.overview
@@ -129,7 +129,7 @@ async function postToTelegram(movie, details) {
     const caption = [
         `🎬 *${title}* ${year ? `(${year})` : ''}`,
         ``,
-        `⭐ *Rating:* ${rating}/10`,
+        `⭐ *TMDB community score:* ${rating}`,
         runtime ? `⏱ *Runtime:* ${runtime}` : '',
         director ? `🎥 *Director:* ${director}` : '',
         cast ? `👥 *Cast:* ${cast}` : '',
@@ -138,7 +138,8 @@ async function postToTelegram(movie, details) {
         ``,
         genres,
         ``,
-        `▶️ *Watch Free:* [Click Here](${movieUrl})`,
+        `🎬 [Explore title information](${movieUrl})`,
+        `ℹ️ TMDB metadata. External playback availability varies by provider and region.`,
         ``,
         `🌐 @hdwatchzone`,
     ].filter(Boolean).join('\n');
@@ -150,7 +151,7 @@ async function postToTelegram(movie, details) {
         photo: posterUrl,
         reply_markup: {
             inline_keyboard: [[
-                { text: '▶️ Watch Now', url: movieUrl },
+                { text: '🎬 Title Info', url: movieUrl },
                 { text: '🌐 HD Watchzone', url: SITE_URL }
             ]]
         }
@@ -164,7 +165,7 @@ async function postToTelegram(movie, details) {
         disable_web_page_preview: false,
         reply_markup: {
             inline_keyboard: [[
-                { text: '▶️ Watch Now', url: movieUrl }
+                { text: '🎬 Title Info', url: movieUrl }
             ]]
         }
     });
@@ -218,7 +219,7 @@ async function postToReddit(movie, details, token) {
 
     const title = movie.title;
     const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
-    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+    const rating = movie.vote_average ? `${movie.vote_average.toFixed(1)}/10` : 'Not supplied';
     const runtime = details.runtime ? formatRuntime(details.runtime) : '';
     const genres = (details.genres || []).map(g => g.name).join(', ');
     const director = details.credits?.crew?.find(c => c.job === 'Director')?.name || 'N/A';
@@ -226,14 +227,14 @@ async function postToReddit(movie, details, token) {
     const slug = createSlug(title);
     const movieUrl = `${SITE_URL}/movie/${movie.id}-${slug}`;
 
-    const postTitle = `🎬 ${title} ${year ? `(${year})` : ''} — Watch Free in HD`;
+    const postTitle = `🎬 ${title} ${year ? `(${year})` : ''} — Movie information`;
 
     const postText = [
         `## ${title} ${year ? `(${year})` : ''}`,
         ``,
         `| Detail | Info |`,
         `|--------|------|`,
-        `| ⭐ Rating | ${rating}/10 |`,
+        `| ⭐ TMDB community score | ${rating} |`,
         runtime ? `| ⏱ Runtime | ${runtime} |` : '',
         `| 🎬 Genre | ${genres || 'N/A'} |`,
         `| 🎥 Director | ${director} |`,
@@ -244,12 +245,12 @@ async function postToReddit(movie, details, token) {
         ``,
         `---`,
         ``,
-        `### ▶️ [Watch ${title} Free on HD Watchzone](${movieUrl})`,
+        `### 🎬 [Explore ${title} on HD Watchzone](${movieUrl})`,
         ``,
-        `> Free streaming • No sign-up required • HD quality`,
+        `> Title metadata: TMDB. External player availability and quality vary by provider and region.`,
         ``,
         `---`,
-        `*Posted by HDWatchzone Bot — New movies daily!*`,
+        `*Posted by HD Watchzone Bot. Title metadata from TMDB.*`,
     ].filter(line => line !== null && line !== undefined).join('\n');
 
     const body = new URLSearchParams({

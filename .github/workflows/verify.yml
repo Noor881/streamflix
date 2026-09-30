@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install pinned build dependencies
+        run: npm ci
       - run: npm test
       - name: Build allowlisted public assets without upstream requests
         run: npm run build:static

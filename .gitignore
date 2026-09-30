@@ -12,3 +12,6 @@ CLAUDE.md
 # Generated allowlisted deployment assets and their ownership manifest.
 /public/
 /public.streamflix-build.json
+
+# Installed build tools are restored from package-lock.json.
+/node_modules/

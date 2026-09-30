@@ -12,3 +12,6 @@ CLAUDE.md
 # Rebuilt from reviewed source on Vercel; never upload local generated output.
 /public/
 /public.streamflix-build.json
+
+# Vercel installs the pinned build dependency from the lockfile.
+/node_modules/
