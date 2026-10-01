@@ -43,9 +43,31 @@ test('homepage initial HTML contains the same hero and portrait-card content wit
         assert.equal(result.statusCode,200);assert.equal(canonical(result.html),SEO.SITE+'/');
         assert.ok(result.html.includes('id="hero-carousel"'));assert.ok(result.html.includes('Fight Club'));
         assert.ok(result.html.includes('href="/movie/550-fight-club"'));assert.ok(result.html.includes('class="card-wrapper"'));assert.ok(result.html.includes('class="card-poster"'));
-        assert.equal(calls.length,4);assert.equal(embeddedJSON(result.html,'initial-catalog-data').responses.length,4);
+        assert.equal(calls.length,6);assert.equal(embeddedJSON(result.html,'initial-catalog-data').responses.length,6);
+        assert.ok(result.html.includes('Indian Movies'));assert.ok(result.html.includes('Indian Series'));
         assert.ok(result.html.includes('rel="preload" as="image"'));
     });
+});
+
+test('Indian movie and series catalogs preserve country, page, portrait cards and detail links',async()=>{
+    for (const [route,item,heading] of [['movies',movie,'Indian Movies'],['tv',show,'Indian Series']]) {
+        const calls=[];
+        await withFetch(async raw=>{calls.push(new URL(raw));return ok({...listing,results:[item],page:2});},async()=>{
+            const result=await rendered({route,category:'indian',page:'2'},`/${route}?category=indian&page=2`);
+            assert.equal(result.statusCode,200);
+            assert.ok(result.html.includes(`<h1>${heading}</h1>`));
+            assert.ok(result.html.includes(`href="/${route}?category=indian&amp;page=3"`) || result.html.includes(`href="/${route}?category=indian&page=3"`));
+            assert.ok(result.html.includes('class="card-poster"'));
+            assert.ok(result.html.includes(route==='movies'?'/movie/550-fight-club':'/tv/1396-breaking-bad'));
+            assert.equal(calls.length,1);
+            assert.equal(calls[0].pathname,route==='movies'?'/3/discover/movie':'/3/discover/tv');
+            assert.equal(calls[0].searchParams.get('with_origin_country'),'IN');
+            assert.equal(calls[0].searchParams.get('page'),'2');
+            assert.equal(calls[0].searchParams.get('include_adult'),'false');
+            assert.equal(calls[0].searchParams.has('with_original_language'),false);
+            assert.equal(canonical(result.html),SEO.SITE+`/${route}?category=indian&page=2`);
+        });
+    }
 });
 
 test('catalog page two SSR requests page two and exposes real sequential links and collection schema',async()=>{

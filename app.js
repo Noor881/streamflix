@@ -309,6 +309,15 @@ const tmdbAPI = {
         return { results: allResults, total_pages: responses[0]?.total_pages || 1, total_results: responses[0]?.total_results || allResults.length };
     },
 
+    // Country of origin includes Hindi and regional Indian-language titles.
+    async getIndianMovies(page = 1) {
+        return this.fetch('/discover/movie', { with_origin_country: 'IN', include_adult: false, page, sort_by: 'popularity.desc' });
+    },
+
+    async getIndianTV(page = 1) {
+        return this.fetch('/discover/tv', { with_origin_country: 'IN', include_adult: false, page, sort_by: 'popularity.desc' });
+    },
+
     // Get movie genres list
     async getMovieGenres() {
         return this.fetch('/genre/movie/list');
@@ -926,9 +935,10 @@ const pages = {
 
         try {
             // Fetch all data in parallel
-            const [trending, popularMovies, popularTV, animeTVShows] = await Promise.all([
+            const [trending, popularMovies, popularTV, animeTVShows, indianMovies, indianTV] = await Promise.all([
                 tmdbAPI.getTrending('all', 'day', 1), tmdbAPI.getPopularMovies(1),
-                tmdbAPI.getPopularTV(1), tmdbAPI.getAnimeTVShows(1)
+                tmdbAPI.getPopularTV(1), tmdbAPI.getAnimeTVShows(1),
+                tmdbAPI.getIndianMovies(), tmdbAPI.getIndianTV()
             ]);
 
             let continueWatchingHtml = '';
@@ -979,6 +989,8 @@ const pages = {
                 ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5, 13), 'all', 'row-trending'), 'row-trending', trendingTabs)}
                 ${components.section('Popular Movies', components.contentRow(popularMovies?.results?.slice(0, 8), 'movie', 'row-movies'), '#/movies')}
                 ${components.section('Popular TV', components.contentRow(popularTV?.results?.slice(0, 8), 'tv', 'row-tv'), '#/tv')}
+                ${components.section('Indian Movies', components.contentRow(indianMovies?.results?.slice(0, 8), 'movie', 'row-indian-movies'), '#/movies?category=indian')}
+                ${components.section('Indian Series', components.contentRow(indianTV?.results?.slice(0, 8), 'tv', 'row-indian-tv'), '#/tv?category=indian')}
                 ${components.section('Anime Spotlight', components.contentRow(animeTVShows?.results?.slice(0, 8), 'tv', 'row-anime'), '#/anime')}
             `;
 
@@ -1006,6 +1018,7 @@ const pages = {
         const ITEMS_PER_PAGE = 24;
         const categories = [
             { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularMovies({ page }) },
+            { id: 'indian', name: 'Indian Movies', fetch: () => tmdbAPI.getIndianMovies(page) },
             { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedMovies({ page }) },
             { id: 'now_playing', name: '🎬 Now Playing', fetch: () => tmdbAPI.getNowPlayingMovies({ page }) },
             { id: 'upcoming', name: '🗓️ Coming Soon', fetch: () => tmdbAPI.getUpcomingMovies({ page }) },
@@ -1039,7 +1052,7 @@ const pages = {
             app.innerHTML = `
                 <div class="browse-page">
                     <div class="browse-header">
-                        <h1>🎬 Movies</h1>
+                        <h1>${category === 'indian' ? 'Indian Movies' : '🎬 Movies'}</h1>
                         <p class="browse-subtitle">Explore our collection of movies by category</p>
                     </div>
                     <div class="category-tabs">
@@ -1070,6 +1083,7 @@ const pages = {
         const ITEMS_PER_PAGE = 24;
         const categories = [
             { id: 'popular', name: '🔥 Popular', fetch: () => tmdbAPI.getPopularTV({ page }) },
+            { id: 'indian', name: 'Indian Series', fetch: () => tmdbAPI.getIndianTV(page) },
             { id: 'top_rated', name: '🏆 Top Rated', fetch: () => tmdbAPI.getTopRatedTV({ page }) },
             { id: 'on_air', name: '📡 On The Air', fetch: () => tmdbAPI.getOnTheAirTV({ page }) },
             { id: '10759', name: '💥 Action & Adventure', fetch: () => tmdbAPI.getTVByGenre(10759, { page }) },
@@ -1101,7 +1115,7 @@ const pages = {
             app.innerHTML = `
                 <div class="browse-page">
                     <div class="browse-header">
-                        <h1>📺 TV Shows</h1>
+                        <h1>${category === 'indian' ? 'Indian Series' : '📺 TV Shows'}</h1>
                         <p class="browse-subtitle">Explore our collection of TV series by category</p>
                     </div>
                     <div class="category-tabs">

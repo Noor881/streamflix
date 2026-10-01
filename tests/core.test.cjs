@@ -70,10 +70,10 @@ test('cache policy revalidates mutable assets and SW never drops a sync queue',(
 test('sitemap generator keeps categories and excludes private pages',()=>{
     const {staticRoutes}=require('../generate-sitemap.js');assert.ok(staticRoutes.includes('/movies'));assert.ok(staticRoutes.includes('/genre/28'));assert.ok(!staticRoutes.includes('/account'));
 });
-test('homepage waits for only its four visible data sources',async()=>{
+test('homepage waits for only its six visible data sources including Indian catalogs',async()=>{
     const c=appContext(),calls=[];
     c.context.fetch=async url=>{calls.push(String(url));return {ok:true,json:async()=>({results:[{id:1,title:'A',name:'A',media_type:'movie',genre_ids:[],vote_average:8}],total_pages:10})};};
-    await c.testing.pages.home();assert.equal(calls.length,4);
+    await c.testing.pages.home();assert.equal(calls.length,6);
 });
 test('metadata outages return retryable 503, not an indexable generic movie',async()=>{
     const render=require('../api/render.js'),original=global.fetch;

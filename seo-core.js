@@ -24,8 +24,8 @@
         '/search':['Search | HD Watchzone','Search movie, TV and anime titles.']
     };
     const categories = {
-        movies:['popular','top_rated','now_playing','upcoming','28','35','18','27','10749','878','53','10752','80','16','99','14'],
-        tv:['popular','top_rated','on_air','10759','35','80','18','10765','9648','10768','16','99','10751','10764'],
+        movies:['popular','indian','top_rated','now_playing','upcoming','28','35','18','27','10749','878','53','10752','80','16','99','14'],
+        tv:['popular','indian','top_rated','on_air','10759','35','80','18','10765','9648','10768','16','99','10751','10764'],
         anime:['popular','movies','top_rated'],
         new:['trending','popular_movies','popular_tv','now_playing','upcoming','on_air','top_rated']
     };
@@ -50,7 +50,7 @@
         let [title,description] = pair;
         const canonicalParams = new URLSearchParams();
         const alternate = categories[section] && category !== (section==='new'?'trending':'popular');
-        if (alternate) { canonicalParams.set('category',category); title = `${labels[category] || genres[category] || category} — ${title}`; }
+        if (alternate) { canonicalParams.set('category',category); title = `${category === 'indian' ? 'Indian' : labels[category] || genres[category] || category} — ${title}`; }
         if (paginated && page>1) { canonicalParams.set('page',String(page)); title = title.replace(' | HD Watchzone',` — Page ${page} | HD Watchzone`); }
         if (path==='/search' && params.get('q')) { canonicalParams.set('q',params.get('q')); if(page>1) canonicalParams.set('page',String(page)); title=`Search for ${params.get('q').slice(0,80)} | HD Watchzone`; }
         const query = canonicalParams.toString();
