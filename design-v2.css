@@ -124,7 +124,8 @@ section[aria-label="About HD Watchzone"] a:hover { color: var(--link-red-hover) 
 .detail-hero .hero-title { letter-spacing: -.04em; }
 .hero-tag { border-radius: 999px; border: 1px solid var(--line-soft); background: rgba(18,22,29,.72); }
 .detail-content { max-width: 1460px; }
-.player-container, .detail-section { border-color: var(--line-soft); border-radius: 14px; background: var(--surface-1); }
+.player-container { border-color: var(--line-soft); border-radius: 14px; background: var(--surface-1); }
+.detail-section { background: transparent; border-radius: 0; }
 .player-wrapper { border-radius: 10px; overflow: hidden; background: #000; }
 .server-btn { border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line-soft); }
 .server-btn.active { background: rgba(245,34,61,.13); border-color: var(--brand-red); color: #fff; }
@@ -198,11 +199,11 @@ section[aria-label="About HD Watchzone"] a:hover { color: var(--link-red-hover) 
 .watch-layout > *, .watch-title-panel, .detail-main, .detail-sidebar { min-width: 0; }
 .watch-layout > .detail-section { padding: 0; margin: 0; }
 body:has(.watch-layout) { padding-top: 0 !important; }
-.watch-title-panel { padding-top: 0; }
+.watch-title-panel { padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; align-self: start; }
 .dnav-logo:has(img) > span { display: none; }
 .watch-layout .hero-info { width: 100%; max-width: none; padding: 0; }
-.watch-layout .hero-title { font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1.15; overflow-wrap: anywhere; }
-.watch-layout .hero-overview { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; color: #bec5d1; }
+.watch-layout .hero-title { font-size: clamp(1.8rem, 3vw, 3rem) !important; line-height: 1.15; overflow-wrap: anywhere; }
+.watch-layout .hero-overview { display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; color: #bec5d1; line-height: 1.65; overflow-wrap: anywhere; }
 .watch-layout .hero-buttons { display: flex; flex-wrap: wrap; }
 .server-selector { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .server-selector .server-btn { width: 100%; min-width: 0; padding: 12px 8px; }
@@ -230,7 +231,7 @@ body:has(.watch-layout) { padding-top: 0 !important; }
 :focus-visible { outline: 2px solid #ff6478; outline-offset: 4px; }
 @media(max-width: 900px) {
  .watch-layout { grid-template-columns: minmax(0, 1fr); padding: 78px 16px 20px; gap: 20px; }
- .watch-layout .hero-title { font-size: 2rem; }
+ .watch-layout .hero-title { font-size: 2rem !important; }
  .detail-mobile-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 490; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); background: #090c12; border-top: 1px solid #303747; }
  .detail-mobile-nav a { display: grid; place-items: center; min-height: 44px; color: #d3dae4; font-size: 13px; }
  body:has(.watch-layout) { padding-bottom: 74px; }

@@ -19,9 +19,22 @@
 .trending-grid .trending-card > img, .reco-grid .reco-card > img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; flex: none; }
 .trending-card-info, .reco-card-info { display: block; height: 84px; min-width: 0; width: 100%; padding: 10px; overflow: hidden; }
 .trending-card-meta, .reco-card-meta { color: #b1bac9; font-size: 12px; line-height: 18px; white-space: nowrap; }
+/* Recommendations occupy one bounded row, independent of the metadata sidebar. */
+.detail-recommendations { width: 100%; min-width: 0; max-width: 1460px; margin: 0 auto; padding: 0 40px 36px; }
+.recommendations-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.recommendations-header .section-title { margin: 0; }
+.recommendations-controls { display: none; gap: 8px; flex: none; }
+.rail-ready.has-overflow .recommendations-controls { display: flex; }
+.recommendations-controls button { width: 44px; height: 44px; border: 1px solid #4a5568; border-radius: 50%; background: #111722; color: #fff; font: inherit; font-size: 24px; cursor: pointer; }
+.recommendations-controls button:disabled { opacity: .4; cursor: default; }
+.detail-recommendations .recommendations-rail { display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: var(--poster-card-width); gap: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: #59677e transparent; padding: 4px 0 12px; }
+.recommendations-rail > .reco-card { scroll-snap-align: start; }
+@media(max-width:1100px) { .detail-recommendations { padding-inline: 24px; } }
 @media(max-width:560px) {
  .content-row { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px !important; }
  .content-row > .card-wrapper { width: 100%; min-width: 0; max-width: 100%; flex: none; }
  .trending-grid, .reco-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px; }
  .content-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+ .detail-recommendations { padding-inline: 12px; }
+ .detail-recommendations .recommendations-rail { grid-auto-columns: calc((100% - 10px) / 2); gap: 10px; }
 }

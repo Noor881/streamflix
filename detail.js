@@ -624,14 +624,27 @@ function buildTrailer(videos) {
 
 /* ---------- Recommendations ---------- */
 function buildRecos(items, type) {
-    if (!items || items.length === 0) return '';
-
-    const cards = items.slice(0, 12).map(item => {
+    if (!Array.isArray(items) || !['movie', 'tv'].includes(type)) return '';
+    const seen = new Set();
+    const related = items.filter(item => {
+        if (!item || !Number.isSafeInteger(item.id) || item.id < 1) return false;
         const mediaType = item.media_type || type;
-        const title = item.title || item.name;
+        const title = mediaType === 'movie' ? item.title : item.name;
+        if (!['movie', 'tv'].includes(mediaType) || typeof title !== 'string' || !title.trim()) return false;
+        if (item.poster_path != null && item.poster_path !== '' && !schemaPoster(item.poster_path)) return false;
+        const key = `${mediaType}:${item.id}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    }).slice(0, 12);
+    if (!related.length) return '';
+
+    const cards = related.map(item => {
+        const mediaType = item.media_type || type;
+        const title = mediaType === 'movie' ? item.title : item.name;
         const date = item.release_date || item.first_air_date;
-        const year = date ? new Date(date).getFullYear() : '';
-        const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
+        const year = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date.slice(0, 4) : '';
+        const rating = Number.isFinite(item.vote_average) && item.vote_average > 0 && item.vote_average <= 10 ? item.vote_average.toFixed(1) : '';
         const slug = createSlug(title);
         const href = `/${mediaType}/${item.id}-${slug}`;
 
@@ -649,10 +662,41 @@ function buildRecos(items, type) {
     }).join('');
 
     return `
-        <div class="detail-section">
-            <h2 class="section-title">You May Also Like</h2>
-            <div class="reco-grid">${cards}</div>
-        </div>`;
+        <section class="detail-recommendations" aria-label="Recommended ${type === 'movie' ? 'movies' : 'TV shows'}">
+            <div class="recommendations-header">
+                <h2 class="section-title" id="recommendations-heading">You May Also Like</h2>
+                <div class="recommendations-controls">
+                    <button type="button" class="reco-prev" aria-label="Previous recommendations" aria-controls="recommendations-rail" onclick="scrollRecommendations(-1)">‹</button>
+                    <button type="button" class="reco-next" aria-label="Next recommendations" aria-controls="recommendations-rail" onclick="scrollRecommendations(1)">›</button>
+                </div>
+            </div>
+            <div class="reco-grid recommendations-rail" id="recommendations-rail" role="region" aria-labelledby="recommendations-heading" tabindex="0">${cards}</div>
+        </section>`;
+}
+
+function updateRecommendationsRail() {
+    const rail = document.getElementById('recommendations-rail');
+    const section = rail?.closest('.detail-recommendations');
+    if (!section) return;
+    const maximum = Math.max(0, rail.scrollWidth - rail.clientWidth);
+    section.classList.add('rail-ready');
+    section.classList.toggle('has-overflow', maximum > 2);
+    section.querySelector('.reco-prev').disabled = rail.scrollLeft <= 2;
+    section.querySelector('.reco-next').disabled = rail.scrollLeft >= maximum - 2;
+}
+
+function scrollRecommendations(direction) {
+    const rail = document.getElementById('recommendations-rail');
+    if (!rail) return;
+    rail.scrollBy({left: direction * rail.clientWidth * 0.85, behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+}
+
+function initRecommendationsRail() {
+    const rail = document.getElementById('recommendations-rail');
+    if (!rail) return;
+    window.addEventListener('resize', updateRecommendationsRail, {passive: true});
+    rail.addEventListener('scroll', updateRecommendationsRail, {passive: true});
+    updateRecommendationsRail();
 }
 
 /* ---------- Details Grid ---------- */
@@ -811,6 +855,7 @@ function layoutWatchPage() {
         button.classList.toggle('active', saved);
         button.setAttribute('aria-pressed', String(saved));
     }
+    initRecommendationsRail();
 }
 
 /* ==========================================
@@ -883,13 +928,6 @@ const DetailPage = {
                             ${buildPlayer('movie', id)}
                         </div>
                         
-                        ${movie.overview ? `
-                        <div class="detail-section">
-                            <h2 class="section-title">Overview</h2>
-                            <p class="about-text">${sanitize(movie.overview)}</p>
-                            ${movie.tagline ? `<p class="about-tagline"><em>"${sanitize(movie.tagline)}"</em></p>` : ''}
-                        </div>` : ''}
-                        
                         ${buildCast(movie.credits)}
                         ${buildTrailer(movie.videos)}
                         
@@ -905,9 +943,9 @@ const DetailPage = {
 
                     <div class="detail-sidebar">
                         ${buildDetailsGrid(movie, 'movie')}
-                        ${buildRecos(movie.recommendations?.results, 'movie')}
                     </div>
                 </div>
+                ${buildRecos(movie.recommendations?.results, 'movie')}
                 
                 ${buildDetailFooter()}`;
 
@@ -1006,14 +1044,6 @@ const DetailPage = {
                             })()}
                         </div>
 
-                        ${tv.overview ? `
-                        <div class="detail-section">
-                            <h2 class="section-title">Overview</h2>
-                            <p class="about-text">${sanitize(tv.overview)}</p>
-                            ${tv.tagline ? `<p class="about-tagline"><em>"${sanitize(tv.tagline)}"</em></p>` : ''}
-                            ${tv.number_of_seasons ? `<p class="about-info">This series has ${tv.number_of_seasons} season${tv.number_of_seasons > 1 ? 's' : ''} with ${tv.number_of_episodes || 'multiple'} episodes.</p>` : ''}
-                        </div>` : ''}
-
                         ${buildEpisodes(tv, season, episode, id)}
                         ${buildCast(tv.credits)}
                         ${buildTrailer(tv.videos)}
@@ -1030,9 +1060,9 @@ const DetailPage = {
 
                     <div class="detail-sidebar">
                         ${buildDetailsGrid(tv, 'tv')}
-                        ${buildRecos(tv.recommendations?.results, 'tv')}
                     </div>
                 </div>
+                ${buildRecos(tv.recommendations?.results, 'tv')}
 
                 ${buildDetailFooter()}`;
 
