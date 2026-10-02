@@ -203,7 +203,7 @@ test('both watch templates invalidate the older cached detail layout assets', ()
     for (const type of ['movie', 'tv']) {
         const template = read(`server/templates/${type}.html`);
         for (const asset of ['detail.css', 'design-v2.css', 'cards.css', 'detail.js']) {
-            assert.ok(template.includes(`/${asset}?v=${asset === 'cards.css' ? 'watch17' : 'ux20'}`), `${type}: ${asset} uses the updated watch-layout version`);
+            assert.ok(template.includes(`/${asset}?v=${asset === 'cards.css' ? 'watch17' : asset === 'detail.js' ? 'discover21' : 'ux20'}`), `${type}: ${asset} uses the updated watch-layout version`);
         }
     }
 });

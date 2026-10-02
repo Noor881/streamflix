@@ -416,9 +416,10 @@ const components = {
                     </div>
                     <div class="card-play"></div>
                 </div>
-                <div class="card-info">
+                <div class="card-info${item.reason ? ' has-recommendation' : ''}">
                     <h3 class="card-info-title">${utils.sanitize(title)}</h3>
                     <p class="card-info-desc">${year || 'Recently added'} <span>•</span> ${mediaType === 'movie' ? 'Movie' : 'TV Series'} </p>
+                    ${item.reason ? `<p class="recommendation-note">${utils.sanitize(String(item.reason))}</p>` : ''}
                 </div>
             </a>
         `;
@@ -715,7 +716,7 @@ const components = {
     },
 
     // Pagination component
-    pagination(currentPage, totalPages, pageType, category = '') {
+    pagination(currentPage, totalPages, pageType, category = '', urlForPage = null) {
         if (totalPages <= 1) return '';
 
         const pages = [];
@@ -727,7 +728,7 @@ const components = {
             start = Math.max(1, end - maxVisible + 1);
         }
 
-        const pageLink = (number, label, active = false) => `<a class="page-btn ${active ? 'active' : ''}" href="${utils.sanitize(window.SiteSEO.pageURL(pageType,category,number))}" ${active ? 'aria-current="page"' : ''}>${label}</a>`;
+        const pageLink = (number, label, active = false) => `<a class="page-btn ${active ? 'active' : ''}" href="${utils.sanitize(urlForPage ? urlForPage(number) : window.SiteSEO.pageURL(pageType,category,number))}" ${active ? 'aria-current="page"' : ''}>${label}</a>`;
 
         if (currentPage > 1) {
             pages.push(pageLink(currentPage - 1, '‹ Prev'));
@@ -926,10 +927,73 @@ window.switchGenreTab = async (genreId, genreName, btn) => {
 const PUBLIC_CONTACT = Object.freeze({ operator: 'Noor', email: 'noor2304f@gmail.com' });
 const SUPPORT_MAILTO = 'mailto:' + encodeURIComponent(PUBLIC_CONTACT.email).replace(/%40/g, '@');
 
+// Discovery entry points are rendered without additional homepage API requests.
+// Personalized recommendations hydrate only in the visitor's browser.
+let forYouRequest = 0;
+const discoveryUI = {
+    collectionTiles() {
+        return (window.DiscoveryCore?.collections || []).map(item => `<a class="discovery-tile" href="/collections/${item.slug}"><span class="discovery-tile-title">${utils.sanitize(item.name)}</span><span class="discovery-tile-description">${utils.sanitize(item.eyebrow)}</span></a>`).join('');
+    },
+    languageTiles(type = 'movie') {
+        return (window.DiscoveryCore?.languages || []).map(item => `<a class="language-tile" href="${utils.sanitize(window.DiscoveryCore.routeURL('indian',item.code,{type}))}"><span class="discovery-tile-title">${item.name}</span><span class="discovery-tile-description">${type === 'tv' ? 'Explore series' : 'Movies & series'} →</span></a>`).join('');
+    },
+    homeSections() {
+        if (!window.DiscoveryCore) return '';
+        return `<section class="discovery-home" aria-labelledby="indian-languages-heading"><div class="discovery-intro"><div><h2 id="indian-languages-heading">Indian Languages</h2><p>Find your next film or series in your language.</p></div><a href="/indian">Explore Indian titles →</a></div><div class="discovery-language-grid">${this.languageTiles()}</div></section><section class="discovery-home" aria-labelledby="collections-heading"><div class="discovery-intro"><div><h2 id="collections-heading">Pick Your Mood</h2><p>Four collections, one easier choice for tonight.</p></div><a href="/collections">All collections →</a></div><div class="discovery-links">${this.collectionTiles()}</div></section>`;
+    },
+    emptyForYou() {
+        return '<div class="for-you-empty"><p>Save a title to My List or open a movie or series to start your recommendations.</p><a href="/collections">Explore collections</a> <a href="/my-list">My List</a></div>';
+    },
+    homeForYou() {
+        if (!window.DiscoveryCore) return '';
+        return `<section class="discovery-home" aria-labelledby="for-you-heading"><div class="discovery-intro"><div><h2 id="for-you-heading">For You</h2><p>Inspired by titles saved or recently viewed in this browser.</p></div><a href="/for-you">Explore For You →</a></div><div id="for-you-content" data-layout="row">${this.emptyForYou()}</div></section>`;
+    },
+    items(data, type) {
+        const seen = new Set();
+        return (Array.isArray(data?.results) ? data.results : []).filter(item => {
+            if (!item || !Number.isSafeInteger(item.id) || item.id < 1 || item.adult === true || item.media_type && item.media_type !== type || type === 'movie' && item.id === 928480) return false;
+            const title = type === 'movie' ? item.title : item.name;
+            if (typeof title !== 'string' || !title.trim() || seen.has(item.id)) return false;
+            seen.add(item.id);
+            return true;
+        }).map(item => ({...item,media_type:type,vote_average:Number.isFinite(item.vote_average) ? item.vote_average : 0,poster_path:typeof item.poster_path === 'string' && /^\/[\w.-]+$/.test(item.poster_path) ? item.poster_path : null}));
+    },
+    async loadForYou(target) {
+        if (!target || !window.ForYou) return;
+        const generation = routeGeneration, request = ++forYouRequest;
+        let saved = [], history = [];
+        try { saved = window.Watchlist.read(); } catch { /* Blocked storage still permits discovery. */ }
+        for (const key of [CONFIG.STORAGE_KEYS.WATCH_HISTORY,CONFIG.STORAGE_KEYS.CONTINUE_WATCHING]) {
+            const records = utils.loadFromStorage(key);
+            if (Array.isArray(records)) history.push(...records);
+        }
+        target.setAttribute('aria-busy','true');
+        target.innerHTML = '<p class="for-you-status" role="status">Finding titles for you…</p>';
+        try {
+            const result = await window.ForYou.load({saved,history,fetcher:(endpoint,params)=>tmdbAPI.fetch(endpoint,params)});
+            if (generation !== routeGeneration || request !== forYouRequest || !target.isConnected) return;
+            if (result.emptyReason === 'new-user') target.innerHTML = this.emptyForYou();
+            else if (!result.recommendations.length) target.innerHTML = `<div class="for-you-status" role="status"><p>${result.emptyReason === 'unavailable' ? 'Recommendations are temporarily unavailable.' : 'No new recommendations for these titles yet. Explore a collection or save another title.'}</p><button type="button" onclick="refreshForYou()">Retry recommendations</button> <a href="/collections">Explore collections</a></div>`;
+            else {
+                const items = result.recommendations.slice(0,target.dataset.layout === 'row' ? 8 : 20);
+                const cards = target.dataset.layout === 'row' ? components.contentRow(items,'all','row-for-you') : `<div class="content-grid">${items.map(item=>components.card(item,item.media_type)).join('')}</div>`;
+                target.innerHTML = `${result.partial ? '<p class="for-you-status" role="status">Some recommendations are unavailable. <button type="button" onclick="refreshForYou()">Retry</button></p>' : ''}${cards}`;
+                initRowArrows();
+            }
+        } catch {
+            if (generation === routeGeneration && request === forYouRequest && target.isConnected) target.innerHTML = '<div class="for-you-status" role="status"><p>Recommendations are temporarily unavailable.</p><button type="button" onclick="refreshForYou()">Retry recommendations</button></div>';
+        } finally {
+            if (request === forYouRequest) target.removeAttribute('aria-busy');
+        }
+    }
+};
+window.refreshForYou = () => discoveryUI.loadForYou(document.getElementById('for-you-content'));
+
 const pages = {
     // Home page
     async home() {
         const app = routeTarget();
+        const generation = routeGeneration;
         showRouteLoading(app);
 
         try {
@@ -987,17 +1051,22 @@ const pages = {
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
                 ${outcomes.some(result => result.status === 'rejected') ? '<div class="section" role="status"><p>Some titles are temporarily unavailable.</p><button class="btn btn-primary" onclick="router.handleRoute()">Retry loading titles</button></div>' : ''}
+                ${discoveryUI.homeForYou()}
                 ${continueWatchingHtml}
                 ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5, 13), 'all', 'row-trending'), 'row-trending', trendingTabs)}
                 ${components.section('Popular Movies', components.contentRow(popularMovies?.results?.slice(0, 8), 'movie', 'row-movies'), '#/movies')}
                 ${components.section('Popular TV', components.contentRow(popularTV?.results?.slice(0, 8), 'tv', 'row-tv'), '#/tv')}
                 ${components.section('Indian Movies', components.contentRow(indianMovies?.results?.slice(0, 8), 'movie', 'row-indian-movies'), '#/movies?category=indian')}
                 ${components.section('Indian Series', components.contentRow(indianTV?.results?.slice(0, 8), 'tv', 'row-indian-tv'), '#/tv?category=indian')}
+                ${discoveryUI.homeSections()}
                 ${components.section('Anime Spotlight', components.contentRow(animeTVShows?.results?.slice(0, 8), 'tv', 'row-anime'), '#/anime')}
             `;
 
+            if (generation !== routeGeneration) return;
             // Start hero carousel auto-rotation
             startHeroCarousel();
+            // This does not block the public catalogue or run on the server.
+            if (window.ForYou) discoveryUI.loadForYou(document.getElementById('for-you-content'));
         } catch (error) {
             console.error('Error loading home page:', error);
             app.innerHTML = `
@@ -1008,6 +1077,52 @@ const pages = {
                 </div>
             `;
         }
+    },
+
+    async collections(slug = '', page = 1) {
+        const app = routeTarget();
+        const collection = window.DiscoveryCore.getCollection(slug);
+        if (!slug) {
+            app.innerHTML = `<div class="discovery-page"><div class="discovery-hero"><h1>Curated Collections</h1><p>Choose a mood, discover a new favourite, and save it for later.</p></div><div class="discovery-links">${discoveryUI.collectionTiles()}</div><div class="discovery-intro"><p>Looking for something closer to your tastes?</p><a href="/for-you">Open For You →</a></div></div>`;
+            return;
+        }
+        if (!collection) return;
+        showRouteLoading(app);
+        try {
+            const query = window.DiscoveryCore.collectionQuery(slug,page);
+            const data = await tmdbAPI.fetch(query.endpoint,query.params);
+            const items = discoveryUI.items(data,query.type);
+            app.innerHTML = `<div class="discovery-page"><div class="discovery-hero"><p><a href="/collections">← All collections</a></p><h1>${utils.sanitize(collection.name)}</h1><p>${utils.sanitize(collection.description)}</p></div><nav class="discovery-tabs" aria-label="Collections">${window.DiscoveryCore.collections.map(item=>`<a class="filter-btn ${item.slug === slug ? 'active' : ''}" ${item.slug === slug ? 'aria-current="page"' : ''} href="/collections/${item.slug}">${utils.sanitize(item.name)}</a>`).join('')}</nav><div class="results-info">Page ${page} · ${items.length} titles shown</div>${items.length ? `<div class="content-grid">${items.map(item=>components.card(item,query.type)).join('')}</div>` : '<div class="for-you-empty"><p>No titles are available in this collection right now. Try another collection.</p></div>'}${components.pagination(page,Math.min(data?.total_pages || 1,500),'collections',slug,number=>window.DiscoveryCore.routeURL('collections',slug,{page:number}))}</div>`;
+        } catch {
+            app.innerHTML = '<div class="discovery-page for-you-status" role="alert"><h1>Collection temporarily unavailable</h1><p>Please try again shortly.</p><button type="button" onclick="router.handleRoute()">Retry</button> <a href="/collections">All collections</a></div>';
+        }
+    },
+
+    async indian(language = '', type = 'movie', page = 1) {
+        const app = routeTarget();
+        const languageInfo = window.DiscoveryCore.getLanguage(language);
+        const mediaTabs = `<nav class="discovery-tabs" aria-label="Title type">${[['movie','Movies'],['tv','Series']].map(([value,label])=>`<a class="filter-btn ${type === value ? 'active' : ''}" ${type === value ? 'aria-current="page"' : ''} href="${utils.sanitize(window.DiscoveryCore.routeURL('indian',language,{type:value}))}">${label}</a>`).join('')}</nav>`;
+        if (!language) {
+            app.innerHTML = `<div class="discovery-page"><div class="discovery-hero"><h1>Indian Movies &amp; Series</h1><p>Explore Hindi, Tamil, Telugu, Malayalam and Punjabi titles made in India. These filters use each title’s original language, not its available dubbing or subtitles.</p></div>${mediaTabs}<div class="discovery-language-grid">${discoveryUI.languageTiles(type)}</div><div class="discovery-intro"><p>Browse all Indian languages together.</p><a href="${type === 'tv' ? '/tv?category=indian' : '/movies?category=indian'}">All Indian ${type === 'tv' ? 'series' : 'movies'} →</a></div></div>`;
+            return;
+        }
+        if (!languageInfo) return;
+        showRouteLoading(app);
+        try {
+            const query = window.DiscoveryCore.indianQuery(language,type,page);
+            const data = await tmdbAPI.fetch(query.endpoint,query.params);
+            const items = discoveryUI.items(data,type);
+            const name = `${languageInfo.name} ${type === 'tv' ? 'Series' : 'Movies'}`;
+            app.innerHTML = `<div class="discovery-page"><div class="discovery-hero"><p><a href="/indian">← Indian languages</a></p><h1>${name}</h1><p>Titles from India originally made in ${languageInfo.name}. Dubbing and subtitle availability depend on the player.</p></div><nav class="discovery-tabs" aria-label="Languages">${window.DiscoveryCore.languages.map(item=>`<a class="filter-btn ${item.code === language ? 'active' : ''}" ${item.code === language ? 'aria-current="page"' : ''} href="${utils.sanitize(window.DiscoveryCore.routeURL('indian',item.code,{type}))}">${item.name}</a>`).join('')}</nav>${mediaTabs}<div class="results-info">Page ${page} · ${items.length} titles shown</div>${items.length ? `<div class="content-grid">${items.map(item=>components.card(item,type)).join('')}</div>` : `<div class="for-you-empty"><p>No ${languageInfo.name} ${type === 'tv' ? 'series' : 'movies'} are listed right now. Try the other title type or another language.</p><a href="/indian">Browse Indian languages</a></div>`}${components.pagination(page,Math.min(data?.total_pages || 1,500),'indian',language,number=>window.DiscoveryCore.routeURL('indian',language,{type,page:number}))}</div>`;
+        } catch {
+            app.innerHTML = '<div class="discovery-page for-you-status" role="alert"><h1>Indian titles temporarily unavailable</h1><p>Please try again shortly.</p><button type="button" onclick="router.handleRoute()">Retry</button> <a href="/indian">Browse Indian languages</a></div>';
+        }
+    },
+
+    async forYou() {
+        const app = routeTarget();
+        app.innerHTML = `<div class="discovery-page"><div class="discovery-hero"><h1>For You</h1><p>Recommendations inspired by your saved and recently viewed titles. Your list stays in this browser; there is no account or cross-device sync.</p></div><div id="for-you-content" data-layout="grid">${discoveryUI.emptyForYou()}</div></div>`;
+        await discoveryUI.loadForYou(document.getElementById('for-you-content'));
     },
 
     // Movies page with categories and pagination
@@ -1711,7 +1826,7 @@ const pages = {
             <div class="static-page">
                 <div class="static-page-header">
                     <h1>Privacy Policy</h1>
-                    <p>Last updated: September 30, 2026</p>
+                    <p>Last updated: October 2, 2026</p>
                 </div>
                 <div class="legal-content">
                     <section class="legal-section">
@@ -1728,6 +1843,7 @@ const pages = {
                             <li><strong>Consent choices:</strong> Your analytics preference is saved in your browser.</li>
                         </ul>
                         <p>These saved feature records are not an online account and are not synced to another device. Requests to the website and its third-party services can still expose technical information such as IP address, browser details and requested URLs. A contact email includes the name, email address and message you choose to send from your email app.</p>
+                        <p><strong>For You:</strong> Recommendations use up to three titles from your local watchlist and recently viewed history. Their title IDs are sent through this website’s metadata service to TMDB to retrieve related titles; your complete saved list and history are not uploaded. The recommendations do not measure verified playback progress.</p>
                     </section>
 
                     <section class="legal-section">
@@ -1947,7 +2063,7 @@ function updateCollectionSchema(app) {
     if (!document.head || !document.createElement || !app.querySelectorAll) return;
     const meta = window.SiteSEO.describe(window.location.pathname + window.location.search);
     const existing = document.getElementById('page-schema');
-    if (meta.status !== 200 || meta.noindex || !(['/movies', '/tv', '/anime', '/new'].includes(meta.path) || meta.genreId)) {
+    if (meta.status !== 200 || meta.noindex || !(['/movies', '/tv', '/anime', '/new'].includes(meta.path) || meta.genreId || meta.collectionSlug || meta.languageCode)) {
         existing?.remove();
         return;
     }
@@ -2003,7 +2119,10 @@ const router = {
         '/search': pages.search,
         '/genre/:id': pages.genre,
         '/new': pages.newPopular,
-        '/my-list': pages.myList
+        '/my-list': pages.myList,
+        '/collections': pages.collections,
+        '/indian': pages.indian,
+        '/for-you': pages.forYou
     },
 
     init() {
@@ -2084,6 +2203,12 @@ const router = {
         // Parse route
         if (path === '/' || path === '') {
             pages.home();
+        } else if (routeMeta.kind === 'collections') {
+            pages.collections(routeMeta.collectionSlug || '',routeMeta.page);
+        } else if (routeMeta.kind === 'indian') {
+            pages.indian(routeMeta.languageCode || '',routeMeta.type,routeMeta.page);
+        } else if (routeMeta.kind === 'for-you') {
+            pages.forYou();
         } else if (path.startsWith('/movies')) {
             // Parse query params for category and page
             const [, queryString] = path.split('?');

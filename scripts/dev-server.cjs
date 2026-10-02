@@ -11,6 +11,7 @@ function routeForURL(url) {
     const movie = pathname.match(/^\/movie\/([^/]+)$/);
     const tv = pathname.match(/^\/tv\/([^/]+)(?:\/([^/]+)\/([^/]+))?$/);
     const genre = pathname.match(/^\/genre\/([^/]+)$/);
+    const discovery = pathname.match(/^\/(collections|indian)\/([^/]+)$/);
     if (movie || pathname === '/movie.html' && url.searchParams.has('id')) {
         return {...params, route:'movie', id:movie?.[1] || params.id};
     }
@@ -18,6 +19,7 @@ function routeForURL(url) {
         return {...params, route:'show', id:tv?.[1] || params.id, ...(tv?.[2] ? {s:tv[2],e:tv[3]} : {})};
     }
     if (genre) return {...params,route:'genre',id:genre[1]};
+    if (discovery) return {...params,route:discovery[1],id:discovery[2]};
     const rewrite = config.rewrites.find(rule => !rule.has && rule.source === pathname && rule.destination.startsWith('/api/render'));
     if (rewrite) return {...params,...Object.fromEntries(new URL(rewrite.destination,'http://localhost').searchParams)};
     if (pathname === '/api/render' || pathname === '/api/render.js') return params;
@@ -41,7 +43,7 @@ function createPreviewServer(options = {}) {
     const assetRoot = options.productionAssets ? path.join(root,'public') : root;
     const renderer = options.render || (async (req,res) => {
         // Reload the renderer and its shared policy, while SSR recompiles changed UI.
-        for (const filename of ['../api/render.js','../server/ssr.js','../seo-core.js']) {
+        for (const filename of ['../api/render.js','../server/ssr.js','../seo-core.js','../discovery-core.js']) {
             delete require.cache[require.resolve(filename)];
         }
         return require('../api/render.js')(req,res);

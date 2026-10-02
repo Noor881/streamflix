@@ -56,6 +56,26 @@
             "destination": "/api/render?route=new"
         },
         {
+            "source": "/collections",
+            "destination": "/api/render?route=collections"
+        },
+        {
+            "source": "/collections/:id",
+            "destination": "/api/render?route=collections&id=:id"
+        },
+        {
+            "source": "/indian",
+            "destination": "/api/render?route=indian"
+        },
+        {
+            "source": "/indian/:id",
+            "destination": "/api/render?route=indian&id=:id"
+        },
+        {
+            "source": "/for-you",
+            "destination": "/api/render?route=for-you"
+        },
+        {
             "source": "/my-list",
             "destination": "/api/render?route=my-list"
         },
@@ -266,7 +286,7 @@
             ]
         },
         {
-            "source": "/(account|my-list|search)",
+            "source": "/(account|my-list|search|for-you)",
             "headers": [
                 {
                     "key": "X-Robots-Tag",
@@ -314,7 +334,7 @@
             "maxDuration": 30
         },
         "api/render.js": {
-            "includeFiles": "{server/templates/*.html,app.js,detail.js,seo-core.js}",
+            "includeFiles": "{server/templates/*.html,app.js,detail.js,seo-core.js,discovery-core.js}",
             "maxDuration": 30
         }
     }

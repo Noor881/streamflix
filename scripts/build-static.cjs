@@ -7,8 +7,8 @@ const OWNER = 'streamflix-public-assets-v1';
 
 // Deliberate allowlist: source, automation, templates and local state are not public assets.
 const ROOT_ASSETS = [
-    'app.js','detail.js','site-core.js','seo-core.js','admin.js','sw.js','search-ui.js','nav-ui.js',
-    'styles.css','nav.css','responsive.css','design-v2.css','cards.css','detail.css','seo-enhancements.css','admin.css','search-ui.css',
+    'app.js','detail.js','site-core.js','seo-core.js','admin.js','sw.js','search-ui.js','nav-ui.js','discovery-core.js','for-you.js',
+    'styles.css','nav.css','responsive.css','design-v2.css','cards.css','detail.css','seo-enhancements.css','admin.css','search-ui.css','discovery.css',
     'admin.html','offline.html','404.html','manifest.json','sitemap.xml','robots.txt','llms.txt',
     'logo-v2.png','logo-v2.webp','logo.png','favicon-v2.ico','favicon.ico','favicon.jpeg','favicon.svg','apple-touch-icon.png',
     '540bb093e1ba44239f8dc4bb75201b7d.txt'

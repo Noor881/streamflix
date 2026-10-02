@@ -60,8 +60,14 @@ module.exports = async function render(req,res) {
             {'@type':'BreadcrumbList',itemListElement:[{name:'Home',item:SEO.SITE+'/'},{name:type==='movie'?'Movies':'TV Shows',item:SEO.SITE+(type==='movie'?'/movies':'/tv')},{name:data.title||data.name,item:meta.canonical}].map((item,i)=>({'@type':'ListItem',position:i+1,...item}))}
         ]};
     } else {
+        // Route adapters flatten their query objects; inspect the incoming URL too so
+        // conflicting page/type parameters cannot silently select a different catalog.
+        if (['collections','indian','for-you'].includes(route) && req.url) {
+            const originalParams = new URL(req.url,SEO.SITE).searchParams;
+            if (['page','type'].some(name=>originalParams.getAll(name).length>1)) return errorResponse(res,404,'Page not found');
+        }
         const params=new URLSearchParams(Object.entries(query).filter(([key])=>!['route','id'].includes(key)));
-        const input=(route==='home'?'/':route==='genre'?`/genre/${query.id}`:`/${route}`)+(params.size?'?'+params:'');
+        const input=(route==='home'?'/':route==='genre'?`/genre/${query.id}`:['collections','indian'].includes(route)&&query.id?`/${route}/${query.id}`:`/${route}`)+(params.size?'?'+params:'');
         meta=SEO.describe(input);
         if(meta.status!==200) return errorResponse(res,404,'Page not found');
         try {
@@ -73,7 +79,7 @@ module.exports = async function render(req,res) {
                 const srcset=[300,780,1280].map(w=>`https://image.tmdb.org/t/p/w${w}${first.backdrop_path} ${w}w`).join(', ');
                 payload+=`<link rel="preload" as="image" href="${escape(src)}" imagesrcset="${escape(srcset)}" imagesizes="100vw" fetchpriority="high">`;
             }
-            const items=rendered.responses.flatMap(entry=>entry.data.results||[]).filter(item=>item.media_type!=='person'&&item.id&&(item.title||item.name));
+            const items=rendered.schemaItems || rendered.responses.flatMap(entry=>entry.data.results||[]).filter(item=>item.media_type!=='person'&&item.id&&(item.title||item.name));
             if(meta.genreId) items.sort((a,b)=>b.popularity-a.popularity);
             if(items.length && route!=='home' && !meta.noindex) schema={'@context':'https://schema.org','@type':'CollectionPage',name:meta.title,url:meta.canonical,mainEntity:{'@type':'ItemList',itemListElement:items.map((item,i)=>({'@type':'ListItem',position:i+1,url:SEO.titleMeta(item,item.media_type || (item.name?'tv':'movie')).canonical,name:item.title||item.name}))}};
         } catch(error) { return errorResponse(res,error.status||503,error.status===404?'Page not found':'Catalog information is temporarily unavailable. Please retry shortly.'); }

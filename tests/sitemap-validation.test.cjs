@@ -14,6 +14,7 @@ function harness(responseFor) {
         require: id => {
             if (id === 'node:fs') return {writeFileSync(path, value) {writes.push(path); previous = value;}};
             if (id === './server/tmdb.js') return {request: (endpoint,params)=>context.fetch(require('../server/tmdb.js').url(endpoint,params))};
+            if (id === './discovery-core.js') return require('../discovery-core.js');
             assert.equal(id, './seo-core.js');
             return SEO;
         },
@@ -69,7 +70,7 @@ test('bounded sitemap generation emits unique canonical titles and all public st
     assert.equal(urls.length, staticRoutes.length + 4);
     for (const route of staticRoutes) assert.ok(urls.includes(SEO.SITE + route));
     for (const url of urls) assert.equal(SEO.describe(url).status === 200 || /^https:\/\/hdwatchzone\.com\/(movie|tv)\/[78]-/.test(url), true);
-    assert.ok(urls.every(url => !/undefined|\?|#/.test(url)));
+    assert.ok(urls.every(url => !/undefined|#/.test(url) && (!url.includes('?') || staticRoutes.includes(url.slice(SEO.SITE.length)))));
     assert.ok(!/<lastmod>|<priority>|<changefreq>/.test(h.xml()));
 });
 

@@ -1,9 +1,9 @@
 /* Shared URL and metadata policy: identical before and after JavaScript. */
 (function (root, factory) {
-    const api = factory();
+    const api = factory(typeof module === 'object' && module.exports ? require('./discovery-core.js') : root.DiscoveryCore);
     if (typeof module === 'object' && module.exports) module.exports = api;
     else root.SiteSEO = api;
-})(typeof window === 'object' ? window : globalThis, function () {
+})(typeof window === 'object' ? window : globalThis, function (Discovery) {
     const SITE = 'https://hdwatchzone.com';
     const genres = {28:'Action',12:'Adventure',16:'Animation',35:'Comedy',80:'Crime',99:'Documentary',18:'Drama',10751:'Family',14:'Fantasy',36:'History',27:'Horror',10402:'Music',9648:'Mystery',10749:'Romance',878:'Science Fiction',10770:'TV Movie',53:'Thriller',10752:'War',37:'Western',10759:'Action & Adventure',10762:'Kids',10763:'News',10764:'Reality',10765:'Sci-Fi & Fantasy',10766:'Soap',10767:'Talk',10768:'War & Politics'};
     const entries = {
@@ -39,6 +39,12 @@
     }
     function describe(input) {
         const url = new URL(input, SITE), path = url.pathname.replace(/\/$/,'') || '/';
+        const discovery = Discovery?.parseRoute(input);
+        if (discovery) {
+            if (discovery.status!==200) return discovery;
+            const title = discovery.name+(discovery.page>1?` — Page ${discovery.page}`:'')+' | HD Watchzone';
+            return {...discovery,title,canonical:SITE+discovery.canonicalPath,robots:discovery.noindex?'noindex, follow':'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'};
+        }
         const genre = path.match(/^\/genre\/(\d+)$/);
         if (!entries[path] && !(genre && genres[genre[1]])) return {status:404};
         const params = url.searchParams, section = path.slice(1), paginated = Boolean(categories[section] || genre);

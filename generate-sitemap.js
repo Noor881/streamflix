@@ -2,9 +2,10 @@
 const fs = require('node:fs');
 const SITE = 'https://hdwatchzone.com';
 const SEO = require('./seo-core.js');
+const Discovery = require('./discovery-core.js');
 const TMDB = require('./server/tmdb.js');
 const slug = SEO.slug;
-const staticRoutes = ['/', '/movies','/tv','/anime','/new','/faq','/help','/contact','/privacy','/terms','/legal', ...Object.keys(SEO.genres).map(id=>'/genre/'+id)];
+const staticRoutes = ['/', '/movies','/tv','/anime','/new','/collections',...Discovery.collections.map(item=>'/collections/'+item.slug),'/indian',...Discovery.languages.flatMap(item=>['/indian/'+item.code,'/indian/'+item.code+'?type=tv']),'/faq','/help','/contact','/privacy','/terms','/legal', ...Object.keys(SEO.genres).map(id=>'/genre/'+id)];
 function titleURL(item, type) {
     if (type !== 'movie' && type !== 'tv') throw new Error('Unsupported sitemap title type');
     if (!item || typeof item !== 'object' || Array.isArray(item) || !Number.isSafeInteger(item.id) || item.id < 1) {

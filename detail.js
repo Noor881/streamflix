@@ -432,6 +432,9 @@ function buildDetailFooter() {
                     <ul class="footer-links">
                         <li><a href="/">Home</a></li>
                         <li><a href="/movies">Movies</a></li>
+                        <li><a href="/for-you">For You</a></li>
+                        <li><a href="/indian">Indian Languages</a></li>
+                        <li><a href="/collections">Collections</a></li>
                         <li><a href="/tv">TV Shows</a></li>
                         <li><a href="/new">Trending</a></li>
                     </ul>

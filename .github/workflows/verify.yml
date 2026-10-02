@@ -27,6 +27,8 @@ jobs:
           node --check api/render.js
           node --check server/ssr.js
           node --check seo-core.js
+          node --check discovery-core.js
+          node --check for-you.js
           node --check scripts/dev-server.cjs
           node --check scripts/auto-blogger.js
           node --check scripts/build.cjs

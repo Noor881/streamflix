@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const SEO = require('../seo-core.js');
+const Discovery = require('../discovery-core.js');
 const TMDB = require('./tmdb.js');
 const root = path.resolve(__dirname,'..');
 const compiled = new Map();
@@ -15,7 +16,7 @@ function script(file, suffix) {
 function context(fetcher) {
     const app = {innerHTML:'',style:{}};
     const document = {hidden:false,body:{style:{}},addEventListener(){},getElementById:id=>id==='app'?app:null,querySelector:()=>null,querySelectorAll:()=>[]};
-    const sandbox = {console,URL,URLSearchParams,AbortSignal,Date,Math,JSON,Number,String,Map,Set,Promise,parseInt,fetch:fetcher,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},requestAnimationFrame(){},matchMedia:()=>({matches:true}),navigator:{},localStorage:{getItem:()=>null,setItem(){},removeItem(){}},document,window:{SiteSEO:SEO,location:{pathname:'/',search:'',hash:'',href:SEO.SITE+'/',origin:SEO.SITE},addEventListener(){},scrollTo(){},Watchlist:{read:()=>[],ready:Promise.resolve()}}};
+    const sandbox = {console,URL,URLSearchParams,AbortSignal,Date,Math,JSON,Number,String,Map,Set,Promise,parseInt,fetch:fetcher,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},requestAnimationFrame(){},matchMedia:()=>({matches:true}),navigator:{},localStorage:{getItem:()=>null,setItem(){},removeItem(){}},document,window:{SiteSEO:SEO,DiscoveryCore:Discovery,location:{pathname:'/',search:'',hash:'',href:SEO.SITE+'/',origin:SEO.SITE},addEventListener(){},scrollTo(){},Watchlist:{read:()=>[],ready:Promise.resolve()}}};
     vm.createContext(sandbox); return {sandbox,app};
 }
 async function catalog(meta, input) {
@@ -35,10 +36,16 @@ async function catalog(meta, input) {
         return {ok:true,json:async()=>data};
     };
     const c = context(async url => {try{return await fetcher(url);}catch(error){failures.push(503);throw error;}});
-    script('app.js','\nthis.serverApp = {pages,components};').runInContext(c.sandbox,{timeout:5000});
+    script('app.js','\nthis.serverApp = {pages,components,discoveryUI};').runInContext(c.sandbox,{timeout:5000});
     const pages = c.sandbox.serverApp.pages;
     const route = meta.path.slice(1);
     if (meta.path==='/') await pages.home();
+    else if (meta.kind==='collections') await pages.collections(meta.collectionSlug || '',meta.page);
+    else if (meta.kind==='indian') await pages.indian(meta.languageCode || '',meta.type,meta.page);
+    else if (meta.kind==='for-you') {
+        // Personalization is browser-owned. Never request seed titles or cache one visitor's list in shared HTML.
+        c.app.innerHTML = '<div class="browse-page"><div class="browse-header"><h1>For You</h1><p class="browse-subtitle">Discover more from saved and recently viewed titles</p></div><div class="no-results"><p>Recommendations use titles saved or recently viewed in this browser. They load after JavaScript starts.</p><noscript><p>Enable JavaScript to view your personalized recommendations.</p></noscript><a href="/movies" class="btn btn-primary">Browse Movies</a></div></div>';
+    }
     else if (['movies','tv','anime'].includes(route)) await pages[route](meta.category,meta.page);
     else if (route==='new') await pages.newPopular(meta.category,meta.page);
     else if (meta.genreId) await pages.genre(meta.genreId,meta.page);
@@ -52,7 +59,10 @@ async function catalog(meta, input) {
     if (failures.length) { const error = new Error('Catalog metadata unavailable'); error.status=503; throw error; }
     const pageLimit = Math.max(1,...responses.map(entry=>entry.data.total_pages || 1));
     if (meta.page>pageLimit && responses.length) {const error=new Error('Page not found');error.status=404;throw error;}
-    return {html:c.app.innerHTML,responses};
+    // Discovery grids discard malformed, duplicate, adult and explicitly excluded titles.
+    // Reuse that exact filter so structured data never advertises cards absent from the page.
+    const schemaItems = meta.collectionSlug || meta.languageCode ? c.sandbox.serverApp.discoveryUI.items(responses[0]?.data,meta.type) : undefined;
+    return {html:c.app.innerHTML,responses,schemaItems};
 }
 function detail(data,type,season,episode) {
     const c=context();
