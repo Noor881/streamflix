@@ -128,9 +128,9 @@ test('production CSS retains portrait sizing, responsive overrides and blocking 
     assert.match(cards.slice(mobile),/\.content-row\{[^}]*display:grid!important;[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
     assert.match(cards.slice(0,mobile),/\.content-row>\.card-wrapper\{[^}]*flex:0 0 var\(--poster-card-width\)/);
     const orders={
-        'index.html':['nav.css','styles.css','responsive.css','design-v2.css','cards.css'],
-        'movie.html':['nav.css','detail.css','seo-enhancements.css','responsive.css','design-v2.css','cards.css'],
-        'tv.html':['nav.css','detail.css','seo-enhancements.css','responsive.css','design-v2.css','cards.css']
+        'index.html':['nav.css','styles.css','responsive.css','design-v2.css','cards.css','search-ui.css'],
+        'movie.html':['nav.css','detail.css','seo-enhancements.css','responsive.css','design-v2.css','cards.css','search-ui.css'],
+        'tv.html':['nav.css','detail.css','seo-enhancements.css','responsive.css','design-v2.css','cards.css','search-ui.css']
     };
     for(const [file,expected] of Object.entries(orders)) {
         const tags=[...read(root,'server/templates/'+file).matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)].map(match=>match[0]).filter(tag=>/href="\/(?!\/)/.test(tag));

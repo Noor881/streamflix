@@ -212,12 +212,17 @@
             padding: 12px;
             text-decoration: none;
             background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.85));
-            opacity: 0;
+            opacity: 1;
             transition: opacity 0.3s ease;
         }
 
         .trending-card:hover a {
             opacity: 1;
+        }
+
+        .trending-card a:focus-visible {
+            outline: 2px solid #ff6478;
+            outline-offset: -3px;
         }
 
         .trending-card-title {

@@ -23,7 +23,7 @@ test('private metadata responses never enter shared worker cache',async()=>{
  vm.runInNewContext(read('sw.js')+'\nthis.run=networkFirst;',c);assert.equal((await c.run({},'test')).status,200);assert.equal(opened,0);
 });
 function detail(){
- const grid={innerHTML:'',scrollTo(){}},copies=[];let sourceWrites=0;
+ const grid={innerHTML:'',scrollTo(){},querySelector:()=>null},copies=[];let sourceWrites=0;
  const c={console:{error(){}},URL,URLSearchParams,AbortSignal,navigator:{},history:{replaceState(){}},window:{SiteSEO:require('../seo-core.js'),addEventListener(){}},document:{addEventListener(){},getElementById:id=>id==='episodes-grid'?grid:id==='video-player'?{set src(v){sourceWrites++;},scrollIntoView(){}}:null,querySelectorAll:()=>[],querySelector:()=>null,createElement:()=>({setAttribute(){},select(){},focus(){}}),body:{appendChild:t=>copies.push(t),removeChild:t=>copies.splice(copies.indexOf(t),1)},execCommand:()=>true}};
  vm.createContext(c);vm.runInContext(read('detail.js')+'\nthis.api={DetailPage,loadEpisodes};saveToHistory=()=>{};showToast=()=>{};',c);
  c.api.DetailPage.currentData={id:999999,name:'Example'};c.api.DetailPage.currentType='tv';c.api.DetailPage.currentSeason=1;c.api.DetailPage.currentEpisode=1;

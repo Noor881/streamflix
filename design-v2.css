@@ -133,6 +133,19 @@ section[aria-label="About HD Watchzone"] a:hover { color: var(--link-red-hover) 
 
 @media (max-width: 900px) {
     body.app-shell { padding-bottom: 68px; }
+    .back-to-top { bottom: calc(82px + env(safe-area-inset-bottom)); }
+    .footer .footer-section a,
+    .detail-footer .footer-links a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        padding-block: 4px;
+        margin-bottom: 0;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+    .detail-footer .footer-links { gap: 0; }
+    .detail-footer .footer-links li { margin-bottom: 0; }
     .dnav-inner { height: 58px; padding-inline: 14px; gap: 10px; }
     .dnav-logo-img, .dnav-logo img { height: 32px; max-width: 128px; }
     .dnav-links { display: none; }
@@ -161,6 +174,16 @@ section[aria-label="About HD Watchzone"] a:hover { color: var(--link-red-hover) 
     .mobile-bottom-link { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 54px; color: #9aa2af; font-size: 11px; }
     .mobile-bottom-link svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; }
     .mobile-bottom-link.active { color: var(--brand-red); }
+}
+
+@media (max-width: 768px) {
+    .footer .footer-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        gap: 24px 16px;
+    }
+    .footer .footer-section { min-width: 0; }
 }
 
 @media (max-width: 560px) {

@@ -428,6 +428,34 @@ img { display: block; max-width: 100%; height: auto; }
     fill: currentColor;
 }
 
+.autoplay-controls {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 12px 12px;
+    background: #0d0d0d;
+}
+
+.btn-next-ep {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #59677e;
+    border-radius: 8px;
+    background: #182131;
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-next-ep:hover:not(:disabled) { background: #26354b; }
+.btn-next-ep:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.btn-next-ep:disabled { opacity: .5; cursor: default; }
+
 .player-wrapper:fullscreen,
 .player-wrapper:-webkit-full-screen {
     width: 100vw;
@@ -451,6 +479,8 @@ img { display: block; max-width: 100%; height: auto; }
         width: 100%;
         justify-content: center;
     }
+
+    .btn-next-ep { width: 100%; }
 }
 
 /* Server tabs bar */

@@ -127,7 +127,9 @@
     z-index: 1000;
 }
 
-.dnav-dropdown:hover .dnav-dropdown-content {
+.dnav-dropdown:hover .dnav-dropdown-content,
+.dnav-dropdown:focus-within .dnav-dropdown-content,
+.dnav-dropdown.genre-open .dnav-dropdown-content {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
@@ -354,6 +356,13 @@
 .mobile-nav .dnav-link:hover { color: #e50914; }
 
 /* ── Scroll-aware activation (JS adds this) ─ */
+.dnav-dropdown.genre-dismissed .dnav-dropdown-content { opacity:0; visibility:hidden; }
+@media (min-width:901px) and (max-width:1180px) {
+    .dnav-inner { padding:0 24px; gap:16px; }
+    .dnav-link { padding:8px; font-size:13px; }
+    .dnav-search-wrap { min-width:230px; max-width:250px; }
+    .dnav-logo img { height:36px; }
+}
 body { padding-top: 66px; }
 
 /* ── Kill old .header / .nav if still in compiled styles ─── */

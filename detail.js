@@ -483,7 +483,6 @@ function renderNav() {
             <div class="dnav-inner">
                 <a href="/" class="dnav-logo" aria-label="HD Watchzone Home">
                     <img src="/logo-v2.webp" alt="HD Watchzone" width="150" height="50" decoding="async" onerror="this.style.display='none'">
-                    <span class="dnav-logo-text">HD<span class="dnav-red">Watchzone</span></span>
                 </a>
                 <div class="dnav-links">
                     <a href="/movies" class="dnav-link">Movies</a>
@@ -522,11 +521,15 @@ function renderNav() {
                     <a href="/new" class="dnav-link">New Releases</a>
                 </div>
                 <div class="dnav-right">
-                    <button class="dnav-search-btn" onclick="window.location.href='/search'" aria-label="Search">
+                    <form class="dnav-search-wrap" id="search-container" role="search" action="/search" method="get">
+                    <button class="dnav-search-btn" id="search-btn" type="submit" aria-label="Open search" aria-expanded="false" aria-controls="search-input">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                         </svg>
                     </button>
+                    <input type="search" name="q" id="search-input" class="dnav-search-input" maxlength="100" placeholder="Search movies and TV shows" aria-label="Search movies and TV shows" autocomplete="off" enterkeyhint="search">
+                    <button class="dnav-search-close" id="search-close-btn" type="button" aria-label="Close search">&times;</button>
+                    </form>
                 </div>
             </div>
         </nav>`;
@@ -538,7 +541,7 @@ function buildPlayer(type, id, season, episode) {
         : SERVERS[activeServer].tvUrl(id, season, episode);
 
     const serverBtns = SERVERS.map((s, i) => `
-        <button class="server-btn ${i === activeServer ? 'active' : ''}"
+        <button class="server-btn ${i === activeServer ? 'active' : ''}" type="button" aria-pressed="${i === activeServer}"
                 onclick="DetailPage.switchServer(${i}, '${type}', '${id}', ${season || 'null'}, ${episode || 'null'})">
             <span class="server-name">${s.name}</span>
             <span class="server-desc">${s.description}</span>
@@ -561,7 +564,7 @@ function buildPlayer(type, id, season, episode) {
             </div>
             
             <div class="autoplay-controls" style="display: ${nextEpVisible}">
-                <button class="btn-next-ep" onclick="DetailPage.playNextEpisode(${id})">
+                <button class="btn-next-ep" type="button" onclick="DetailPage.playNextEpisode(${id})">
                     <span>Next Episode</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>
                 </button>
@@ -759,7 +762,7 @@ function buildEpisodes(tvData, currentSeason, currentEpisode, tvId) {
     if (realSeasons.length === 0) return '';
 
     const seasonBtns = realSeasons.map(s => `
-        <button class="season-btn ${s.season_number === currentSeason ? 'active' : ''}"
+        <button class="season-btn ${s.season_number === currentSeason ? 'active' : ''}" type="button" aria-pressed="${s.season_number === currentSeason}"
                 onclick="DetailPage.changeSeason(${tvId}, ${s.season_number})">
             Season ${s.season_number}
         </button>`).join('');
@@ -833,6 +836,65 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
     }
 }
 
+let expandedPlayerState = null;
+function setExpandedPlayer(wrapper, expanded) {
+    if (!expanded) {
+        const state = expandedPlayerState;
+        if (!state) return;
+        expandedPlayerState = null;
+        state.wrapper.classList.remove('is-expanded');
+        document.body.style.overflow = state.overflow;
+        for (const [element, inert] of state.outside) element.inert = inert;
+        for (const [name, value] of Object.entries(state.attributes)) {
+            if (value === null) state.wrapper.removeAttribute(name);
+            else state.wrapper.setAttribute(name, value);
+        }
+        if (state.trigger?.isConnected) state.trigger.focus({preventScroll:true});
+        return;
+    }
+    if (expandedPlayerState) return;
+    const trigger = document.activeElement;
+    const outside = [];
+    for (let element = wrapper; element?.parentElement; element = element.parentElement) {
+        for (const sibling of element.parentElement.children) {
+            if (sibling !== element) {
+                outside.push([sibling, Boolean(sibling.inert)]);
+                sibling.inert = true;
+            }
+        }
+        if (element.parentElement === document.body) break;
+    }
+    expandedPlayerState = {
+        wrapper, outside, trigger, overflow:document.body.style.overflow,
+        attributes:Object.fromEntries(['role','aria-modal','aria-label'].map(name => [name, wrapper.getAttribute(name)]))
+    };
+    wrapper.classList.add('is-expanded');
+    wrapper.setAttribute('role','dialog');
+    wrapper.setAttribute('aria-modal','true');
+    wrapper.setAttribute('aria-label','Expanded video player');
+    document.body.style.overflow = 'hidden';
+    wrapper.querySelector('.player-exit-fullscreen')?.focus({preventScroll:true});
+}
+
+function handleExpandedPlayerKeydown(event) {
+    const state = expandedPlayerState;
+    if (!state) return;
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        setExpandedPlayer(state.wrapper, false);
+        return;
+    }
+    if (event.key !== 'Tab') return;
+    const controls = [...state.wrapper.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])')]
+        .filter(element => element.getClientRects().length);
+    const first = controls[0], last = controls[controls.length - 1];
+    if (!first) { event.preventDefault(); return; }
+    if (!state.wrapper.contains(document.activeElement) || event.shiftKey && document.activeElement === first || !event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus({preventScroll:true});
+    }
+}
+
 function layoutWatchPage() {
     const hero = document.querySelector('.detail-hero');
     const info = hero?.querySelector('.hero-info');
@@ -866,6 +928,7 @@ function layoutWatchPage() {
         button.setAttribute('aria-pressed', String(saved));
     }
     initRecommendationsRail();
+    DetailPage.updateEpisodeControls();
 }
 
 /* ==========================================
@@ -1033,7 +1096,7 @@ const DetailPage = {
                             <div class="hero-buttons">
                                 <button class="btn-play" onclick="document.getElementById('video-player')?.scrollIntoView({behavior:'smooth'})">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    Watch S${season} E${episode}
+                                    <span class="current-episode-label">Watch S${season} E${episode}</span>
                                 </button>
                                 <button class="btn-secondary" onclick="document.getElementById('episodes-section')?.scrollIntoView({behavior:'smooth'})">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -1117,6 +1180,7 @@ const DetailPage = {
 
         document.querySelectorAll('.server-btn').forEach((btn, i) => {
             btn.classList.toggle('active', i === index);
+            btn.setAttribute('aria-pressed', String(i === index));
         });
     },
 
@@ -1125,8 +1189,7 @@ const DetailPage = {
         if (!wrapper) return;
 
         if (wrapper.classList.contains('is-expanded')) {
-            wrapper.classList.remove('is-expanded');
-            document.body.style.overflow = '';
+            setExpandedPlayer(wrapper, false);
             return;
         }
         try {
@@ -1137,13 +1200,11 @@ const DetailPage = {
             } else if (wrapper.webkitRequestFullscreen) {
                 wrapper.webkitRequestFullscreen();
             } else {
-                wrapper.classList.add('is-expanded');
-                document.body.style.overflow = 'hidden';
+                setExpandedPlayer(wrapper, true);
                 showToast('Expanded player. Your browser does not support native fullscreen.');
             }
         } catch (error) {
-            wrapper.classList.add('is-expanded');
-            document.body.style.overflow = 'hidden';
+            setExpandedPlayer(wrapper, true);
             showToast('Native fullscreen is unavailable here. Showing an expanded player.');
         }
     },
@@ -1156,6 +1217,7 @@ const DetailPage = {
         document.querySelectorAll('.season-btn').forEach(btn => {
             const num = parseInt(btn.textContent.replace('Season ', ''));
             btn.classList.toggle('active', num === seasonNum);
+            btn.setAttribute('aria-pressed', String(num === seasonNum));
         });
 
         // Reload episodes
@@ -1167,9 +1229,24 @@ const DetailPage = {
     changeEpisodePage(direction) {
         if (!episodePageState) return;
         const lastPage = Math.max(0, Math.ceil(episodePageState.episodes.length / EPISODES_PER_PAGE) - 1);
-        episodePageState.page = Math.max(0, Math.min(lastPage, episodePageState.page + direction));
+        const nextPage = Math.max(0, Math.min(lastPage, episodePageState.page + direction));
+        if (nextPage === episodePageState.page) return;
+        episodePageState.page = nextPage;
         renderEpisodePage();
-        document.getElementById('episodes-grid')?.scrollTo?.({ top:0 });
+        const grid = document.getElementById('episodes-grid');
+        grid?.scrollTo?.({ top:0 });
+        grid?.querySelector('.episode-card')?.focus({ preventScroll:true });
+    },
+
+    updateEpisodeControls() {
+        if (this.currentType !== 'tv') return;
+        const label = document.querySelector('.current-episode-label');
+        if (label) label.textContent = `Watch S${this.currentSeason} E${this.currentEpisode}`;
+        const nextButton = document.querySelector('.btn-next-ep');
+        const seasons = Array.isArray(this.currentData?.seasons) ? this.currentData.seasons : [];
+        const season = seasons.find(item => item.season_number === this.currentSeason);
+        const nextSeason = seasons.find(item => item.season_number === this.currentSeason + 1 && item.episode_count > 0);
+        if (nextButton) nextButton.disabled = Boolean(season && this.currentEpisode >= season.episode_count && !nextSeason);
     },
 
     playEpisode(tvId, season, episode) {
@@ -1181,7 +1258,7 @@ const DetailPage = {
         if (player) {
             const remap = getRemappedTV(tvId, season, episode);
             player.src = SERVERS[activeServer].tvUrl(tvId, remap.s, remap.e);
-            player.scrollIntoView({ behavior: 'smooth' });
+            player.scrollIntoView({ behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }
 
         // Update active state
@@ -1192,6 +1269,7 @@ const DetailPage = {
         const selectedCard = document.querySelector('[data-episode="' + episode + '"][data-season="' + season + '"]');
         selectedCard?.classList.add('active');
         selectedCard?.setAttribute('aria-pressed', 'true');
+        this.updateEpisodeControls();
         const path = '/tv/' + tvId + '-' + createSlug(this.currentData.name) + '/' + season + '/' + episode;
         history.replaceState(null, '', path);
         saveToHistory(this.currentData, 'tv', season, episode);
@@ -1219,6 +1297,8 @@ const DetailPage = {
     },
 
     initNavScroll() {
+        window.SearchUI?.init();
+        window.NavigationUI?.init();
         const nav = document.getElementById('detail-nav');
         if (!nav) return;
 
@@ -1279,4 +1359,4 @@ const DetailPage = {
     }
 };
 
-document.addEventListener("keydown", event => { if (event.key === "Escape") { const player = document.getElementById("player-wrapper"); if (player?.classList.contains("is-expanded")) { player.classList.remove("is-expanded"); document.body.style.overflow = ""; } } });
+document.addEventListener('keydown', handleExpandedPlayerKeydown);

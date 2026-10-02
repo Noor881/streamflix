@@ -51,6 +51,12 @@ function createPreviewServer(options = {}) {
         try { url = new URL(req.url,'http://localhost'); pathname = decodeURIComponent(url.pathname); }
         catch { res.writeHead(400,{'Content-Type':'text/plain'}); res.end('Invalid URL'); return; }
         applyIndexingHeaders(pathname,url.searchParams,res);
+        if (pathname === '/api/search-suggestions' || pathname === '/api/search-suggestions.js') {
+            req.query = Object.fromEntries(url.searchParams);
+            try { await require('../api/search-suggestions.js')(req,res); }
+            catch { res.statusCode=503;res.setHeader('Content-Type','application/json');res.end('{"error":"Suggestions unavailable"}'); }
+            return;
+        }
         if (pathname === '/api/metadata' || pathname === '/api/metadata.js') {
             req.query = Object.fromEntries(url.searchParams);
             try { await require('../api/metadata.js')(req,res); }

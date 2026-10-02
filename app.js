@@ -1247,6 +1247,11 @@ const pages = {
             });
 
             if (items.length === 0) {
+                let suggestions = null;
+                if (query.trim().length >= 2 && window.SearchUI) {
+                    try { suggestions = await window.SearchUI.lookup(query); } catch { /* A suggestion outage must not hide the original empty state. */ }
+                }
+                const related = window.SearchUI?.validResults(suggestions) || [];
                 app.innerHTML = `
                     <div class="search-page">
                         <div class="search-header">
@@ -1255,8 +1260,9 @@ const pages = {
                         <div class="no-results">
                             <div class="no-results-icon">😔</div>
                             <h2>No Results Found</h2>
-                            <p>Try searching for something else</p>
+                            <p>Try a different spelling or choose one of the similar titles below.</p>
                         </div>
+                        ${related.length ? `<h2 class="search-related-heading">${suggestions.correctedQuery ? 'Did you mean “' + utils.sanitize(suggestions.correctedQuery) + '”?' : 'Similar titles'}</h2><div class="content-grid">${related.map(item => components.card(item,item.media_type)).join('')}</div>` : ''}
                     </div>
                 `;
                 return;
@@ -1767,7 +1773,8 @@ const pages = {
     // Cookie Preferences page
     cookies() {
         const app = routeTarget();
-        const analyticsConsent = localStorage.getItem('analytics_consent') === 'true';
+        let analyticsConsent = false;
+        try { analyticsConsent = localStorage.getItem('analytics_consent') === 'true'; } catch { /* Preferences remain usable with storage blocked. */ }
 
         app.innerHTML = `
             <div class="static-page">
@@ -1803,7 +1810,7 @@ const pages = {
                             </div>
                             <div class="cookie-toggle">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="analytics-toggle" ${analyticsConsent ? 'checked' : ''} onchange="toggleAnalyticsCookies(this.checked)">
+                                    <input type="checkbox" id="analytics-toggle" aria-label="Enable optional analytics" ${analyticsConsent ? 'checked' : ''} onchange="toggleAnalyticsCookies(this.checked)">
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span class="cookie-status" id="analytics-status">${analyticsConsent ? 'Enabled' : 'Disabled'}</span>
@@ -2022,6 +2029,7 @@ const router = {
 
     handleRoute() {
         routeGeneration++;
+        window.NavigationUI?.close();
         const hash = window.location.hash;
         // Use hash if present, otherwise use pathname as fallback for clean URLs
         let path = hash ? hash.slice(1) : window.location.pathname + window.location.search;
@@ -2158,6 +2166,8 @@ const router = {
 // ==========================================
 function initEventListeners() {
     // Search functionality
+    if (window.SearchUI) window.SearchUI.init({navigate: target => router.navigate(target)});
+    else {
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
     const searchContainer = document.getElementById('search-container');
@@ -2185,7 +2195,8 @@ function initEventListeners() {
         }
     };
 
-    searchBtn?.addEventListener('click', () => {
+    searchBtn?.addEventListener('click', (event) => {
+        event.preventDefault();
         const isOpen = searchContainer?.classList.contains('search-open');
         if (isCompactSearch() && !isOpen) {
             setSearchOpen(true);
@@ -2209,8 +2220,11 @@ function initEventListeners() {
     window.addEventListener('resize', () => {
         if (!isCompactSearch()) setSearchOpen(false);
     }, { passive: true });
+    }
 
     // Mobile hamburger menu
+    if (window.NavigationUI) window.NavigationUI.init();
+    else {
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const mobileNav = document.getElementById('mobile-nav');
     const mobileOverlay = document.getElementById('mobile-nav-overlay');
@@ -2251,11 +2265,13 @@ function initEventListeners() {
     document.addEventListener('click', () => {
         dropdownContent?.classList.remove('show');
     });
+    }
 
     // Keyboard navigation for hero carousel
     document.addEventListener('keydown', (e) => {
         const heroCarousel = document.getElementById('hero-carousel');
         if (!heroCarousel) return;
+        if (e.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return;
         if (e.key === 'ArrowLeft') prevSlide();
         if (e.key === 'ArrowRight') nextSlide();
     });
@@ -2281,7 +2297,7 @@ function initEventListeners() {
     });
 
     backToTopBtn?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     });
 }
 

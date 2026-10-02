@@ -97,8 +97,8 @@ test('layout styles remain blocking and ordered after the optional font declarat
     for (const file of templates) {
         const html = fs.readFileSync(`server/templates/${file}`, 'utf8');
         const expected = file === 'index.html'
-            ? ['/nav.css', '/styles.css', '/responsive.css', '/design-v2.css', '/cards.css']
-            : ['/nav.css', '/detail.css', '/seo-enhancements.css', '/responsive.css', '/design-v2.css', '/cards.css'];
+            ? ['/nav.css', '/styles.css', '/responsive.css', '/design-v2.css', '/cards.css', '/search-ui.css']
+            : ['/nav.css', '/detail.css', '/seo-enhancements.css', '/responsive.css', '/design-v2.css', '/cards.css', '/search-ui.css'];
         const layoutLinks = [...html.matchAll(/<link\b[^>]*>/g)].map(match => match[0])
             .filter(tag => (linkAttribute(tag, 'href') || '').startsWith('/') && (linkAttribute(tag, 'href') || '').includes('.css'));
         assert.deepEqual(layoutLinks.map(tag => new URL(linkAttribute(tag, 'href'), 'https://hdwatchzone.com').pathname), expected);

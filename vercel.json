@@ -309,6 +309,10 @@
         }
     ],
     "functions": {
+        "api/search-suggestions.js": {
+            "includeFiles": "sitemap.xml",
+            "maxDuration": 30
+        },
         "api/render.js": {
             "includeFiles": "{server/templates/*.html,app.js,detail.js,seo-core.js}",
             "maxDuration": 30
