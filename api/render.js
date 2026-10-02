@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const SEO = require('../seo-core.js');
+const TMDB = require('../server/tmdb.js');
 const SSR = require('../server/ssr.js');
 const escape = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const json = value => JSON.stringify(value).replace(/</g,'\\u003c');
@@ -32,7 +33,7 @@ module.exports = async function render(req,res) {
         if(!Number.isSafeInteger(numericId) || numericId<1) return errorResponse(res,404,'Title not found');
         if(type==='movie' && numericId===928480) return errorResponse(res,410,'This title has been removed');
         try {
-            const response=await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=d74b73cd4563f614919e6493152fbc1e&append_to_response=credits,videos,recommendations`,{signal:AbortSignal.timeout(10000)});
+            const response=await TMDB.request('/'+type+'/'+id,{append_to_response:'credits,videos,recommendations'});
             if(response.status===404) return errorResponse(res,404,'Title not found');
             if(!response.ok) throw new Error('Metadata unavailable');
             data=await response.json();
@@ -78,19 +79,19 @@ module.exports = async function render(req,res) {
         } catch(error) { return errorResponse(res,error.status||503,error.status===404?'Page not found':'Catalog information is temporarily unavailable. Please retry shortly.'); }
     }
     let html=fs.readFileSync(path.resolve(__dirname,'..','server','templates',isDetail?`${type}.html`:'index.html'),'utf8');
-    html=html.replace(/<title>[\s\S]*?<\/title>/,`<title>${escape(meta.title)}</title>`);
+    html=html.replace(/<title>[\s\S]*?<\/title>/,()=>`<title>${escape(meta.title)}</title>`);
     const values={title:meta.title,description:meta.description,robots:meta.robots,'og:title':meta.title,'og:description':meta.description,'og:url':meta.canonical,'og:image':image,'twitter:title':meta.title,'twitter:description':meta.description,'twitter:url':meta.canonical,'twitter:image':image};
     for(const [key,value] of Object.entries(values)) {
         const pattern=new RegExp(`(<meta (?:name|property)="${key}"\\s+content=")[^"]*(")`);
         html=html.replace(pattern,(_,a,b)=>a+escape(value)+b);
     }
-    html=html.replace(/<link rel="canonical"[^>]*>/g,'').replace('</head>',`<link rel="canonical" href="${escape(meta.canonical)}">${payload || ''}</head>`);
+    html=html.replace(/<link rel="canonical"[^>]*>/g,'').replace('</head>',()=>`<link rel="canonical" href="${escape(meta.canonical)}">${payload || ''}</head>`);
     if(isDetail) {
         html=html.replace(/(<div id="detail-app">)[\s\S]*?(<\/div>\s*<div id="toast")/,(_,open,close)=>open+body+close);
         html=html.replace(/(<script id="schema-movie" type="application\/ld\+json">)[\s\S]*?(<\/script>)/,(_,a,b)=>a+json(schema)+b);
     } else {
         html=html.replace(/(<main[^>]*id="app"[^>]*>)[\s\S]*?(<\/main>)/,(_,a,b)=>a.replace('id="app"','id="app" data-server-rendered="true"')+body+b);
-        if(schema) html=html.replace('</head>',`<script id="page-schema" type="application/ld+json">${json(schema)}</script></head>`);
+        if(schema) html=html.replace('</head>',()=>`<script id="page-schema" type="application/ld+json">${json(schema)}</script></head>`);
     }
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control',meta.noindex?'private, no-store':'public, max-age=0, s-maxage=600, stale-while-revalidate=3600');

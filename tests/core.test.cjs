@@ -93,7 +93,7 @@ test('initial category metadata and privacy-sensitive noindex are emitted before
 });
 test('SW passes opaque images and real 404s through unchanged',async()=>{
     const cache={put:async()=>{},keys:async()=>[],match:async()=>null};
-    const c={self:{addEventListener(){},location:{origin:'http://localhost'}},caches:{open:async()=>cache},AbortSignal,URL,Response,fetch:async()=>({type:'opaque',status:0,ok:false,clone(){return this;}})};
+    const c={setTimeout,clearTimeout,AbortController,self:{addEventListener(){},location:{origin:'http://localhost'}},caches:{open:async()=>cache},AbortSignal,URL,Response,fetch:async()=>({type:'opaque',status:0,ok:false,clone(){return this;}})};
     vm.runInNewContext(fs.readFileSync('sw.js','utf8')+'\nthis.readNetwork=networkFirst;',c);
     assert.equal((await c.readNetwork({mode:'no-cors'},'images')).type,'opaque');
     c.fetch=async()=>({ok:false,status:404,type:'basic'});assert.equal((await c.readNetwork({mode:'navigate'},'static')).status,404);

@@ -32,7 +32,9 @@ jobs:
       - name: 📋 Restore posted IDs cache
         uses: actions/cache@v4
         with:
-          path: scripts/posted_ids.json
+          path: |
+            scripts/posted_ids.json
+            scripts/delivery-state.json
           key: posted-ids-${{ github.run_id }}
           restore-keys: |
             posted-ids-
@@ -55,5 +57,7 @@ jobs:
         uses: actions/cache@v4
         if: always()
         with:
-          path: scripts/posted_ids.json
+          path: |
+            scripts/posted_ids.json
+            scripts/delivery-state.json
           key: posted-ids-${{ github.run_id }}

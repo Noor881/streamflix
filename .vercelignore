@@ -15,3 +15,5 @@ CLAUDE.md
 
 # Vercel installs the pinned build dependency from the lockfile.
 /node_modules/
+scripts/delivery-state.json
+scripts/posted_ids.json

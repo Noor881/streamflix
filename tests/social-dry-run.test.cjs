@@ -15,12 +15,13 @@ function runner({empty = false, env = {}, argv = [], failDetails = false} = {}) 
         console: {log() {}, error() {}}, process: {env, argv, exit() {throw new Error('Unexpected exit');}},
         SITE_URL: 'https://hdwatchzone.com', createSlug: () => 'example',
         loadPostedIds: () => [...history],
+        loadDeliveryState: () => ({}), saveDeliveryState() {},
         savePostedIds: ids => {calls.writes.push([...ids]);},
         fetchTrendingMovies: async () => {calls.reads++; return [{id: 550, title: 'Example'}];},
         pickMovies: movies => empty ? [] : movies,
         fetchMovieDetails: async () => {calls.details++; if (failDetails) throw new Error('Metadata unavailable'); return {};},
         getRedditToken: async () => {calls.auth++; return 'mock-token';},
-        postToTelegram: async () => {calls.telegram++;}, postToReddit: async () => {calls.reddit++;},
+        postToTelegram: async () => {calls.telegram++;return {status:'sent'};}, postToReddit: async () => {calls.reddit++;return {status:'sent'};},
         sleep: async () => {}
     };
     const pure = source.slice(source.indexOf('function readDryRun('), source.indexOf('if (require.main === module)'));
@@ -69,4 +70,25 @@ test('default and explicit false retain the existing scheduled live path, using 
         assert.equal(calls.auth, 1); assert.equal(calls.telegram, 1); assert.equal(calls.reddit, 1);
         assert.deepEqual(calls.writes, [[10, 550]]);
     }
+});
+test('failed or skipped deliveries do not mark a movie globally posted', async () => {
+    for (const status of ['failed','skipped']) {
+        const {calls, sandbox, run} = runner();
+        let state;
+        sandbox.postToReddit = async () => ({status});
+        sandbox.saveDeliveryState = value => {state=JSON.parse(JSON.stringify(value));};
+        await assert.rejects(run(), /deliveries failed or were skipped/);
+        assert.deepEqual(calls.writes, [[10]]);
+        assert.equal(state[550].telegram,'sent');
+        assert.equal(state[550].reddit,status);
+    }
+});
+test('partial retry does not resend to an already successful platform', async () => {
+    const {calls,sandbox,run}=runner();
+    sandbox.loadDeliveryState=()=>({550:{telegram:'sent',reddit:'failed'}});
+    await run();assert.equal(calls.telegram,0);assert.equal(calls.reddit,1);assert.deepEqual(calls.writes,[[10,550]]);
+});
+test('Reddit authentication failure does not prevent Telegram delivery',async()=>{
+    const {calls,sandbox,run}=runner();sandbox.getRedditToken=async()=>{throw Error('auth');};sandbox.postToReddit=async()=>({status:'skipped'});
+    await assert.rejects(run(), /deliveries failed or were skipped/);assert.equal(calls.telegram,1);assert.deepEqual(calls.writes,[[10]]);
 });

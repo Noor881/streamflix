@@ -22,8 +22,8 @@
     { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
-    { "name": "Movies", "url": "/#/movies" },
-    { "name": "TV Shows", "url": "/#/tv" },
-    { "name": "My List", "url": "/#/my-list" }
+    { "name": "Movies", "url": "/movies" },
+    { "name": "TV Shows", "url": "/tv" },
+    { "name": "My List", "url": "/my-list" }
   ]
 }

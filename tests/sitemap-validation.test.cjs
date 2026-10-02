@@ -13,6 +13,7 @@ function harness(responseFor) {
         module: {exports: {}}, console: {log() {}}, AbortSignal,
         require: id => {
             if (id === 'node:fs') return {writeFileSync(path, value) {writes.push(path); previous = value;}};
+            if (id === './server/tmdb.js') return {request: (endpoint,params)=>context.fetch(require('../server/tmdb.js').url(endpoint,params))};
             assert.equal(id, './seo-core.js');
             return SEO;
         },
@@ -26,7 +27,7 @@ function harness(responseFor) {
     return {generate: context.module.exports.generateSitemap, requests, writes, xml: () => previous};
 }
 function validResponse(url) {
-    const movie = /\/movie\//.test(url.pathname);
+    const movie = /\/movie(?:\/|$)/.test(url.pathname);
     const type = movie ? 'movie' : 'tv';
     return {ok: true, json: async () => ({results: [
         {id: 7, [movie ? 'title' : 'name']: 'A < & "quoted" title', media_type: type},
@@ -60,7 +61,7 @@ test('sitemap rejects malformed identifiers, missing names and unsupported media
 test('bounded sitemap generation emits unique canonical titles and all public static routes using mocked requests only', async () => {
     const h = harness(validResponse);
     await h.generate();
-    assert.equal(h.requests.length, 100);
+    assert.equal(h.requests.length, 120);
     assert.deepEqual([...new Set(h.requests.map(r => r.page))].sort((a, b) => a - b), Array.from({length: 10}, (_, i) => String(i + 1)));
     assert.deepEqual(h.writes, ['sitemap.xml']);
     const urls = [...h.xml().matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);

@@ -15,3 +15,5 @@ CLAUDE.md
 
 # Installed build tools are restored from package-lock.json.
 /node_modules/
+scripts/delivery-state.json
+scripts/posted_ids.json

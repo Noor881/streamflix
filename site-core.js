@@ -1,20 +1,49 @@
 /* Shared, local-only preferences. No analytics network request before opt-in. */
 (() => {
+    window.fetchWithDeadline = async (input, options = {}, milliseconds = 12000) => {
+        const controller = typeof AbortController === 'function' ? new AbortController() : null;
+        let timer;
+        try {
+            return await Promise.race([
+                fetch(input, { ...options, signal: controller?.signal || options.signal }),
+                new Promise((_, reject) => { timer = setTimeout(() => { controller?.abort(); reject(new Error('Request timed out')); }, milliseconds); })
+            ]);
+        } finally { clearTimeout(timer); }
+    };
     const preference = key => { try { return localStorage.getItem(key); } catch { return null; } };
+    let canPersist = true;
+    const backup = key => {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw && !localStorage.getItem(key + '_recovery_backup')) localStorage.setItem(key + '_recovery_backup', raw);
+        } catch { canPersist = false; }
+    };
     const readArray = key => {
-        try { const value = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(value) ? value : []; }
-        catch { return []; }
+        try {
+            const value = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!Array.isArray(value)) { backup(key); return []; }
+            return value.filter(item => {
+                const valid = item && typeof item === 'object' && !Array.isArray(item) && /^\d+$/.test(String(item.id)) && Number.isSafeInteger(Number(item.id)) && Number(item.id) > 0 && ['movie','tv'].includes(item.media_type || item.type || 'movie');
+                if (!valid) backup(key);
+                else if (item.poster != null && typeof item.poster !== 'string' || item.poster_path != null && typeof item.poster_path !== 'string') backup(key);
+                return valid;
+            });
+        } catch { backup(key); return []; }
     };
     window.Watchlist = {
         read() {
+            canPersist = true;
             const items = [...readArray('streamflix_my_list'), ...readArray('watchlist')];
             const unique = new Map();
             for (const item of items) {
                 const type = item.media_type || item.type || 'movie';
-                unique.set(`${type}:${item.id}`, { ...item, media_type: type, type, poster_path: item.poster_path || (item.poster || '').replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^/]+/, '') });
+                const poster = typeof item.poster === 'string' ? item.poster : '';
+                const posterPath = typeof item.poster_path === 'string' ? item.poster_path : poster.replace(/^https:\/\/image\.tmdb\.org\/t\/p\/[^/]+/, '');
+                if (item.poster != null && typeof item.poster !== 'string' || item.poster_path != null && typeof item.poster_path !== 'string') backup('streamflix_my_list');
+                unique.set(`${type}:${Number(item.id)}`, { ...item, id:Number(item.id), title:typeof item.title==='string'?item.title:typeof item.name==='string'?item.name:'Untitled', name:typeof item.name==='string'?item.name:typeof item.title==='string'?item.title:'Untitled', media_type: type, type, poster, poster_path: posterPath });
             }
             const list = [...unique.values()];
-            try { localStorage.setItem('streamflix_my_list', JSON.stringify(list)); localStorage.removeItem('watchlist'); } catch { /* storage disabled */ }
+            if (canPersist) try { localStorage.setItem('streamflix_my_list', JSON.stringify(list)); localStorage.removeItem('watchlist'); } catch { /* original data preserved when storage is disabled */ }
             return list;
         }
     };

@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const SEO = require('../seo-core.js');
+const TMDB = require('./tmdb.js');
 const root = path.resolve(__dirname,'..');
 const compiled = new Map();
 function script(file, suffix) {
@@ -21,15 +22,16 @@ async function catalog(meta, input) {
     const responses = [], failures = [];
     const fetcher = async url => {
         const target = new URL(url);
-        const response = await fetch(target,{signal:AbortSignal.timeout(10000)});
+        const endpoint = target.searchParams.get('endpoint');
+        const params = Object.fromEntries([...target.searchParams].filter(([key])=>key!=='endpoint'));
+        const response = await TMDB.request(endpoint,params);
         if (!response.ok) { failures.push(response.status); return response; }
         const data = await response.json();
         if (!Array.isArray(data?.results) || !Number.isFinite(data.total_pages) || data.total_pages < 0) {
             failures.push(503);
             throw new Error('Incomplete catalog metadata');
         }
-        const params = Object.fromEntries([...target.searchParams].filter(([key])=>key!=='api_key'));
-        responses.push({endpoint:target.pathname.replace(/^\/3/,''),params,data});
+        responses.push({endpoint,params,data});
         return {ok:true,json:async()=>data};
     };
     const c = context(async url => {try{return await fetcher(url);}catch(error){failures.push(503);throw error;}});

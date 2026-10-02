@@ -53,9 +53,9 @@ const TWEET_TEMPLATES = [
 ];
 
 async function fetchJson(url) {
-    const res = await fetch(url);
+    const res = await fetch(url, {signal:AbortSignal.timeout(15000)});
     if (!res.ok) {
-        throw new Error(`HTTP ${res.status} for ${url}: ${await res.text()}`);
+        throw new Error(`HTTP ${res.status} for ${require('../server/tmdb.js').redact(url)}`);
     }
     return res.json();
 }

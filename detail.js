@@ -3,8 +3,7 @@
    ========================================== */
 
 const TMDB = {
-    KEY: 'd74b73cd4563f614919e6493152fbc1e',
-    BASE: 'https://api.themoviedb.org/3',
+    BASE: '/api/metadata',
     IMG: 'https://image.tmdb.org/t/p',
     SITE_URL: 'https://hdwatchzone.com'
 };
@@ -41,10 +40,10 @@ async function tmdbFetch(endpoint, params = {}) {
             if (String(data.id) === endpoint.split('/')[2] && (endpoint.startsWith('/movie/') ? data.title : data.name)) return data;
         } catch { /* Fall back to the API for an invalid initial payload. */ }
     }
-    const url = new URL(`${TMDB.BASE}${endpoint}`);
-    url.searchParams.set('api_key', TMDB.KEY);
+    const url = new URL(TMDB.BASE, window.location.origin || TMDB.SITE_URL);
+    url.searchParams.set('endpoint', endpoint);
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(12000) });
+    const res = await (window.fetchWithDeadline ? window.fetchWithDeadline(url.toString()) : fetch(url.toString(), { signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(12000) : undefined }));
     if (!res.ok) throw new Error(`TMDB ${res.status}`);
     return res.json();
 }
@@ -464,7 +463,7 @@ function buildDetailFooter() {
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; ${new Date().getFullYear()} HD Watchzone. All content sourced from The Movie Database (TMDB). HD Watchzone is not responsible for third-party content.</p>
+                <p>&copy; ${new Date().getFullYear()} HD Watchzone. Title metadata from The Movie Database (TMDB). Video players are supplied by independent third parties.</p>
             </div>
         </footer>`;
 }
@@ -775,10 +774,35 @@ function buildEpisodes(tvData, currentSeason, currentEpisode, tvId) {
         </div>`;
 }
 
+let episodeRequestVersion = 0;
+let episodePageState = null;
+const EPISODES_PER_PAGE = 40;
+function renderEpisodePage() {
+    const state = episodePageState;
+    const grid = document.getElementById('episodes-grid');
+    if (!grid || !state || state.season !== DetailPage.currentSeason) return;
+    const start = state.page * EPISODES_PER_PAGE;
+    const end = Math.min(start + EPISODES_PER_PAGE, state.episodes.length);
+    grid.innerHTML = state.episodes.slice(start, end).map(ep => {
+        const still = schemaPoster(ep.still_path) ? imgUrl(ep.still_path, 'w300') : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="169"><rect width="300" height="169" fill="#1a1a1a"/></svg>');
+        return `<div data-season="${state.season}" data-episode="${ep.virtual_number}" role="button" tabindex="0" aria-pressed="${ep.virtual_number === DetailPage.currentEpisode}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="episode-card ${ep.virtual_number === DetailPage.currentEpisode ? 'active' : ''}" onclick="DetailPage.playEpisode(${state.id}, ${state.season}, ${ep.virtual_number})"><div class="episode-still"><img src="${still}" alt="Episode ${ep.virtual_number}" ${responsiveImageAttrs(ep.still_path, 'still', '(max-width: 900px) calc(100vw - 32px), 300px')} loading="lazy"></div><div class="episode-info"><div class="episode-number">Episode ${ep.virtual_number}</div><div class="episode-name">${sanitize(ep.name)}</div><div class="episode-overview">${sanitize(ep.overview)}</div></div></div>`;
+    }).join('') || '<p>No episodes are available for this season.</p>';
+    grid.innerHTML += `<nav class="episode-pagination" aria-label="Episode ranges"><button type="button" ${state.page === 0 ? 'disabled' : ''} onclick="DetailPage.changeEpisodePage(-1)">Previous episodes</button><span role="status">${state.episodes.length ? start + 1 : 0}–${end} of ${state.episodes.length}</span><button type="button" ${end >= state.episodes.length ? 'disabled' : ''} onclick="DetailPage.changeEpisodePage(1)">Next episodes</button></nav>`;
+}
+function ensureEpisodeVisible(episode) {
+    if (!episodePageState || episodePageState.season !== DetailPage.currentSeason) return;
+    const index = episodePageState.episodes.findIndex(ep => ep.virtual_number === episode);
+    if (index >= 0 && Math.floor(index / EPISODES_PER_PAGE) !== episodePageState.page) {
+        episodePageState.page = Math.floor(index / EPISODES_PER_PAGE);
+        renderEpisodePage();
+    }
+}
 async function loadEpisodes(tvId, seasonNum, currentEpisode) {
     const grid = document.getElementById('episodes-grid');
     if (!grid) return;
-
+    const version = ++episodeRequestVersion;
+    episodePageState = null;
+    grid.innerHTML = '<div class="detail-loading" role="status">Loading episodes…</div>';
     try {
         const tid = String(tvId).trim();
         const ovr = TV_OVERRIDES[tid];
@@ -798,28 +822,14 @@ async function loadEpisodes(tvId, seasonNum, currentEpisode) {
             episodes = (season.episodes || []).map(ep => ({ ...ep, virtual_number: ep.episode_number, real_number: ep.episode_number }));
         }
 
-        if (DetailPage.currentSeason !== seasonNum) return;
-        grid.innerHTML = episodes.map(ep => {
-            const still = ep.still_path
-                ? imgUrl(ep.still_path, 'w300')
-                : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="169"><rect width="300" height="169" fill="#1a1a1a"/></svg>');
-            const isActive = ep.virtual_number === currentEpisode;
-
-            return `
-                <div data-season="${seasonNum}" data-episode="${ep.virtual_number}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" class="episode-card ${isActive ? 'active' : ''}"
-                     onclick="DetailPage.playEpisode(${tvId}, ${seasonNum}, ${ep.virtual_number})">
-                    <div class="episode-still">
-                        <img src="${still}" alt="Episode ${ep.virtual_number}" ${responsiveImageAttrs(ep.still_path, 'still', '(max-width: 900px) calc(100vw - 32px), 300px')} loading="lazy">
-                    </div>
-                    <div class="episode-info">
-                        <div class="episode-number">Episode ${ep.virtual_number}</div>
-                        <div class="episode-name">${sanitize(ep.name)}</div>
-                        <div class="episode-overview">${sanitize(ep.overview)}</div>
-                    </div>
-                </div>`;
-        }).join('');
+        if (DetailPage.currentSeason !== seasonNum || version !== episodeRequestVersion) return;
+        episodes = episodes.filter(ep => Number.isSafeInteger(ep.virtual_number) && ep.virtual_number > 0);
+        const selectedIndex = Math.max(0, episodes.findIndex(ep => ep.virtual_number === DetailPage.currentEpisode));
+        episodePageState = { id:Number(tvId), season:seasonNum, episodes, page:Math.floor(selectedIndex / EPISODES_PER_PAGE) };
+        renderEpisodePage();
     } catch (err) {
-        grid.innerHTML = '<p style="color:#777">Failed to load episodes</p>';
+        if (DetailPage.currentSeason !== seasonNum || version !== episodeRequestVersion) return;
+        grid.innerHTML = `<p role="status">Episodes are temporarily unavailable.</p><button type="button" class="btn-secondary" onclick="DetailPage.retryEpisodes(${Number(tvId)}, ${seasonNum})">Retry episodes</button>`;
     }
 }
 
@@ -1142,13 +1152,6 @@ const DetailPage = {
         this.currentSeason = seasonNum;
         this.currentEpisode = 1;
 
-        // Update player
-        const player = document.getElementById('video-player');
-        if (player) {
-            const remap = getRemappedTV(tvId, seasonNum, 1);
-            player.src = SERVERS[activeServer].tvUrl(tvId, remap.s, remap.e);
-        }
-
         // Update season buttons
         document.querySelectorAll('.season-btn').forEach(btn => {
             const num = parseInt(btn.textContent.replace('Season ', ''));
@@ -1156,13 +1159,23 @@ const DetailPage = {
         });
 
         // Reload episodes
-        loadEpisodes(tvId, seasonNum, 1);
         this.playEpisode(tvId, seasonNum, 1);
+        loadEpisodes(tvId, seasonNum, 1);
+    },
+
+    retryEpisodes(tvId, season) { return loadEpisodes(tvId, season, this.currentEpisode); },
+    changeEpisodePage(direction) {
+        if (!episodePageState) return;
+        const lastPage = Math.max(0, Math.ceil(episodePageState.episodes.length / EPISODES_PER_PAGE) - 1);
+        episodePageState.page = Math.max(0, Math.min(lastPage, episodePageState.page + direction));
+        renderEpisodePage();
+        document.getElementById('episodes-grid')?.scrollTo?.({ top:0 });
     },
 
     playEpisode(tvId, season, episode) {
         this.currentSeason = season;
         this.currentEpisode = episode;
+        ensureEpisodeVisible(episode);
 
         const player = document.getElementById('video-player');
         if (player) {
@@ -1174,26 +1187,35 @@ const DetailPage = {
         // Update active state
         document.querySelectorAll('.episode-card').forEach(card => {
             card.classList.remove('active');
+            card.setAttribute('aria-pressed', 'false');
         });
-        document.querySelector('[data-episode="' + episode + '"][data-season="' + season + '"]')?.classList.add('active');
+        const selectedCard = document.querySelector('[data-episode="' + episode + '"][data-season="' + season + '"]');
+        selectedCard?.classList.add('active');
+        selectedCard?.setAttribute('aria-pressed', 'true');
         const path = '/tv/' + tvId + '-' + createSlug(this.currentData.name) + '/' + season + '/' + episode;
         history.replaceState(null, '', path);
         saveToHistory(this.currentData, 'tv', season, episode);
     },
 
-    copyLink(url) {
-        navigator.clipboard.writeText(url).then(() => {
+    async copyLink(url) {
+        try {
+            if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+            await navigator.clipboard.writeText(url);
             showToast('Link copied to clipboard!');
-        }).catch(() => {
-            // Fallback
+            return true;
+        } catch {
             const ta = document.createElement('textarea');
             ta.value = url;
+            ta.setAttribute('aria-label', 'Title link — select and copy');
+            ta.readOnly = true;
             document.body.appendChild(ta);
             ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            showToast('Link copied to clipboard!');
-        });
+            let copied = false;
+            try { copied = Boolean(document.execCommand?.('copy')); } catch { /* manual selection stays available */ }
+            if (copied) { document.body.removeChild(ta); showToast('Link copied to clipboard!'); }
+            else { ta.focus(); showToast('Copy unavailable. Select and copy the displayed link.'); }
+            return copied;
+        }
     },
 
     initNavScroll() {

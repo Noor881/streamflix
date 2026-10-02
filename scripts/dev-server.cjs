@@ -51,6 +51,12 @@ function createPreviewServer(options = {}) {
         try { url = new URL(req.url,'http://localhost'); pathname = decodeURIComponent(url.pathname); }
         catch { res.writeHead(400,{'Content-Type':'text/plain'}); res.end('Invalid URL'); return; }
         applyIndexingHeaders(pathname,url.searchParams,res);
+        if (pathname === '/api/metadata' || pathname === '/api/metadata.js') {
+            req.query = Object.fromEntries(url.searchParams);
+            try { await require('../api/metadata.js')(req,res); }
+            catch { res.statusCode=503;res.end('{"error":"Metadata unavailable"}'); }
+            return;
+        }
         if (pathname === '/index.html' || config.trailingSlash === false && pathname !== '/' && pathname.endsWith('/')) {
             res.writeHead(308,{'Location':(pathname === '/index.html' ? '/' : pathname.replace(/\/+$/,'')) + url.search,'Cache-Control':'no-store'});
             res.end('Moved permanently');return;

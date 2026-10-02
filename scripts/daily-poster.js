@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 // ─── Config ───────────────────────────────────────────────
-const TMDB_KEY = process.env.TMDB_API_KEY || 'd74b73cd4563f614919e6493152fbc1e';
+const TMDB_KEY = require('../server/tmdb.js').key();
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHANNEL = process.env.TELEGRAM_CHANNEL_ID; // e.g. @hdwatchzone
 const REDDIT_CLIENT_ID = process.env.REDDIT_CLIENT_ID;
@@ -17,6 +17,11 @@ const REDDIT_PASS = process.env.REDDIT_PASSWORD;
 const REDDIT_SUB = process.env.REDDIT_SUBREDDIT || 'HDWatchzone';
 const SITE_URL = 'https://hdwatchzone.com';
 const POSTED_FILE = path.join(__dirname, 'posted_ids.json');
+const DELIVERY_FILE = path.join(__dirname, 'delivery-state.json');
+function loadDeliveryState() {
+    try { const data=JSON.parse(fs.readFileSync(DELIVERY_FILE,'utf8')); return data && typeof data==='object' && !Array.isArray(data) ? data : {}; } catch { return {}; }
+}
+function saveDeliveryState(state) { fs.writeFileSync(DELIVERY_FILE,JSON.stringify(state,null,2),'utf8'); }
 
 // ─── Helpers ──────────────────────────────────────────────
 function httpsGet(url) {
@@ -107,7 +112,7 @@ function pickMovies(movies, postedIds) {
 async function postToTelegram(movie, details) {
     if (!TELEGRAM_TOKEN || !TELEGRAM_CHANNEL) {
         console.log('⚠️  Telegram credentials missing, skipping...');
-        return;
+        return {status:'skipped',error:'Telegram is not configured'};
     }
 
     const title = movie.title;
@@ -183,8 +188,10 @@ async function postToTelegram(movie, details) {
     const res = await httpsPost(options, finalBody);
     if (res.ok) {
         console.log(`✅ Telegram: Posted "${title}"`);
+        return {status:'sent'};
     } else {
-        console.error(`❌ Telegram error for "${title}":`, JSON.stringify(res));
+        console.error(`❌ Telegram refused delivery for "${title}"`);
+        return {status:'failed',error:'Telegram refused delivery'};
     }
 }
 
@@ -215,7 +222,7 @@ async function getRedditToken() {
 
 // ─── Reddit Post ───────────────────────────────────────────
 async function postToReddit(movie, details, token) {
-    if (!token) return;
+    if (!token) return {status:'skipped',error:'Reddit authentication unavailable'};
 
     const title = movie.title;
     const year = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
@@ -277,11 +284,13 @@ async function postToReddit(movie, details, token) {
 
     if (res?.json?.data?.url) {
         console.log(`✅ Reddit: Posted "${title}" → ${res.json.data.url}`);
+        return {status:'sent'};
     } else if (res?.json?.errors?.length > 0) {
-        console.error(`❌ Reddit error for "${title}":`, res.json.errors);
+        console.error(`❌ Reddit refused delivery for "${title}"`);
     } else {
-        console.log(`✅ Reddit: "${title}" submitted (response:`, JSON.stringify(res).substring(0, 100), ')');
+        console.error(`❌ Reddit did not confirm delivery for "${title}"`);
     }
+    return {status:'failed',error:'Reddit did not confirm delivery'};
 }
 
 // ─── Main ─────────────────────────────────────────────────
@@ -301,6 +310,8 @@ async function main(options = {}) {
 
     // 1. Load posted IDs to avoid duplicates
     const postedIds = loadPostedIds();
+    const deliveryState = loadDeliveryState();
+    let failures = 0;
     console.log(`📋 Already posted ${postedIds.length} movies (dedup active)\n`);
 
     // 2. Fetch trending movies
@@ -311,7 +322,9 @@ async function main(options = {}) {
     }
 
     // 3. Pick 2 unposted movies
-    const toPost = pickMovies(trending, postedIds);
+    const partial = trending.filter(movie => !postedIds.includes(movie.id) && deliveryState[movie.id] && Object.values(deliveryState[movie.id]).includes('sent'));
+    const candidates = [...partial, ...pickMovies(trending, postedIds)];
+    const toPost = candidates.filter((movie,index) => candidates.findIndex(other => other.id === movie.id) === index).slice(0,2);
     if (!toPost.length) {
         console.log(dryRun ? 'ℹ️  All trending movies already posted. Dry run preserves history.' : 'ℹ️  All trending movies already posted. Clearing history...');
         if (!dryRun) savePostedIds([]);
@@ -323,7 +336,7 @@ async function main(options = {}) {
     console.log('');
 
     // 4. Get Reddit token once
-    const redditToken = dryRun ? null : await getRedditToken();
+    const redditToken = dryRun ? null : await getRedditToken().catch(() => null);
 
     // 5. Post each movie
     for (const movie of toPost) {
@@ -338,23 +351,27 @@ async function main(options = {}) {
                 continue;
             }
 
-            // Post to Telegram
-            await postToTelegram(movie, details);
-            await sleep(1000);
-
-            // Post to Reddit
-            await postToReddit(movie, details, redditToken);
-            await sleep(2000);
-
-            // Mark as posted
-            postedIds.push(movie.id);
+            const state = deliveryState[movie.id] || (deliveryState[movie.id] = {});
+            for (const [platform,send] of [['telegram',()=>postToTelegram(movie,details)],['reddit',()=>postToReddit(movie,details,redditToken)]]) {
+                if (state[platform] === 'sent') continue;
+                try {
+                    const result = await send();
+                    state[platform] = result?.status || 'failed';
+                    if (state[platform] !== 'sent') failures++;
+                } catch { state[platform]='failed'; failures++; }
+                saveDeliveryState(deliveryState);
+                await sleep(platform==='telegram'?1000:2000);
+            }
+            if (state.telegram === 'sent' && state.reddit === 'sent') postedIds.push(movie.id);
         } catch (err) {
+            if (!dryRun) failures++;
             console.error(`❌ Error posting ${movie.title}:`, err.message);
         }
     }
 
     // 6. Save updated posted IDs
     if (!dryRun) savePostedIds(postedIds);
+    if (!dryRun && failures) throw new Error(`${failures} intended deliveries failed or were skipped; successful platform deliveries were preserved for retry.`);
 
     console.log(dryRun ? '\n✅ Dry run complete. No social messages or history changes.' : '\n✅ All done! See you tomorrow. 🎬');
 }
@@ -363,4 +380,4 @@ if (require.main === module) main().catch(err => {
     console.error('💥 Fatal error:', err);
     process.exit(1);
 });
-module.exports = { main, readDryRun };
+module.exports = { main, readDryRun, loadDeliveryState, saveDeliveryState };

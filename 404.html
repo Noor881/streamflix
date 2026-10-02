@@ -23,7 +23,7 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:image" content="https://hdwatchzone.com/logo-v2.png">
 
-    <script src="/site-core.js" defer></script>
+    <script src="/site-core.js?v=audit19" defer></script>
 
     <link rel="icon" href="/favicon-v2.ico" sizes="any">
     <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
@@ -318,7 +318,6 @@
     </div>
 
     <script>
-        const TMDB_KEY = 'd74b73cd4563f614919e6493152fbc1e';
         const IMG_BASE = 'https://image.tmdb.org/t/p/w342';
 
         function escapeTrendingHtml(value) {
@@ -360,7 +359,7 @@
         async function loadTrending() {
             try {
                 const res = await fetch(
-                    `https://api.themoviedb.org/3/trending/all/day?api_key=${TMDB_KEY}`
+                    '/api/metadata?endpoint=%2Ftrending%2Fall%2Fweek'
                 );
                 if (!res.ok) throw new Error('Trending request failed');
                 const data = await res.json();

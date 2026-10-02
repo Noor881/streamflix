@@ -7,13 +7,14 @@ const OWNER = 'streamflix-public-assets-v1';
 
 // Deliberate allowlist: source, automation, templates and local state are not public assets.
 const ROOT_ASSETS = [
-    'app.js','detail.js','site-core.js','seo-core.js','admin.js','mobile-fixes.js','sw.js',
+    'app.js','detail.js','site-core.js','seo-core.js','admin.js','sw.js',
     'styles.css','nav.css','responsive.css','design-v2.css','cards.css','detail.css','seo-enhancements.css','admin.css',
     'admin.html','offline.html','404.html','manifest.json','sitemap.xml','robots.txt','llms.txt',
     'logo-v2.png','logo-v2.webp','logo.png','favicon-v2.ico','favicon.ico','favicon.jpeg','favicon.svg','apple-touch-icon.png',
     '540bb093e1ba44239f8dc4bb75201b7d.txt'
 ];
-const SCRIPT_ASSETS = ['install.js','idb-helper.js','playback.js','recommendations.js','search.js','visitor-counter.js','watchlist.js'];
+const SCRIPT_ASSETS = ['install.js'];
+const RETIRED_ASSETS = ['mobile-fixes.js','scripts/idb-helper.js','scripts/playback.js','scripts/recommendations.js','scripts/search.js','scripts/visitor-counter.js','scripts/watchlist.js'];
 const ICON_SIZES = [72,96,128,144,152,192,384,512];
 // Targets constrain syntax rewrites; they do not polyfill browser APIs or existing CSS features.
 const BROWSER_TARGETS = ['chrome90','edge90','firefox88','safari14'];
@@ -79,10 +80,16 @@ function buildStatic({outputDirectory=OUTPUT_DIRECTORY}={}) {
         if (fs.readdirSync(output).length) {
             if (!previous) throw new Error('Existing public directory has no generated ownership manifest; contents preserved');
         }
-        inspectOutput(output,{root:output,files:assets});
+        inspectOutput(output,{root:output,files:previous?[...assets,...RETIRED_ASSETS]:assets});
+    }
+    const retired = RETIRED_ASSETS.filter(file => fs.existsSync(path.join(output,file)));
+    for (const file of retired) {
+        const target=path.resolve(output,file);
+        if (!target.startsWith(output+path.sep) || !previous?.files.includes(file) || !fs.readFileSync(target).equals(productionAsset(file,fs.readFileSync(path.join(root,file))))) throw new Error(`Modified retired output preserved: ${file}`);
     }
     // Finish all transforms before touching generated output. A parse error preserves the old build.
     const prepared=assets.map(file=>({file,contents:productionAsset(file,fs.readFileSync(path.join(root,file)))}));
+    for (const file of retired) fs.unlinkSync(path.resolve(output,file));
     fs.mkdirSync(output,{recursive:true});
     // The ownership marker stays outside the deployed static directory.
     fs.writeFileSync(manifest,JSON.stringify({owner:OWNER,files:assets},null,2)+'\n');

@@ -752,6 +752,10 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .episode-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
 .episode-card.active { background: rgba(229,9,20,0.1); border-color: rgba(229,9,20,0.26); }
+.episode-pagination { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 0; color: #c2cad8; }
+.episode-pagination button { min-height:44px; padding:8px 12px; background:#182131; border:1px solid #59677e; color:#fff; border-radius:8px; cursor:pointer; }
+.episode-pagination button:disabled { opacity:.5; cursor:default; }
+.episode-pagination button:focus-visible { outline:2px solid #fff; outline-offset:3px; }
 
 .episode-still { width: 120px; height: 68px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #1a1a1a; }
 .episode-still img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -774,7 +778,7 @@ img { display: block; max-width: 100%; height: auto; }
 /* ────────────────────────────────────────
    SHARE BUTTONS
 ──────────────────────────────────────── */
-.share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+ .share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 
 .share-btn {
     display: inline-flex;

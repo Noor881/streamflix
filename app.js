@@ -5,8 +5,7 @@
 // Configuration
 const CONFIG = {
     // TMDB API - Get your free API key at https://www.themoviedb.org/settings/api
-    TMDB_API_KEY: 'd74b73cd4563f614919e6493152fbc1e',
-    TMDB_BASE_URL: 'https://api.themoviedb.org/3',
+    TMDB_BASE_URL: '/api/metadata',
     TMDB_IMAGE_BASE: 'https://image.tmdb.org/t/p',
 
     // Vidking Embed
@@ -140,8 +139,8 @@ const initialCatalog = document.getElementById('initial-catalog-data');
 if (initialCatalog) {
     try {
         for (const entry of JSON.parse(initialCatalog.textContent).responses || []) {
-            const url = new URL(CONFIG.TMDB_BASE_URL + entry.endpoint);
-            url.searchParams.set('api_key', CONFIG.TMDB_API_KEY);
+            const url = new URL(CONFIG.TMDB_BASE_URL, window.location.origin || window.SiteSEO.SITE);
+            url.searchParams.set('endpoint', entry.endpoint);
             Object.entries(entry.params).forEach(([key,value]) => url.searchParams.set(key,value));
             url.searchParams.sort();
             apiCache.set(url.toString(), {data:entry.data,timestamp:Date.now()});
@@ -158,8 +157,8 @@ window.imgErr = function (el) { el.src = FALLBACK_IMG; el.onerror = null; };
 // ==========================================
 const tmdbAPI = {
     async fetch(endpoint, params = {}) {
-        const url = new URL(`${CONFIG.TMDB_BASE_URL}${endpoint}`);
-        url.searchParams.append('api_key', CONFIG.TMDB_API_KEY);
+        const url = new URL(CONFIG.TMDB_BASE_URL, window.location.origin || window.SiteSEO.SITE);
+        url.searchParams.set('endpoint', endpoint);
 
         Object.entries(params).forEach(([key, value]) => {
             url.searchParams.append(key, value);
@@ -173,13 +172,13 @@ const tmdbAPI = {
         }
 
         try {
-            const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
-            if (!response.ok) throw new Error('API request failed');
+            const response = await (window.fetchWithDeadline ? window.fetchWithDeadline(url) : fetch(url, { signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(12000) : undefined }));
+            if (!response.ok) throw new Error('Metadata request failed (' + response.status + ')');
             const data = await response.json();
             apiCache.set(cacheKey, { data, timestamp: Date.now() });
             return data;
         } catch (error) {
-            return null;
+            throw new Error('Title information is temporarily unavailable. Please retry.');
         }
     },
 
@@ -935,11 +934,13 @@ const pages = {
 
         try {
             // Fetch all data in parallel
-            const [trending, popularMovies, popularTV, animeTVShows, indianMovies, indianTV] = await Promise.all([
+            const outcomes = await Promise.allSettled([
                 tmdbAPI.getTrending('all', 'day', 1), tmdbAPI.getPopularMovies(1),
                 tmdbAPI.getPopularTV(1), tmdbAPI.getAnimeTVShows(1),
                 tmdbAPI.getIndianMovies(), tmdbAPI.getIndianTV()
             ]);
+            if (outcomes.every(result => result.status === 'rejected')) throw new Error('Catalog unavailable');
+            const [trending, popularMovies, popularTV, animeTVShows, indianMovies, indianTV] = outcomes.map(result => result.status === 'fulfilled' ? result.value : null);
 
             let continueWatchingHtml = '';
             if (state.continueWatching.length > 0) {
@@ -985,6 +986,7 @@ const pages = {
 
             app.innerHTML = `
                 ${components.heroCarousel(trending?.results)}
+                ${outcomes.some(result => result.status === 'rejected') ? '<div class="section" role="status"><p>Some titles are temporarily unavailable.</p><button class="btn btn-primary" onclick="router.handleRoute()">Retry loading titles</button></div>' : ''}
                 ${continueWatchingHtml}
                 ${components.sectionWithRightTabs('Trending Now', components.contentRow(trending?.results?.slice(5, 13), 'all', 'row-trending'), 'row-trending', trendingTabs)}
                 ${components.section('Popular Movies', components.contentRow(popularMovies?.results?.slice(0, 8), 'movie', 'row-movies'), '#/movies')}
@@ -1001,10 +1003,8 @@ const pages = {
             app.innerHTML = `
                 <div class="section text-center">
                     <h2>Error loading content</h2>
-                    <p class="text-muted">Please check your API key configuration and try again.</p>
-                    <p class="text-muted" style="margin-top: 1rem;">
-                        Get a free API key at <a href="https://www.themoviedb.org/settings/api" target="_blank" style="color: var(--color-primary);">TMDB</a>
-                    </p>
+                    <p class="text-muted">Title information is temporarily unavailable.</p>
+                    <button type="button" class="btn btn-primary" onclick="location.reload()">Retry</button>
                 </div>
             `;
         }
@@ -1071,7 +1071,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error loading movies page:', error);
-            app.innerHTML = '<div class="section"><p>Error loading movies</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>Movies are temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
@@ -1134,7 +1134,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error loading TV page:', error);
-            app.innerHTML = '<div class="section"><p>Error loading TV shows</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>TV shows are temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
@@ -1202,7 +1202,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error loading Anime page:', error);
-            app.innerHTML = '<div class="section"><p>Error loading Anime content</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>Anime is temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
@@ -1282,7 +1282,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error searching:', error);
-            app.innerHTML = '<div class="section"><p>Error searching</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>Search is temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
@@ -1353,7 +1353,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error loading genre page:', error);
-            app.innerHTML = '<div class="section"><p>Error loading genre</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>This catalogue is temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
@@ -1408,7 +1408,7 @@ const pages = {
             `;
         } catch (error) {
             console.error('Error loading new & popular page:', error);
-            app.innerHTML = '<div class="section"><p>Error loading content</p></div>';
+            app.innerHTML = '<div class="section" role="alert"><p>Titles are temporarily unavailable.</p><button class="btn btn-primary" onclick="location.reload()">Retry</button></div>';
         }
     },
 
